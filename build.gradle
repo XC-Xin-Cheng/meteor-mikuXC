@@ -5,19 +5,77 @@ plugins {
 version = project.mod_version
 group = project.maven_group
 
-repositories {
-    mavenCentral()
-    // Meteor 本体只作为编译期前置：harness 会把 meteor-client 的 API 一起编进来做类型检查，
-    // 但不会打进我们的 jar。运行时由用户已安装的 Meteor 本体提供。
-    maven { url = 'https://maven.meteordev.org/releases' }
-    maven { url = 'https://maven.meteordev.org/snapshots' }
-}
+repositories { mavenCentral() }
+
+// seedfinding 各构件（与 meteor-rejects build.gradle 相同版本），已离线缓存到 libs/
+def seedfindingJars = files(
+    'libs/mc_core.jar',
+    'libs/mc_math.jar',
+    'libs/mc_seed.jar',
+    'libs/mc_noise.jar',
+    'libs/mc_biome.jar',
+    'libs/mc_terrain.jar',
+    'libs/mc_feature.jar',
+)
+
+// cubiomes：seedmap.app 与 SeedMapper 使用的同一套结构库（MIT，C 实现）。
+// 这里用的是 xpple 维护并发布到其 Maven 仓库的 Java 绑定构件，内含 dev.xpple.cubiomes
+// 的 FFM 绑定（java.lang.foreign）与 5 个平台的原生库：
+//   libcubiomes_x86.so / libcubiomes_arm.so / libcubiomes.dylib / cubiomes_x86.dll / cubiomes_arm.dll
+// 与 seedfinding 一样离线缓存在 libs/，避免构建期依赖网络。构件出处：
+//   https://maven.xpple.dev/maven2/dev/xpple/cubiomes/
+//   sha256 8e78fb2048ecf4dd00966c5e0f7e760e9b81ec0e67a9a2918c0a80f3260bdfa4
+def cubiomesJar = files('libs/cubiomes-0.0.0-2026.10.2.1790944595+4f04235f3e6e25491a02a830e4f500f68045be17.jar')
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-    compileOnly "meteordevelopment:meteor-client:${project.meteor_version}"
+
+    // Meteor Client 与 Baritone 是本 addon 的运行前置，由玩家的 mods 文件夹提供。
+    // 26.x 起游戏不再混淆，Meteor/Baritone 发行的 jar 就是 Mojang 官方名，
+    // 因此可以直接当编译期依赖，不需要 modImplementation / remap。
+    compileOnly files('libs/meteor-client-26.1.2.jar')
+    compileOnly files('libs/baritone-26.1.2.jar')
+    // Meteor 的事件总线库，运行期由 Meteor 自身提供，编译期需要注解类。
+    compileOnly files('libs/orbit-0.2.4.jar')
+
+    // 以下为本模组在 fabric.mod.json 里声明的强制前置 Mod（Xaero 小地图 / 世界地图、
+    // Litematica、MiniHUD），运行期由玩家的 mods 文件夹提供；仅编译期可见，不打包。
+    // 另外 XaeroPlus、MaLiLib、Fabric API 没有直接引用其类，只在元数据里声明前置。
+    compileOnly files('libs/xaerominimap-fabric-26.1.2-26.5.0.jar')
+    compileOnly files('libs/xaeroworldmap-fabric-26.1.2-1.46.0.jar')
+    compileOnly files('libs/litematica-fabric-26.1.2-0.27.14.jar')
+    compileOnly files('libs/minihud-fabric-26.1.2-0.39.11.jar')
+
+    // 种子模拟库（ElytraFinder/StructureFinder/SeedMine/AutoElytraHarvester 运行期必需），
+    // 与上游 meteor-rejects 一致：编译期在 classpath，最终 jar 里直接 shade 进去。
+    implementation seedfindingJars
+
+    // 结构定位库：与 seedmap.app / SeedMapper 使用同一套 cubiomes，结构搜索优先走它。
+    implementation cubiomesJar
+}
+
+// 与上游 meteor-rejects 的 extraLibs 处理一致：把 seedfinding 的 class 直接解包进模组 jar，
+// 运行时不依赖 jjar-in-jar 的可见性规则。排除 META-INF，避免与外层 jar 的清单冲突。
+tasks.named('jar') {
+    from(seedfindingJars.collect { zipTree(it) }) {
+        exclude 'META-INF/**'
+    }
+    // cubiomes 的 FFM 绑定类与 5 个平台的原生库一起打进模组 jar；
+    // 运行期由 CubiomesStructureLocator 按 os/arch 挑一个解到临时目录再 System.load。
+    from(cubiomesJar.collect { zipTree(it) }) {
+        exclude 'META-INF/**'
+    }
+    // GPL-3.0：分发二进制时必须随附许可证全文与源码出处；被 shade 进来的 MIT 库
+    // 也要求保留版权声明，一并放进 META-INF。
+    from('LICENSE') { into 'META-INF' }
+    from('THIRD-PARTY-NOTICES.md') { into 'META-INF' }
+    manifest {
+        attributes 'Implementation-Title': project.archives_base_name,
+                   'Implementation-Version': project.version,
+                   'Implementation-Vendor': 'XC_XinCheng'
+    }
 }
 
 processResources {
@@ -33,10 +91,10 @@ processResources {
     }
 }
 
-// 本工程是 Meteor 附加模组：meteor-client 26.1.2 的构建元数据明确要求 JVM 25，
-// 且 26.x 的 Minecraft 本身也跑在 Java 25 上，所以字节码目标只能是 25。
-// （1.21.1 - 1.21.5 的 Meteor 走 intermediary/混淆名，26.x 走官方名，
-// 同一份含 mixin 的代码无法两个版本族共用；跨版本的汉化键数据仍全部保留在 lang 里。）
-tasks.withType(JavaCompile).configureEach { options.release = 25; options.encoding = 'UTF-8' }
+tasks.withType(JavaCompile).configureEach { options.release = 25; options.encoding = 'UTF-8'
+    // javac 默认 100 条错误就停，移植工程错误面广，放开以便一轮看全
+    options.compilerArgs.addAll(['-Xmaxerrs', '100000'])
+}
+
 java { toolchain.languageVersion = JavaLanguageVersion.of(25); withSourcesJar() }
 base { archivesName = project.archives_base_name }
