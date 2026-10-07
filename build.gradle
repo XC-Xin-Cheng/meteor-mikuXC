@@ -5,49 +5,19 @@ plugins {
 version = project.mod_version
 group = project.maven_group
 
-repositories { mavenCentral() }
-
-// seedfinding 各构件（与 meteor-rejects build.gradle 相同版本），已离线缓存到 libs/
-def seedfindingJars = files(
-    'libs/mc_core.jar',
-    'libs/mc_math.jar',
-    'libs/mc_seed.jar',
-    'libs/mc_noise.jar',
-    'libs/mc_biome.jar',
-    'libs/mc_terrain.jar',
-    'libs/mc_feature.jar',
-)
+repositories {
+    mavenCentral()
+    // Meteor 本体只作为编译期前置：harness 会把 meteor-client 的 API 一起编进来做类型检查，
+    // 但不会打进我们的 jar。运行时由用户已安装的 Meteor 本体提供。
+    maven { url = 'https://maven.meteordev.org/releases' }
+    maven { url = 'https://maven.meteordev.org/snapshots' }
+}
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-
-    // Meteor Client 与 Baritone 是本 addon 的运行前置，由玩家的 mods 文件夹提供。
-    // 26.x 起游戏不再混淆，Meteor/Baritone 发行的 jar 就是 Mojang 官方名，
-    // 因此可以直接当编译期依赖，不需要 modImplementation / remap。
-    compileOnly files('libs/meteor-client-26.1.2.jar')
-    compileOnly files('libs/baritone-26.1.2.jar')
-    // Meteor 的事件总线库，运行期由 Meteor 自身提供，编译期需要注解类。
-    compileOnly files('libs/orbit-0.2.4.jar')
-
-    // 以下为可选联动 Mod（装了才生效，没装则相关 mixin/集成自然跳过），仅编译期可见：
-    compileOnly files('libs/xaerominimap-fabric-26.1.2-26.5.0.jar')
-    compileOnly files('libs/xaeroworldmap-fabric-26.1.2-1.46.0.jar')
-    compileOnly files('libs/litematica-fabric-26.1.2-0.27.14.jar')
-    compileOnly files('libs/minihud-fabric-26.1.2-0.39.11.jar')
-
-    // 种子模拟库（ElytraFinder/StructureFinder/SeedMine/AutoElytraHarvester 运行期必需），
-    // 与上游 meteor-rejects 一致：编译期在 classpath，最终 jar 里直接 shade 进去。
-    implementation seedfindingJars
-}
-
-// 与上游 meteor-rejects 的 extraLibs 处理一致：把 seedfinding 的 class 直接解包进模组 jar，
-// 运行时不依赖 jjar-in-jar 的可见性规则。排除 META-INF，避免与外层 jar 的清单冲突。
-tasks.named('jar') {
-    from(seedfindingJars.collect { zipTree(it) }) {
-        exclude 'META-INF/**'
-    }
+    compileOnly "meteordevelopment:meteor-client:${project.meteor_version}"
 }
 
 processResources {
@@ -63,10 +33,10 @@ processResources {
     }
 }
 
-tasks.withType(JavaCompile).configureEach { options.release = 25; options.encoding = 'UTF-8'
-    // javac 默认 100 条错误就停，移植工程错误面广，放开以便一轮看全
-    options.compilerArgs.addAll(['-Xmaxerrs', '100000'])
-}
-
+// 本工程是 Meteor 附加模组：meteor-client 26.1.2 的构建元数据明确要求 JVM 25，
+// 且 26.x 的 Minecraft 本身也跑在 Java 25 上，所以字节码目标只能是 25。
+// （1.21.1 - 1.21.5 的 Meteor 走 intermediary/混淆名，26.x 走官方名，
+// 同一份含 mixin 的代码无法两个版本族共用；跨版本的汉化键数据仍全部保留在 lang 里。）
+tasks.withType(JavaCompile).configureEach { options.release = 25; options.encoding = 'UTF-8' }
 java { toolchain.languageVersion = JavaLanguageVersion.of(25); withSourcesJar() }
 base { archivesName = project.archives_base_name }
