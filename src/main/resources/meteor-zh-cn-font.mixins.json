@@ -1,0 +1,12 @@
+{
+  "required": false,
+  "package": "cn.blockforge.meteorzhcn.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "injectors": {
+    "defaultRequire": 0
+  },
+  "mixins": [
+    "FontMixin",
+    "CustomTextRendererMixin"
+  ]
+}

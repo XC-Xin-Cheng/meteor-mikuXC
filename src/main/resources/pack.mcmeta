@@ -1,0 +1,10 @@
+{
+  "pack": {
+    "pack_format": 84,
+    "description": "Meteor 完整简体中文（兼容 1.21.1 - 26.2）",
+    "supported_formats": {
+      "min_inclusive": 15,
+      "max_inclusive": 99
+    }
+  }
+}
