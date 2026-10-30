@@ -40,7 +40,7 @@ dependencies {
     compileOnly files('libs/orbit-0.2.4.jar')
     compileOnly files('libs/sponge-mixin-0.17.4+mixin.0.8.7.jar')
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    // fabric-api 仅在 fabric.mod.json 元数据里声明前置，源码不直接引用其类，编译期不需要。
 
     // Meteor Client 与 Baritone 是本 addon 的运行前置，由玩家的 mods 文件夹提供。
     // 26.x 起游戏不再混淆，Meteor/Baritone 发行的 jar 就是 Mojang 官方名，
