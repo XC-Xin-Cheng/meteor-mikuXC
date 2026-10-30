@@ -1,0 +1,32 @@
+{
+  "required": true,
+  "package": "com.github.mikumiku.addon.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "AccessorFireworkRocketEntity",
+    "BlockESPAccessor",
+    "BlockESPMixin",
+    "BlockUtilsMixin",
+    "ClientPlayerEntity",
+    "ClientPlayerInteractionManagerMixin",
+    "CountPlacementModifierAccessor",
+    "DefaultSettingsWidgetFactoryMixin",
+    "ESPBlockMixin",
+    "EntityMixin",
+    "HeightRangePlacementModifierAccessor",
+    "IClientWorld",
+    "KeyBindingMixin",
+    "LivingEntityMixin",
+    "LookUpMixin",
+    "MeteorChatPrefixMixin",
+    "MikuMixin",
+    "RarityFilterPlacementModifierAccessor",
+    "XrayAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "mixins": [
+    "LivingEntityAccessor"
+  ]
+}

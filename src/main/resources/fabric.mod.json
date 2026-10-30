@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "id": "meteor_miku_xc",
+  "version": "${version}",
+  "name": "Meteor-MikuXC",
+  "description": "Meteor Client addon miku.",
+  "authors": [
+    "§cMiku",
+    "§7§oXC_Xin_Cheng"
+  ],
+  "license": "GPL-3.0-only",
+  "contact": {
+    "repo": "https://github.com/XC-Xin-Cheng/meteor-mikuXC",
+    "homepage": "https://github.com/XC-Xin-Cheng/meteor-mikuXC",
+    "sources": "https://github.com/XC-Xin-Cheng/meteor-mikuXC",
+    "issues": "https://github.com/XC-Xin-Cheng/meteor-mikuXC/issues"
+  },
+  "icon": "assets/meteor_miku_xc/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "preLaunch": [
+      "com.github.mikumiku.addon.ok.PreLaunchInitializer"
+    ],
+    "meteor": [
+      "com.github.mikumiku.addon.ok.MikuMikuAddon"
+    ]
+  },
+  "mixins": [
+    "miku.mixins.json"
+  ],
+  "custom": {
+    "meteor-client:color": "225,25,25"
+  },
+  "depends": {
+    "java": ">=25",
+    "minecraft": [
+      ">=26.1 <26.3"
+    ],
+    "fabric-api": "*",
+    "meteor-client": "*",
+    "xaerominimap": "*",
+    "xaeroworldmap": "*",
+    "litematica": "*",
+    "minihud": "*",
+    "malilib": "*"
+  },
+  "suggests": {
+    "baritone": "*",
+    "baritone-meteor": "*",
+    "xaeroplus": "*",
+    "viafabric": "*",
+    "viafabricplus": "*"
+  }
+}
