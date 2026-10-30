@@ -57,7 +57,7 @@ import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.network.HashedStack;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -672,7 +672,7 @@ public class DebugModule extends BaseModule {
         if (packet instanceof ServerboundContainerClickPacket click) {
             int slot = click.slotNum(); // 被点击的槽位
             int button = click.buttonNum(); // 鼠标键
-            ContainerInput actionType = click.containerInput(); // 点击动作类型（PICKUP、QUICK_MOVE等）
+            ClickType actionType = click.clickType(); // 点击动作类型（PICKUP、QUICK_MOVE等）
             Int2ObjectMap<HashedStack> modifieded = click.changedSlots();// 被点击槽位上的物品
 
             return String.format("""

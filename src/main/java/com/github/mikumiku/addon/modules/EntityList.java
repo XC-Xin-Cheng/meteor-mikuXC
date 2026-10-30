@@ -268,11 +268,11 @@ public class EntityList extends BaseModule {
             }
 
             int y = yOffset.get();
-            y = drawPlayer(playersMap, playerArmorMap, y, playerColor.get(), event.graphics);
-            y = draw(items1Map, y, items1Color.get(), event.graphics);
-            y = draw(items2Map, y, items2Color.get(), event.graphics);
-            y = draw(itemsMap, y, itemsColor.get(), event.graphics);
-            y = drawEntity(entitysMap, y, entitysColor.get(), event.graphics);
+            y = drawPlayer(playersMap, playerArmorMap, y, playerColor.get(), event.drawContext);
+            y = draw(items1Map, y, items1Color.get(), event.drawContext);
+            y = draw(items2Map, y, items2Color.get(), event.drawContext);
+            y = draw(itemsMap, y, itemsColor.get(), event.drawContext);
+            y = drawEntity(entitysMap, y, entitysColor.get(), event.drawContext);
         }
     }
 

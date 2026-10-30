@@ -19,12 +19,12 @@ package com.github.mikumiku.addon.util;
 
 import com.github.mikumiku.addon.modules.VillagerRoller;
 import meteordevelopment.meteorclient.MeteorClient;
-import meteordevelopment.meteorclient.events.meteor.KeyInputEvent;
-import meteordevelopment.meteorclient.mixininterface.IClipContext;
-import meteordevelopment.meteorclient.mixininterface.IVec3;
+import meteordevelopment.meteorclient.events.meteor.KeyEvent;
+import meteordevelopment.meteorclient.mixininterface.IRaycastContext;
+import meteordevelopment.meteorclient.mixininterface.IVec3d;
 import meteordevelopment.meteorclient.utils.player.Rotations;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.ClientInput;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -125,19 +125,19 @@ public class Via {
         return value;
     }
 
-    public static void setRaycast(IClipContext raycastContext, Vec3 source, Vec3 vec3d, ClipContext.Block shapeType, ClipContext.Fluid fluidHandling, LocalPlayer player) {
+    public static void setRaycast(IRaycastContext raycastContext, Vec3 source, Vec3 vec3d, ClipContext.Block shapeType, ClipContext.Fluid fluidHandling, LocalPlayer player) {
         raycastContext.meteor$set(source, vec3d, shapeType, fluidHandling, player);
     }
 
-    public static void setMovement(IClipContext raycastContext, Vec3 source, Vec3 vec3d, ClipContext.Block shapeType, ClipContext.Fluid fluidHandling, LocalPlayer player) {
+    public static void setMovement(IRaycastContext raycastContext, Vec3 source, Vec3 vec3d, ClipContext.Block shapeType, ClipContext.Fluid fluidHandling, LocalPlayer player) {
         raycastContext.meteor$set(source, vec3d, shapeType, fluidHandling, player);
     }
 
-    public static void setMovement(IVec3 movement, double x, double y, double z) {
+    public static void setMovement(IVec3d movement, double x, double y, double z) {
         movement.meteor$set(x, y, z);
     }
 
-    public static void drawTexture(GuiGraphicsExtractor drawContext, Identifier texture2, int i, int i1, int i2, int i3) {
+    public static void drawTexture(GuiGraphics drawContext, Identifier texture2, int i, int i1, int i2, int i3) {
     }
 
     public static Vec3 playerKnockback(ClientboundExplodePacket packet) {
@@ -214,7 +214,7 @@ public class Via {
         return entity.getScoreboardName();
     }
 
-    public static int getKeyEventKey(KeyInputEvent event) {
+    public static int getKeyEventKey(KeyEvent event) {
         return event.key();
     }
 }

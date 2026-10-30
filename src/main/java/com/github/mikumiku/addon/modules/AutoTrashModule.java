@@ -26,7 +26,7 @@ import meteordevelopment.orbit.EventHandler;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 
 import java.util.*;
 
@@ -234,20 +234,20 @@ public class AutoTrashModule extends BaseModule {
 
         if (dropAll.get()) {
             // 丢弃整组物品（Ctrl + Q）
-            mc.gameMode.handleContainerInput(
+            mc.gameMode.handleInventoryMouseClick(
                 mc.player.containerMenu.containerId,
                 screenSlot,
                 1, // 右键
-                ContainerInput.THROW,
+                ClickType.THROW,
                 mc.player
             );
         } else {
             // 只丢弃一个物品（Q）
-            mc.gameMode.handleContainerInput(
+            mc.gameMode.handleInventoryMouseClick(
                 mc.player.containerMenu.containerId,
                 screenSlot,
                 0, // 左键
-                ContainerInput.THROW,
+                ClickType.THROW,
                 mc.player
             );
         }

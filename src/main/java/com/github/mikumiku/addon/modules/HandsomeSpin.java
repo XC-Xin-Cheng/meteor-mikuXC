@@ -29,7 +29,7 @@ import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.input.Input;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.resources.Identifier;
 import net.minecraft.core.BlockPos;
@@ -299,7 +299,7 @@ public class HandsomeSpin extends BaseModule {
     @EventHandler
     private void onRender2D(Render2DEvent event) {
         if (!Utils.isLoading() && isActive()) {
-            GuiGraphicsExtractor drawContext = event.graphics;
+            GuiGraphics drawContext = event.drawContext;
 //            Via.drawTexture(drawContext, TEXTURE2, 0, 0, 100, 100);
         }
     }

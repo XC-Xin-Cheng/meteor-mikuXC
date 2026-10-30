@@ -20,7 +20,7 @@ package com.github.mikumiku.addon.util;
 
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.game.GameJoinedEvent;
-import meteordevelopment.meteorclient.mixininterface.IClipContext;
+import meteordevelopment.meteorclient.mixininterface.IRaycastContext;
 import meteordevelopment.meteorclient.utils.PreInit;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.world.level.block.state.BlockState;
@@ -181,7 +181,7 @@ public class MikuDamageUtils {
 
     public static double getExposure(Vec3 source, AABB box, BlockPos ignorePos, BlockPos obbyPos, boolean ignoreTerrain) {
 
-        Via.setRaycast(((IClipContext) raycastContext), source, null, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, mc.player);
+        Via.setRaycast(((IRaycastContext) raycastContext), source, null, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, mc.player);
 
         double lx = box.getXsize();
         double ly = box.getYsize();
@@ -207,7 +207,7 @@ public class MikuDamageUtils {
             for (double y = box.minY; y <= box.maxY; y += stepY) {
                 for (double z = box.minZ + offsetZ, maxZ = box.maxZ + offsetZ; z <= maxZ; z += stepZ) {
                     Vec3 vec3d = new Vec3(x, y, z);
-                    Via.setRaycast(((IClipContext) raycastContext), source, vec3d, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, mc.player);
+                    Via.setRaycast(((IRaycastContext) raycastContext), source, vec3d, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, mc.player);
                     if (raycast(MikuDamageUtils.raycastContext, ignorePos, obbyPos, ignoreTerrain).getType() == HitResult.Type.MISS)
                         ++i;
 

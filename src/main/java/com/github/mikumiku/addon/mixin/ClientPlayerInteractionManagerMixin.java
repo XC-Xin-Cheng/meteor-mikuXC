@@ -20,18 +20,18 @@ package com.github.mikumiku.addon.mixin;
 import com.github.mikumiku.addon.mixinface.IClientPlayerInteractionManager;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(value = MultiPlayerGameMode.class, priority = 1002)
 public abstract class ClientPlayerInteractionManagerMixin implements IClientPlayerInteractionManager {
-    // 26.1：原版方法改名为 handleContainerInput，接口里保留 clickSlot 语义做桥接
+    // 26.1：原版方法改名为 handleClickType，接口里保留 clickSlot 语义做桥接
     @Shadow
-    public abstract void handleContainerInput(int syncId, int slotId, int button, ContainerInput actionType, Player player);
+    public abstract void handleInventoryMouseClick(int syncId, int slotId, int button, ClickType actionType, Player player);
 
     @Override
-    public void clickSlot(int syncId, int slotId, int button, ContainerInput actionType, Player player) {
-        handleContainerInput(syncId, slotId, button, actionType, player);
+    public void clickSlot(int syncId, int slotId, int button, ClickType actionType, Player player) {
+        handleInventoryMouseClick(syncId, slotId, button, actionType, player);
     }
 }

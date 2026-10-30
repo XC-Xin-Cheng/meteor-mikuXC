@@ -34,7 +34,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.item.Items;
 import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.resources.Identifier;
 import net.minecraft.core.BlockPos;
@@ -161,11 +161,11 @@ public class ChestplateFly extends BaseModule {
             }
 
             if (result.found()) {
-                this.mc.gameMode.handleContainerInput(this.mc.player.inventoryMenu.containerId, 6, result.slot(), ContainerInput.SWAP, this.mc.player);
+                this.mc.gameMode.handleInventoryMouseClick(this.mc.player.inventoryMenu.containerId, 6, result.slot(), ClickType.SWAP, this.mc.player);
                 if (slotSwap != null) {
                     this.mc
                         .gameMode
-                        .handleContainerInput(this.mc.player.inventoryMenu.containerId, slotSwap.inventorySlot, result.slot(), ContainerInput.SWAP, this.mc.player);
+                        .handleInventoryMouseClick(this.mc.player.inventoryMenu.containerId, slotSwap.inventorySlot, result.slot(), ClickType.SWAP, this.mc.player);
                 }
             } else {
                 result = InvUtils.find(Items.NETHERITE_CHESTPLATE);
@@ -186,7 +186,7 @@ public class ChestplateFly extends BaseModule {
         } else {
             FindItemResult result = InvUtils.findInHotbar(Items.ELYTRA);
             if (result.found()) {
-                this.mc.gameMode.handleContainerInput(this.mc.player.inventoryMenu.containerId, 6, result.slot(), ContainerInput.SWAP, this.mc.player);
+                this.mc.gameMode.handleInventoryMouseClick(this.mc.player.inventoryMenu.containerId, 6, result.slot(), ClickType.SWAP, this.mc.player);
                 return null;
             } else {
                 result = InvUtils.find(Items.ELYTRA);
@@ -196,17 +196,17 @@ public class ChestplateFly extends BaseModule {
                     FindItemResult hotbarSlot = InvUtils.findInHotbar(x -> x.getItem() != Items.TOTEM_OF_UNDYING);
                     this.mc
                         .gameMode
-                        .handleContainerInput(
+                        .handleInventoryMouseClick(
                             this.mc.player.inventoryMenu.containerId,
                             result.slot(),
                             hotbarSlot.found() ? hotbarSlot.slot() : 0,
-                            ContainerInput.SWAP,
+                            ClickType.SWAP,
                             this.mc.player
                         );
                     this.mc
                         .gameMode
-                        .handleContainerInput(
-                            this.mc.player.inventoryMenu.containerId, 6, hotbarSlot.found() ? hotbarSlot.slot() : 0, ContainerInput.SWAP, this.mc.player
+                        .handleInventoryMouseClick(
+                            this.mc.player.inventoryMenu.containerId, 6, hotbarSlot.found() ? hotbarSlot.slot() : 0, ClickType.SWAP, this.mc.player
                         );
                     InventorySlotSwap slotSwap = new InventorySlotSwap();
                     slotSwap.hotbarSlot = hotbarSlot.found() ? hotbarSlot.slot() : 0;
@@ -233,7 +233,7 @@ public class ChestplateFly extends BaseModule {
             hotbarSilentSwapSlot = hotbarSlotToSwapToResult.found() ? hotbarSlotToSwapToResult.slot() : 0;
             this.mc
                 .gameMode
-                .handleContainerInput(this.mc.player.inventoryMenu.containerId, inventorySilentSwapSlot, hotbarSilentSwapSlot, ContainerInput.SWAP, this.mc.player);
+                .handleInventoryMouseClick(this.mc.player.inventoryMenu.containerId, inventorySilentSwapSlot, hotbarSilentSwapSlot, ClickType.SWAP, this.mc.player);
             itemResult = InvUtils.findInHotbar(Items.FIREWORK_ROCKET);
         }
 
@@ -250,8 +250,8 @@ public class ChestplateFly extends BaseModule {
 
             if (inventorySilentSwapSlot != -1 && hotbarSilentSwapSlot != -1) {
                 this.mc.gameMode
-                    .handleContainerInput(
-                        this.mc.player.inventoryMenu.containerId, inventorySilentSwapSlot, hotbarSilentSwapSlot, ContainerInput.SWAP, this.mc.player
+                    .handleInventoryMouseClick(
+                        this.mc.player.inventoryMenu.containerId, inventorySilentSwapSlot, hotbarSilentSwapSlot, ClickType.SWAP, this.mc.player
                     );
             }
         }

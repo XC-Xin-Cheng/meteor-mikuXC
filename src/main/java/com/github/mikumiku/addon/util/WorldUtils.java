@@ -63,9 +63,9 @@ public class WorldUtils {
         // 保留 distanceTo 的原始比较方式，保证筛选结果与顺序逐项不变。
         Set<BlockPos> seen = new HashSet<>();
 
-        for (double x = pos.x() - range; x < pos.x() + range; x++) {
-            for (double z = pos.z() - range; z < pos.z() + range; z++) {
-                for (double y = pos.y() - range; y < pos.y() + range; y++) {
+        for (double x = pos.x - range; x < pos.x + range; x++) {
+            for (double z = pos.z - range; z < pos.z + range; z++) {
+                for (double y = pos.y - range; y < pos.y + range; y++) {
                     BlockPos blockPos = new BlockPos(Mth.floor(x), Mth.floor(y), Mth.floor(z));
 
                     if (!(Vec3.atCenterOf(blockPos).distanceTo(pos) > range) && seen.add(blockPos)) {

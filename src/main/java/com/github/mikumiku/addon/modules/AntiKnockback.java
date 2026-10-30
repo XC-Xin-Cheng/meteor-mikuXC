@@ -127,7 +127,7 @@ public class AntiKnockback extends BaseModule {
 
         // 处理实体速度包
         if (event.packet instanceof ClientboundSetEntityMotionPacket packet) {
-            if (packet.id() != mc.player.getId()) return;
+            if (packet.getId() != mc.player.getId()) return;
 
             double h = horizontal.get() / 100.0;
             double v = vertical.get() / 100.0;

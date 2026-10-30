@@ -32,8 +32,8 @@
     "meteor-client:color": "225,25,25"
   },
   "depends": {
-    "java": ">=25",
-    "minecraft": "26.1",
+    "java": ">=21",
+    "minecraft": "1.21.11",
     "fabric-api": "*",
     "meteor-client": "*",
     "xaerominimap": "*",

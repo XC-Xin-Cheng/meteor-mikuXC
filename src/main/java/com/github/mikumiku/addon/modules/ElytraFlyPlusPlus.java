@@ -33,7 +33,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.resources.Identifier;
 
 import java.util.List;
@@ -246,11 +246,11 @@ public class ElytraFlyPlusPlus extends BaseModule {
      * 装备胸甲到胸甲槽
      */
     private void equipChestplate(int hotbarSlot) {
-        mc.gameMode.handleContainerInput(
+        mc.gameMode.handleInventoryMouseClick(
             mc.player.containerMenu.containerId,
             hotbarSlot + 36,
             6,
-            ContainerInput.SWAP,
+            ClickType.SWAP,
             mc.player
         );
     }

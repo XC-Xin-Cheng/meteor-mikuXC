@@ -733,8 +733,8 @@ public class EnchantedAppleFinder extends BaseModule {
                 }
                 if (pos == null) continue;
 
-                int chunkX = pos.x();
-                int chunkZ = pos.z();
+                int chunkX = pos.x;
+                int chunkZ = pos.z;
 
                 double chunkDistance = Math.sqrt(Math.pow(chunkX - playerChunkX, 2)
                     + Math.pow(chunkZ - playerChunkZ, 2));

@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.Map.Entry;
-import meteordevelopment.meteorclient.events.meteor.KeyInputEvent;
+import meteordevelopment.meteorclient.events.meteor.KeyEvent;
 import meteordevelopment.meteorclient.events.render.Render3DEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent.Pre;
 import meteordevelopment.meteorclient.pathing.BaritoneUtils;
@@ -54,7 +54,7 @@ import meteordevelopment.meteorclient.utils.world.BlockUtils;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -453,7 +453,7 @@ public class AutoMiner extends BaseModule {
    }
 
    @EventHandler
-   private void onKey(KeyInputEvent event) {
+   private void onKey(KeyEvent event) {
       if (event.action == KeyAction.Press) {
          if (this.mc.screen == null) {
             if (this.toolMarkMode.get() == AutoMiner.MarkMode.KEY && ((Keybind)this.toolMarkKey.get()).isPressed()) {
@@ -1666,7 +1666,7 @@ public class AutoMiner extends BaseModule {
                   String otherName = other.getItem().getName(other).getString();
                   int otherCount = other.getCount();
                   int otherBefore = this.countOtherItems(handler);
-                  this.mc.gameMode.handleContainerInput(handler.containerId, otherSlot, 0, ContainerInput.QUICK_MOVE, this.mc.player);
+                  this.mc.gameMode.handleInventoryMouseClick(handler.containerId, otherSlot, 0, ClickType.QUICK_MOVE, this.mc.player);
                   if (this.countOtherItems(handler) >= otherBefore) {
                      this.extractStallUntil = now + 5000L;
                      this.warning("取不出盒子里的其他物品，先停 5 秒再试", new Object[0]);
@@ -1697,7 +1697,7 @@ public class AutoMiner extends BaseModule {
                      return;
                   }
 
-                  this.mc.gameMode.handleContainerInput(handler.containerId, i, 0, ContainerInput.QUICK_MOVE, this.mc.player);
+                  this.mc.gameMode.handleInventoryMouseClick(handler.containerId, i, 0, ClickType.QUICK_MOVE, this.mc.player);
                   itemsMoved++;
                   hasMovedItems = true;
                   this.info("放入" + stack.getItem().getName(stack).getString() + "到潜影盒，数量: " + stack.getCount(), new Object[0]);
@@ -1906,7 +1906,7 @@ public class AutoMiner extends BaseModule {
 
    private void moveItemFromShulker(int shulkerSlot, int playerSlot) {
       if (this.mc.gameMode != null) {
-         this.mc.gameMode.handleContainerInput(this.mc.player.containerMenu.containerId, shulkerSlot, 0, ContainerInput.QUICK_MOVE, this.mc.player);
+         this.mc.gameMode.handleInventoryMouseClick(this.mc.player.containerMenu.containerId, shulkerSlot, 0, ClickType.QUICK_MOVE, this.mc.player);
       }
    }
 

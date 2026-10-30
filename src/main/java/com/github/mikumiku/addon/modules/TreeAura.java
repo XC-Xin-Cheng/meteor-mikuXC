@@ -30,7 +30,7 @@ import meteordevelopment.orbit.EventHandler;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.NetherFungusBlock;
+import net.minecraft.world.level.block.FungusBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SaplingBlock;
@@ -185,7 +185,7 @@ public class TreeAura extends BaseModule {
     private boolean isSapling(BlockPos pos) {
         Block block = Minecraft.getInstance().level.getBlockState(pos).getBlock();
         return block instanceof SaplingBlock
-            || block instanceof NetherFungusBlock
+            || block instanceof FungusBlock
             || block.equals(Blocks.CRIMSON_FUNGUS)
             || block.equals(Blocks.WARPED_FUNGUS);
     }
@@ -271,7 +271,7 @@ public class TreeAura extends BaseModule {
 
                     // 如果检查位置是树苗、菌类或树干，则不能种植
                     if (checkBlock instanceof SaplingBlock ||
-                        checkBlock instanceof NetherFungusBlock ||
+                        checkBlock instanceof FungusBlock ||
                         checkBlock.equals(Blocks.CRIMSON_FUNGUS) ||
                         checkBlock.equals(Blocks.WARPED_FUNGUS) ||
                         checkBlock instanceof RotatedPillarBlock) {

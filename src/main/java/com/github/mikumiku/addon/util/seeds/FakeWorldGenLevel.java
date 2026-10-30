@@ -97,6 +97,12 @@ import java.util.function.Supplier;
  */
 final class FakeWorldGenLevel implements WorldGenLevel {
 
+    @Override
+    public float getShade(net.minecraft.core.Direction direction, boolean shade) {
+        return 1.0F;
+    }
+
+
     private final long seed;
     private final RegistryAccess registries;
     private final int minY;

@@ -24,7 +24,7 @@ import com.github.mikumiku.addon.BaseModule;
 import com.github.mikumiku.addon.util.ScanData;
 import com.github.mikumiku.addon.util.Via;
 import com.github.mikumiku.addon.util.MikuCompat;
-import meteordevelopment.meteorclient.events.meteor.KeyInputEvent;
+import meteordevelopment.meteorclient.events.meteor.KeyEvent;
 import meteordevelopment.meteorclient.events.render.Render3DEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.renderer.ShapeMode;
@@ -52,7 +52,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.BlockHitResult;
@@ -957,7 +957,7 @@ public class MassExtractor extends BaseModule {
 //    }
 
     @EventHandler
-    private void onKey(KeyInputEvent event) {
+    private void onKey(KeyEvent event) {
         if (event.action == KeyAction.Press) {
             tryMarkCorner();
             tryMarkChests();
@@ -2405,7 +2405,7 @@ public class MassExtractor extends BaseModule {
                     placeFail = "hotbar is all tools/food — no slot to stage into";
                     return Place.FAILED;
                 }
-                mc.gameMode.handleContainerInput(mc.player.inventoryMenu.containerId, srcMain, hbSlot, ContainerInput.SWAP, mc.player);
+                mc.gameMode.handleInventoryMouseClick(mc.player.inventoryMenu.containerId, srcMain, hbSlot, ClickType.SWAP, mc.player);
                 attempts = 0;
                 step = 2;
                 timer = nextDelay();
@@ -3389,7 +3389,7 @@ public class MassExtractor extends BaseModule {
      */
     private boolean hasContents(ItemStack stack) {
         var c = stack.get(DataComponents.CONTAINER);
-        return c != null && c.allItemsCopyStream().findAny().isPresent();
+        return c != null && c.stream().findAny().isPresent();
     }
 
     private int countShulkers(java.util.function.Predicate<ItemStack> p) {
@@ -4094,7 +4094,7 @@ public class MassExtractor extends BaseModule {
         if (!isShulker(s)) return false;
         var c = s.get(DataComponents.CONTAINER);
         if (c == null) return false;
-        return c.allItemsCopyStream().anyMatch(this::isGoodFood);
+        return c.stream().anyMatch(this::isGoodFood);
     }
 
     /**
@@ -4158,7 +4158,7 @@ public class MassExtractor extends BaseModule {
         var c = s.get(DataComponents.CONTAINER);
         if (c == null) return false;
         final ToolType t = toolType.get() == ToolType.Auto ? autoToolType() : toolType.get();
-        return c.allItemsCopyStream().anyMatch(inner -> requireFresh ? isFreshTool(inner, t) : isToolOfType(inner, t));
+        return c.stream().anyMatch(inner -> requireFresh ? isFreshTool(inner, t) : isToolOfType(inner, t));
     }
 
     // ---------------- Container interaction ----------------
@@ -4248,7 +4248,7 @@ public class MassExtractor extends BaseModule {
      * Shift-click a slot (moves the stack to the opposite inventory half).
      */
     private void quickMove(AbstractContainerMenu h, int slotIndex) {
-        mc.gameMode.handleContainerInput(h.containerId, slotIndex, 0, ContainerInput.QUICK_MOVE, mc.player);
+        mc.gameMode.handleInventoryMouseClick(h.containerId, slotIndex, 0, ClickType.QUICK_MOVE, mc.player);
     }
 
     // ---------------- Placement + safety ----------------
@@ -4311,7 +4311,7 @@ public class MassExtractor extends BaseModule {
      * Move the item at a (currently-open) container slot into a hotbar slot — single SWAP packet.
      */
     private void swapToHotbar(AbstractContainerMenu h, int fromSlot, int hotbarSlot) {
-        mc.gameMode.handleContainerInput(h.containerId, fromSlot, hotbarSlot, ContainerInput.SWAP, mc.player);
+        mc.gameMode.handleInventoryMouseClick(h.containerId, fromSlot, hotbarSlot, ClickType.SWAP, mc.player);
     }
 
     /**
@@ -4331,7 +4331,7 @@ public class MassExtractor extends BaseModule {
             if (!mainHasRoomFor(s)) continue; // can't relocate now; it'll go into the shulker during fill
             // Hotbar inventory index i is screen slot 36+i in the player's own screen handler;
             // shift-clicking it there moves the stack into the main inventory (slots 9-35).
-            mc.gameMode.handleContainerInput(mc.player.inventoryMenu.containerId, 36 + i, 0, ContainerInput.QUICK_MOVE, mc.player);
+            mc.gameMode.handleInventoryMouseClick(mc.player.inventoryMenu.containerId, 36 + i, 0, ClickType.QUICK_MOVE, mc.player);
             return true;
         }
         return false;

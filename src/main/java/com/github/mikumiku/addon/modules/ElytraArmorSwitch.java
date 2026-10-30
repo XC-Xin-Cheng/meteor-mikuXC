@@ -24,7 +24,7 @@ import com.github.mikumiku.addon.util.Via;
 import com.github.mikumiku.addon.util.MikuCompat;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import meteordevelopment.meteorclient.events.meteor.KeyInputEvent;
+import meteordevelopment.meteorclient.events.meteor.KeyEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.DoubleSetting;
 import meteordevelopment.meteorclient.settings.Setting;
@@ -191,7 +191,7 @@ public class ElytraArmorSwitch extends BaseModule {
     }
 
     @EventHandler
-    private void onKeyEvent(KeyInputEvent event) {
+    private void onKeyEvent(KeyEvent event) {
         if (Via.getKeyEventKey(event) == 32 && event.action == KeyAction.Press) {
             if (this.lastPressTime == 0L) {
                 this.lastPressTime = System.currentTimeMillis();

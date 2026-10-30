@@ -1,11 +1,11 @@
 plugins {
-    id 'net.fabricmc.fabric-loom' version "${loom_version}"
+    id 'fabric-loom' version "${loom_version}"
 }
 
 version = project.mod_version
 group = project.maven_group
 
-repositories { mavenCentral() }
+repositories { maven { url = uri('libs/m2repo') }; mavenCentral() }
 
 // seedfinding 各构件（与 meteor-rejects build.gradle 相同版本），已离线缓存到 libs/
 def seedfindingJars = files(
@@ -29,6 +29,16 @@ def cubiomesJar = files('libs/cubiomes-0.0.0-2026.10.2.1790944595+4f04235f3e6e25
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "meteordevelopment:meteor-client:1.21.11-local"
+    modCompileOnly "baritone:baritone:1.21.11-local"
+    modCompileOnly "xaero:xaerominimap:1.21.11-local"
+    modCompileOnly "xaero:xaeroworldmap:1.21.11-local"
+    modCompileOnly "litematica:litematica:1.21.11-local"
+    modCompileOnly "minihud:minihud:1.21.11-local"
+    modCompileOnly "malilib:malilib:1.21.11-local"
+    compileOnly files('libs/orbit-0.2.4.jar')
+    compileOnly files('libs/sponge-mixin-0.17.4+mixin.0.8.7.jar')
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
@@ -39,6 +49,7 @@ dependencies {
     compileOnly files('libs/baritone-26.1.2.jar')
     // Meteor 的事件总线库，运行期由 Meteor 自身提供，编译期需要注解类。
     compileOnly files('libs/orbit-0.2.4.jar')
+    compileOnly files('libs/sponge-mixin-0.17.4+mixin.0.8.7.jar')
 
     // 以下为本模组在 fabric.mod.json 里声明的强制前置 Mod（Xaero 小地图 / 世界地图、
     // Litematica、MiniHUD），运行期由玩家的 mods 文件夹提供；仅编译期可见，不打包。
@@ -91,10 +102,10 @@ processResources {
     }
 }
 
-tasks.withType(JavaCompile).configureEach { options.release = 25; options.encoding = 'UTF-8'
+tasks.withType(JavaCompile).configureEach { options.release = 21; options.encoding = 'UTF-8'
     // javac 默认 100 条错误就停，移植工程错误面广，放开以便一轮看全
     options.compilerArgs.addAll(['-Xmaxerrs', '100000'])
 }
 
-java { toolchain.languageVersion = JavaLanguageVersion.of(25); withSourcesJar() }
+java { toolchain.languageVersion = JavaLanguageVersion.of(21); withSourcesJar() }
 base { archivesName = project.archives_base_name }

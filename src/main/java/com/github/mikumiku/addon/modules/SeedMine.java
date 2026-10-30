@@ -303,8 +303,8 @@ public class SeedMine extends BaseModule {
         // 同步给本体 block-esp 且用户选择隐藏自绘时，就完全不画自己的线框，避免两层框重叠。
         if (meteorBridge.get() && bridgeBlockEsp.get() && bridgeHideSelf.get()) return;
 
-        int chunkX = mc.player.chunkPosition().x();
-        int chunkZ = mc.player.chunkPosition().z();
+        int chunkX = mc.player.chunkPosition().x;
+        int chunkZ = mc.player.chunkPosition().z;
         int rangeVal = horizontalRadius.get();
 
         // 连接边框要知道相邻方块是不是同一类矿石（可能跨区块），
@@ -355,7 +355,7 @@ public class SeedMine extends BaseModule {
     }
 
     private void fillConnectedScratch(int x, int z, Set<Ore.OreKey> selected) {
-        Map<Ore, Set<Vec3>> chunk = chunkRenderers.get(ChunkPos.pack(x, z));
+        Map<Ore, Set<Vec3>> chunk = chunkRenderers.get(ChunkPos.asLong(x, z));
         if (chunk == null) return;
 
         for (Map.Entry<Ore, Set<Vec3>> oreRenders : chunk.entrySet()) {
@@ -370,7 +370,7 @@ public class SeedMine extends BaseModule {
     }
 
     private void renderChunk(int x, int z, Render3DEvent event) {
-        Map<Ore, Set<Vec3>> chunk = chunkRenderers.get(ChunkPos.pack(x, z));
+        Map<Ore, Set<Vec3>> chunk = chunkRenderers.get(ChunkPos.asLong(x, z));
         if (chunk == null) return;
 
         Set<Ore.OreKey> selected = oreSelection.get();
@@ -461,7 +461,7 @@ public class SeedMine extends BaseModule {
     private void onBlockUpdate(BlockUpdateEvent event) {
         if (airCheck.get() != AirCheck.RECHECK || event.newState.canOcclude()) return;
 
-        long chunkKey = ChunkPos.pack(event.pos);
+        long chunkKey = ChunkPos.asLong(event.pos);
         if (chunkRenderers.containsKey(chunkKey)) {
             Vec3 pos = Vec3.atLowerCornerOf(event.pos);
             for (var ore : chunkRenderers.get(chunkKey).values()) {
@@ -558,11 +558,11 @@ public class SeedMine extends BaseModule {
         var chunkPos = mc.player.chunkPosition();
 
         for (int range = 0; range <= rangeVal; ++range) {
-            for (int x = -range + chunkPos.x(); x <= range + chunkPos.x(); ++x) {
-                tempGoals.addAll(addToBaritone(x, chunkPos.z() + range - rangeVal));
+            for (int x = -range + chunkPos.x; x <= range + chunkPos.x; ++x) {
+                tempGoals.addAll(addToBaritone(x, chunkPos.z + range - rangeVal));
             }
-            for (int x = -range + 1 + chunkPos.x(); x < range + chunkPos.x(); ++x) {
-                tempGoals.addAll(addToBaritone(x, chunkPos.z() - range + rangeVal + 1));
+            for (int x = -range + 1 + chunkPos.x; x < range + chunkPos.x; ++x) {
+                tempGoals.addAll(addToBaritone(x, chunkPos.z - range + rangeVal + 1));
             }
         }
 
@@ -584,7 +584,7 @@ public class SeedMine extends BaseModule {
 
     private ArrayList<BlockPos> addToBaritone(int chunkX, int chunkZ) {
         ArrayList<BlockPos> baritoneGoals = new ArrayList<>();
-        long chunkKey = ChunkPos.pack(chunkX, chunkZ);
+        long chunkKey = ChunkPos.asLong(chunkX, chunkZ);
         if (this.chunkRenderers.containsKey(chunkKey)) {
             this.chunkRenderers.get(chunkKey).entrySet().stream()
                 .flatMap(entry -> entry.getValue().stream()
@@ -604,11 +604,11 @@ public class SeedMine extends BaseModule {
         var chunkPos = mc.player.chunkPosition();
 
         for (int range = 0; range <= rangeVal; ++range) {
-            for (int x = -range + chunkPos.x(); x <= range + chunkPos.x(); ++x) {
-                allTargets.addAll(addToBaritone(x, chunkPos.z() + range - rangeVal));
+            for (int x = -range + chunkPos.x; x <= range + chunkPos.x; ++x) {
+                allTargets.addAll(addToBaritone(x, chunkPos.z + range - rangeVal));
             }
-            for (int x = -range + 1 + chunkPos.x(); x < range + chunkPos.x(); ++x) {
-                allTargets.addAll(addToBaritone(x, chunkPos.z() - range + rangeVal + 1));
+            for (int x = -range + 1 + chunkPos.x; x < range + chunkPos.x; ++x) {
+                allTargets.addAll(addToBaritone(x, chunkPos.z - range + rangeVal + 1));
             }
         }
 
@@ -797,7 +797,7 @@ public class SeedMine extends BaseModule {
     private void doMathOnChunk(ChunkAccess chunk) {
 
         var chunkPos = chunk.getPos();
-        long chunkKey = chunkPos.pack();
+        long chunkKey = chunkPos.toLong();
 
         ClientLevel world = mc.level;
 
@@ -807,7 +807,7 @@ public class SeedMine extends BaseModule {
 
         Set<ResourceKey<Biome>> biomes = new HashSet<>();
         ChunkPos.rangeClosed(chunkPos, 1).forEach(chunkPosx -> {
-            ChunkAccess chunkxx = world.getChunk(chunkPosx.x(), chunkPosx.z(), ChunkStatus.BIOMES, false);
+            ChunkAccess chunkxx = world.getChunk(chunkPosx.x, chunkPosx.z, ChunkStatus.BIOMES, false);
             if (chunkxx == null) return;
 
             for (LevelChunkSection chunkSection : chunkxx.getSections()) {
@@ -816,8 +816,8 @@ public class SeedMine extends BaseModule {
         });
         Set<Ore> oreSet = biomes.stream().flatMap(b -> getDefaultOres(b).stream()).collect(Collectors.toSet());
 
-        int chunkX = chunkPos.x() << 4;
-        int chunkZ = chunkPos.z() << 4;
+        int chunkX = chunkPos.x << 4;
+        int chunkZ = chunkPos.z << 4;
         // 26.x：与上游 meteor-rejects 的 OreSim 一样，直接用本版游戏原生的
         // 世界生成算法算矿位，不经过种子库，所以“MC版本”里的选择不影响矿位，
         // 只作为种子元数据记录（26.2 / 26.1.2 / 26.1.1 / 26.1 都已被 SeedVersion 收录）。

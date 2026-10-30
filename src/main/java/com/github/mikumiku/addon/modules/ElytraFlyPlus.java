@@ -21,7 +21,7 @@ import com.github.mikumiku.addon.BaseModule;
 import com.github.mikumiku.addon.util.Via;
 import meteordevelopment.meteorclient.events.entity.player.PlayerMoveEvent;
 import meteordevelopment.meteorclient.events.world.PlaySoundEvent;
-import meteordevelopment.meteorclient.mixininterface.IVec3;
+import meteordevelopment.meteorclient.mixininterface.IVec3d;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.resources.Identifier;
@@ -192,7 +192,7 @@ public class ElytraFlyPlus extends BaseModule {
     private void constantiamTick(PlayerMoveEvent event) {
         Vec3 motion = getMotion(mc.player.getDeltaMovement());
         if (motion != null) {
-            Via.setMovement(((IVec3) event.movement), motion.x(), motion.y(), motion.z());
+            Via.setMovement(((IVec3d) event.movement), motion.x(), motion.y(), motion.z());
             event.movement = motion;
         }
     }
@@ -242,7 +242,7 @@ public class ElytraFlyPlus extends BaseModule {
             if (!mc.options.keyShift.isDown() && mc.options.keyJump.isDown()) {
                 y = up.get();
             }
-            Via.setMovement(((IVec3) event.movement), x, y, z);
+            Via.setMovement(((IVec3d) event.movement), x, y, z);
 
             mc.player.setDeltaMovement(0.0, 0.0, 0.0);
         }
@@ -295,7 +295,7 @@ public class ElytraFlyPlus extends BaseModule {
             if (mc.options.keyShift.isDown() && !mc.options.keyJump.isDown()) {
                 y = -(Double) down.get();
             }
-            Via.setMovement(((IVec3) event.movement), x, y, z);
+            Via.setMovement(((IVec3d) event.movement), x, y, z);
 
             mc.player.setDeltaMovement(0.0, 0.0, 0.0);
         }

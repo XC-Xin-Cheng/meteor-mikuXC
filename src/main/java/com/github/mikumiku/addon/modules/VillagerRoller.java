@@ -676,12 +676,12 @@ public class VillagerRoller extends BaseModule {
             EntityHitResult entityHitResult = ProjectileUtil.getEntityHitResult(mc.player, playerPos, villagerPos, rollingVillager.getBoundingBox(), Entity::isPickable, playerPos.distanceToSqr(villagerPos));
             if (entityHitResult == null) {
                 // Raycast didn't find villager entity?
-                mc.gameMode.interact(mc.player, rollingVillager, new EntityHitResult(rollingVillager), InteractionHand.MAIN_HAND);
+                mc.gameMode.interact(mc.player, rollingVillager, InteractionHand.MAIN_HAND);
                 waitingForTradesTicks = 0;
             } else {
-                InteractionResult actionResult = mc.gameMode.interact(mc.player, rollingVillager, entityHitResult, InteractionHand.MAIN_HAND);
+                InteractionResult actionResult = mc.gameMode.interact(mc.player, rollingVillager, InteractionHand.MAIN_HAND);
                 if (!actionResult.consumesAction()) {
-                    mc.gameMode.interact(mc.player, rollingVillager, new EntityHitResult(rollingVillager), InteractionHand.MAIN_HAND);
+                    mc.gameMode.interact(mc.player, rollingVillager, InteractionHand.MAIN_HAND);
                     waitingForTradesTicks = 0;
                 }
             }

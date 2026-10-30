@@ -52,7 +52,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.BlockHitResult;
@@ -427,11 +427,11 @@ public class UniversalSupply extends BaseModule {
                     if (containsNeededItem) {
                         info("发现包含目标物品的潜影盒，开始提取");
                         // 点击提取潜影盒
-                        mc.gameMode.handleContainerInput(
+                        mc.gameMode.handleInventoryMouseClick(
                             screenHandler.containerId,
                             i,
                             0,
-                            ContainerInput.QUICK_MOVE,
+                            ClickType.QUICK_MOVE,
                             mc.player
                         );
                         foundItems = true;
@@ -878,7 +878,7 @@ public class UniversalSupply extends BaseModule {
 
 
     private boolean isNight() {
-        long timeOfDay = mc.level.getOverworldClockTime() % 24000;
+        long timeOfDay = mc.level.getDayTime() % 24000;
         return timeOfDay >= 13000 && timeOfDay <= 23000;
     }
 
@@ -1049,7 +1049,7 @@ public class UniversalSupply extends BaseModule {
         if (container == null) return;
 
         // 遍历潜影盒中的所有物品
-        for (ItemStack stack : container.allItemsCopyStream().toList()) {
+        for (ItemStack stack : container.stream().toList()) {
             if (stack.isEmpty()) continue;
 
             Item item = stack.getItem();
@@ -1333,11 +1333,11 @@ public class UniversalSupply extends BaseModule {
                             ItemStack containerStack = screenHandler.getSlot(j).getItem();
                             if (containerStack.isEmpty()) {
                                 // 将潜影盒移入容器
-                                mc.gameMode.handleContainerInput(
+                                mc.gameMode.handleInventoryMouseClick(
                                     screenHandler.containerId,
                                     i + 36, // 玩家背包槽位需要加36
                                     0,
-                                    ContainerInput.QUICK_MOVE,
+                                    ClickType.QUICK_MOVE,
                                     mc.player
                                 );
                                 movedAnyBox = true;

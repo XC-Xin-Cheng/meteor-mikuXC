@@ -106,7 +106,7 @@ public class Velocity extends BaseModule {
         if (onlyGround.get() && !mc.player.onGround()) return;
 
         if (event.packet instanceof ClientboundSetEntityMotionPacket packet) {
-            if (packet.id() == mc.player.getId()) {
+            if (packet.getId() == mc.player.getId()) {
                 double h = horizontal.get();
                 double v = vertical.get();
 

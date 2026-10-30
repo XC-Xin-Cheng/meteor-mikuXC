@@ -42,7 +42,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.core.BlockPos;
@@ -255,7 +255,7 @@ public class ShulkerBoxItemFetcher extends BaseModule {
                                 boolean hasHighDurabilityElytra = false;
                                 int elytraCount = 0;
 
-                                for (ItemStack itemStack : container.allItemsCopyStream().toList()) {
+                                for (ItemStack itemStack : container.stream().toList()) {
                                     if (!itemStack.isEmpty() && itemStack.getItem() == Items.ELYTRA) {
                                         elytraCount++;
                                         if (isElytraHighDurability(itemStack)) {
@@ -330,7 +330,7 @@ public class ShulkerBoxItemFetcher extends BaseModule {
         if (container == null) return false;
 
         // Check each item in the container
-        for (ItemStack stack : container.allItemsCopyStream().toList()) {
+        for (ItemStack stack : container.stream().toList()) {
             if (!stack.isEmpty() && stack.getItem() == targetItem) {
                 return true;
             }
@@ -344,7 +344,7 @@ public class ShulkerBoxItemFetcher extends BaseModule {
         if (container == null) return 0;
 
         int groupCount = 0;
-        for (ItemStack stack : container.allItemsCopyStream().toList()) {
+        for (ItemStack stack : container.stream().toList()) {
             if (!stack.isEmpty() && stack.getItem() == targetItem) {
                 groupCount++;
             }
@@ -358,7 +358,7 @@ public class ShulkerBoxItemFetcher extends BaseModule {
         if (container == null) return 0;
 
         int totalCount = 0;
-        for (ItemStack stack : container.allItemsCopyStream().toList()) {
+        for (ItemStack stack : container.stream().toList()) {
             if (!stack.isEmpty() && stack.getItem() == targetItem) {
                 totalCount += stack.getCount();
             }
@@ -505,11 +505,11 @@ public class ShulkerBoxItemFetcher extends BaseModule {
         for (int i = 0; i < 9; i++) {
             if (mc.player.getInventory().getItem(i).isEmpty()) {
                 // Move item to hotbar
-                mc.gameMode.handleContainerInput(
+                mc.gameMode.handleInventoryMouseClick(
                     mc.player.containerMenu.containerId,
                     sourceSlot,
                     i,
-                    ContainerInput.SWAP,
+                    ClickType.SWAP,
                     mc.player
                 );
                 shulkerSlot = i;
@@ -518,11 +518,11 @@ public class ShulkerBoxItemFetcher extends BaseModule {
         }
 
         // If no empty slot, swap with first hotbar slot
-        mc.gameMode.handleContainerInput(
+        mc.gameMode.handleInventoryMouseClick(
             mc.player.containerMenu.containerId,
             sourceSlot,
             0,
-            ContainerInput.SWAP,
+            ClickType.SWAP,
             mc.player
         );
         shulkerSlot = 0;
@@ -602,11 +602,11 @@ public class ShulkerBoxItemFetcher extends BaseModule {
                     info("发现低耐久鞘翅 (耐久: " + getElytraDurability(lowElytra) + ")，先存入潜影盒");
                 }
                 // Move low durability elytra to container
-                mc.gameMode.handleContainerInput(
+                mc.gameMode.handleInventoryMouseClick(
                     screenHandler.containerId,
                     36 + lowDurabilitySlot, // Player inventory slot
                     0,
-                    ContainerInput.QUICK_MOVE,
+                    ClickType.QUICK_MOVE,
                     mc.player
                 );
                 hasStoredLowDurabilityElytra = true;
@@ -665,11 +665,11 @@ public class ShulkerBoxItemFetcher extends BaseModule {
                 }
 
                 // Click to take the item
-                mc.gameMode.handleContainerInput(
+                mc.gameMode.handleInventoryMouseClick(
                     screenHandler.containerId,
                     i,
                     0,
-                    ContainerInput.QUICK_MOVE,
+                    ClickType.QUICK_MOVE,
                     mc.player
                 );
                 foundItems = true;

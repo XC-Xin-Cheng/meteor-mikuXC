@@ -50,7 +50,7 @@ public abstract class BlockESPMixin {
         at = @At("HEAD"), cancellable = true)
     private static void injectSearchChunk(ChunkAccess chunk, List<Block> blocks, CallbackInfoReturnable<ESPChunk> cir) {
         try {
-            ESPChunk schunk = new ESPChunk(chunk.getPos().x(), chunk.getPos().z());
+            ESPChunk schunk = new ESPChunk(chunk.getPos().x, chunk.getPos().z);
             if (schunk.shouldBeDeleted()) {
                 cir.setReturnValue(schunk);
                 return;
