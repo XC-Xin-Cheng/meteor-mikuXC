@@ -123,7 +123,7 @@ public final class MikuEntities {
 
         // 3) 原版按名解析
         try {
-            Optional<EntityType<?>> byName = EntityType.byString(registryPath);
+            Optional<EntityType<?>> byName = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.withDefaultNamespace(registryPath));
             if (byName != null && byName.isPresent()) return byName;
         } catch (Throwable ignored) {
             // 方法在新版本被移除

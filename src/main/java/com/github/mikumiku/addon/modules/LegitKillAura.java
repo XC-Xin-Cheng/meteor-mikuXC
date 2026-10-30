@@ -312,10 +312,17 @@ public class LegitKillAura extends BaseModule {
      */
     private int threatTier(Entity entity) {
         EntityType<?> type = entity.getType();
-        if (type == EntityType.WITHER || type == EntityType.ENDER_DRAGON || type == EntityType.CREEPER) return 0;
-        if (type == EntityType.WITCH || type == EntityType.SKELETON
-            || type == EntityType.STRAY || type == EntityType.WITHER_SKELETON) return 1;
+        if (type == et("wither") || type == et("ender_dragon") || type == et("creeper")) return 0;
+        if (type == et("witch") || type == et("skeleton")
+            || type == et("stray") || type == et("wither_skeleton")) return 1;
         return 2;
+    }
+
+
+    /** 26.2 起实体类型常量移入注册表，按 id 取。 */
+    private static EntityType<?> et(String name) {
+        return net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE
+            .getValue(net.minecraft.resources.Identifier.withDefaultNamespace(name));
     }
 
     /** 综合分：同一威胁档位内，距离占比 + 血量占比，越小越优先。 */

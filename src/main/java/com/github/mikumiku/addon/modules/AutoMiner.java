@@ -455,7 +455,7 @@ public class AutoMiner extends BaseModule {
    @EventHandler
    private void onKey(KeyInputEvent event) {
       if (event.action == KeyAction.Press) {
-         if (this.mc.screen == null) {
+         if (this.mc.gui.screen() == null) {
             if (this.toolMarkMode.get() == AutoMiner.MarkMode.KEY && ((Keybind)this.toolMarkKey.get()).isPressed()) {
                net.minecraft.core.BlockPos pos = this.getCrosshairShulkerPos();
                if (pos == null) {
@@ -906,7 +906,7 @@ public class AutoMiner extends BaseModule {
 
    private void inspectOpenShulkerBox() {
       if (this.mc.player != null && this.mc.level != null) {
-         if (this.mc.screen instanceof net.minecraft.client.gui.screens.inventory.ShulkerBoxScreen) {
+         if (this.mc.gui.screen() instanceof net.minecraft.client.gui.screens.inventory.ShulkerBoxScreen) {
             if (this.currentState != AutoMiner.MinerState.GETTING_TOOLS) {
                net.minecraft.world.inventory.AbstractContainerMenu handler = this.mc.player.containerMenu;
                if (handler != null) {
@@ -1546,22 +1546,7 @@ public class AutoMiner extends BaseModule {
             Settings settings = BaritoneAPI.getSettings();
             List<net.minecraft.world.level.block.Block> blocksToAvoid = new ArrayList<>();
             blocksToAvoid.add(net.minecraft.world.level.block.Blocks.SHULKER_BOX);
-            blocksToAvoid.add(net.minecraft.world.level.block.Blocks.WHITE_SHULKER_BOX);
-            blocksToAvoid.add(net.minecraft.world.level.block.Blocks.ORANGE_SHULKER_BOX);
-            blocksToAvoid.add(net.minecraft.world.level.block.Blocks.MAGENTA_SHULKER_BOX);
-            blocksToAvoid.add(net.minecraft.world.level.block.Blocks.LIGHT_BLUE_SHULKER_BOX);
-            blocksToAvoid.add(net.minecraft.world.level.block.Blocks.YELLOW_SHULKER_BOX);
-            blocksToAvoid.add(net.minecraft.world.level.block.Blocks.LIME_SHULKER_BOX);
-            blocksToAvoid.add(net.minecraft.world.level.block.Blocks.PINK_SHULKER_BOX);
-            blocksToAvoid.add(net.minecraft.world.level.block.Blocks.GRAY_SHULKER_BOX);
-            blocksToAvoid.add(net.minecraft.world.level.block.Blocks.LIGHT_GRAY_SHULKER_BOX);
-            blocksToAvoid.add(net.minecraft.world.level.block.Blocks.CYAN_SHULKER_BOX);
-            blocksToAvoid.add(net.minecraft.world.level.block.Blocks.PURPLE_SHULKER_BOX);
-            blocksToAvoid.add(net.minecraft.world.level.block.Blocks.BLUE_SHULKER_BOX);
-            blocksToAvoid.add(net.minecraft.world.level.block.Blocks.BROWN_SHULKER_BOX);
-            blocksToAvoid.add(net.minecraft.world.level.block.Blocks.GREEN_SHULKER_BOX);
-            blocksToAvoid.add(net.minecraft.world.level.block.Blocks.RED_SHULKER_BOX);
-            blocksToAvoid.add(net.minecraft.world.level.block.Blocks.BLACK_SHULKER_BOX);
+            blocksToAvoid.addAll(net.minecraft.world.level.block.Blocks.DYED_SHULKER_BOX.asList());
             settings.blocksToDisallowBreaking.value = blocksToAvoid;
             this.info("已设置 Baritone 保护所有潜影盒", new Object[0]);
          } catch (Exception var3) {
@@ -1860,7 +1845,7 @@ public class AutoMiner extends BaseModule {
    }
 
    private int findToolInShulker() {
-      if (!(this.mc.screen instanceof net.minecraft.client.gui.screens.inventory.ShulkerBoxScreen)) {
+      if (!(this.mc.gui.screen() instanceof net.minecraft.client.gui.screens.inventory.ShulkerBoxScreen)) {
          return -1;
       } else {
          net.minecraft.world.inventory.AbstractContainerMenu handler = this.mc.player.containerMenu;
@@ -1926,7 +1911,7 @@ public class AutoMiner extends BaseModule {
    }
 
    private void closeShulkerBox() {
-      if (this.mc.screen instanceof net.minecraft.client.gui.screens.inventory.ShulkerBoxScreen) {
+      if (this.mc.gui.screen() instanceof net.minecraft.client.gui.screens.inventory.ShulkerBoxScreen) {
          this.mc.player.closeContainer();
          ChatUtils.sendMsg("关闭潜影盒");
       }
@@ -1935,7 +1920,7 @@ public class AutoMiner extends BaseModule {
    }
 
    private boolean isShulkerBoxOpen() {
-      return this.mc.screen instanceof net.minecraft.client.gui.screens.inventory.ShulkerBoxScreen;
+      return this.mc.gui.screen() instanceof net.minecraft.client.gui.screens.inventory.ShulkerBoxScreen;
    }
 
    private List<net.minecraft.world.item.Item> getToolPriorityList(AutoMiner.ToolType toolType) {

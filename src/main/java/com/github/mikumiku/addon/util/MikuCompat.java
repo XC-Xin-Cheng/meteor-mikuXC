@@ -75,7 +75,7 @@ public final class MikuCompat {
         try { mcSetScreenMethod = Minecraft.class.getMethod("setScreen", Screen.class); } catch (Throwable ignored) {}
     }
 
-    /** 当前打开的界面，没有则返回 null。等价于 26.1 的 {@code mc.screen}。 */
+    /** 当前打开的界面，没有则返回 null。等价于 26.1 的 {@code mc.gui.screen()}。 */
     public static Screen screen() {
         initScreen();
         Minecraft mc = Minecraft.getInstance();

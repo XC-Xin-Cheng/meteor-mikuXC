@@ -162,7 +162,7 @@ public class Via {
         return tag.getListOrEmpty(key);
     }
     public static boolean isNoneProfession(VillagerData data) {
-        return data.profession() == VillagerProfession.NONE;
+        return data.profession().is(VillagerProfession.NONE);
     }
     public static void sendPressShift() {
         Input playerInput = new Input(false, false, false, false, false, true, false);
