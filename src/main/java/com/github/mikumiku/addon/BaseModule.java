@@ -123,18 +123,6 @@ public abstract class BaseModule extends Module implements MEnum {
         }
     }
 
-    /**
-     * 1.21.11 的 Meteor 移除了开关模块的聊天提示，这里在基类统一补回：
-     * 无论是快捷键还是 GUI 触发，开关本插件的模块都会在聊天栏提示。
-     */
-    @Override
-    public void toggle() {
-        super.toggle();
-        if (Utils.canUpdate()) {
-            sendToggledMsg();
-        }
-    }
-
     public void sendToggledMsg() {
         Component onMsg = Component.empty().setStyle(Style.EMPTY.applyFormat(ChatFormatting.GREEN)).append("ON");
         Component offMsg = Component.empty().setStyle(Style.EMPTY.applyFormat(ChatFormatting.RED)).append("OFF");

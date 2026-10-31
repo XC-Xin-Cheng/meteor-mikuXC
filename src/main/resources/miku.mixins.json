@@ -20,6 +20,7 @@
     "LookUpMixin",
     "MeteorChatPrefixMixin",
     "MikuMixin",
+    "MixinModule",
     "RarityFilterPlacementModifierAccessor",
     "XrayAccessor"
   ],

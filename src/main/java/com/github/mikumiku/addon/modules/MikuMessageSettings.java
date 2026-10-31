@@ -25,6 +25,8 @@ import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.settings.StringSetting;
 import meteordevelopment.meteorclient.systems.modules.Modules;
+import meteordevelopment.meteorclient.utils.Utils;
+import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -97,6 +99,13 @@ public class MikuMessageSettings extends BaseModule {
         .build()
     );
 
+    private final Setting<Boolean> toggleNotifications = sgGeneral.add(new BoolSetting.Builder()
+        .name("模块开关提示")
+        .description("开关任何模块（快捷键或 GUI）时，在聊天栏显示「模块名 已开启/已关闭」提示")
+        .defaultValue(true)
+        .build()
+    );
+
     public MikuMessageSettings() {
         super(BaseModule.CATEGORY, "Miku 消息设置",
             "[Miku 消息设置] 把聊天栏里固定的紫色 [Meteor] 换成你自己写的文字与颜色："
@@ -139,6 +148,23 @@ public class MikuMessageSettings extends BaseModule {
      * 恢复原样。颜色用 {@link TextColor#fromRgb(int)} 写死 RGB，避免把 alpha 也带进去
      * 导致前缀变透明。</p>
      */
+    /**
+     * 给 mixin 用：模块被开关时调用（覆盖 Meteor 自带模块与本插件全部模块）。
+     *
+     * <p>「模块开关提示」开启且已进世界时，按开关后的状态在聊天栏提示
+     * 「模块名 已开启/已关闭」，颜色与其它版本的 Meteor 开关提示一致。</p>
+     */
+    public static void onModuleToggled(meteordevelopment.meteorclient.systems.modules.Module module) {
+        MikuMessageSettings self = Modules.get().get(MikuMessageSettings.class);
+        if (self == null || !self.isActive() || !self.toggleNotifications.get()) return;
+        if (!Utils.canUpdate()) return;
+
+        boolean active = module.isActive();
+        ChatUtils.sendMsg(module.title.hashCode(),
+            active ? net.minecraft.ChatFormatting.GREEN : net.minecraft.ChatFormatting.RED,
+            module.title + (active ? " 已开启" : " 已关闭"));
+    }
+
     public static Component buildPrefix() {
         MikuMessageSettings self = Modules.get().get(MikuMessageSettings.class);
         if (self == null || !self.isActive()) return null;
