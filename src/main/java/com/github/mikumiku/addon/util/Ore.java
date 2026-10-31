@@ -336,7 +336,7 @@ public class Ore {
         this.index = index;
         this.type = type;
         this.color = type.color;
-        int bottom = Minecraft.getInstance().level.getMinY();
+        int bottom = Minecraft.getInstance().level.getMinBuildHeight();
         int height = Minecraft.getInstance().level.dimensionType().logicalHeight();
         this.heightContext = new WorldGenerationContext(generator, LevelHeightAccessor.create(bottom, height));
 

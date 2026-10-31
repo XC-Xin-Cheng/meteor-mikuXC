@@ -20,7 +20,7 @@ package com.github.mikumiku.addon.modules;
 import com.github.mikumiku.addon.BaseModule;
 import com.github.mikumiku.addon.util.Via;
 import meteordevelopment.meteorclient.events.entity.player.PlayerMoveEvent;
-import meteordevelopment.meteorclient.mixininterface.IVec3;
+import meteordevelopment.meteorclient.mixininterface.IVec3d;
 import meteordevelopment.meteorclient.settings.BoolSetting;
 import meteordevelopment.meteorclient.settings.DoubleSetting;
 import meteordevelopment.meteorclient.settings.Setting;
@@ -107,7 +107,7 @@ public class Hover extends BaseModule {
             }
 
             // 应用移动
-            Via.setMovement(((IVec3) event.movement), moveX, moveY, moveZ);
+            Via.setMovement(((IVec3d) event.movement), moveX, moveY, moveZ);
 
             // 减少下落速度以实现更好的悬停效果
             Vec3 velocity = mc.player.getDeltaMovement();

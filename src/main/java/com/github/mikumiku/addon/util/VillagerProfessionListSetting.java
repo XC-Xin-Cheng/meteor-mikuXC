@@ -24,8 +24,8 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.npc.VillagerProfession;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,7 +78,7 @@ public class VillagerProfessionListSetting extends Setting<List<VillagerProfessi
     }
 
     @Override
-    public Iterable<Identifier> getIdentifierSuggestions() {
+    public Iterable<ResourceLocation> getIdentifierSuggestions() {
         return BuiltInRegistries.VILLAGER_PROFESSION.keySet();
     }
 
@@ -99,9 +99,9 @@ public class VillagerProfessionListSetting extends Setting<List<VillagerProfessi
     public List<VillagerProfession> load(CompoundTag tag) {
         get().clear();
 
-        ListTag valueTag = tag.getList("value").get();
+        ListTag valueTag = tag.getList("value", net.minecraft.nbt.Tag.TAG_LIST);
         for (Tag tagI : valueTag) {
-            VillagerProfession profession = BuiltInRegistries.VILLAGER_PROFESSION.getOptional(Identifier.parse(tagI.asString().get())).orElse(null);
+            VillagerProfession profession = BuiltInRegistries.VILLAGER_PROFESSION.getOptional(ResourceLocation.tryParse(tagI.getAsString())).orElse(null);
 
             if (bypassFilterWhenSavingAndLoading || (filter == null || filter.test(profession))) {
                 get().add(profession);

@@ -489,7 +489,7 @@ public class FakeCoordinates extends BaseModule {
      */
     private boolean isInNether() {
         if (mc.level == null) return false;
-        return mc.level.dimension().identifier().getPath().equals("the_nether");
+        return mc.level.dimension().location().getPath().equals("the_nether");
     }
 
     /**

@@ -32,7 +32,7 @@ import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket;
 import net.minecraft.network.protocol.game.ServerboundRenameItemPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerClosePacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.core.BlockPos;
 
 import java.util.ArrayList;
@@ -197,10 +197,10 @@ public class MapNamer extends BaseModule {
             // info("Process map: " + slot + " with x: " + startX.get() + ", y: " + startY.get());
 
             IClientPlayerInteractionManager cim = (IClientPlayerInteractionManager) mc.gameMode;
-            cim.clickSlot(mc.player.containerMenu.containerId, slot, 1, ContainerInput.QUICK_MOVE, mc.player);
+            cim.clickSlot(mc.player.containerMenu.containerId, slot, 1, ClickType.QUICK_MOVE, mc.player);
             String newMapName = mapName.get() + currentX + separator + currentY;
             mc.getConnection().send(new ServerboundRenameItemPacket(newMapName));
-            cim.clickSlot(mc.player.containerMenu.containerId, 2, 1, ContainerInput.QUICK_MOVE, mc.player);
+            cim.clickSlot(mc.player.containerMenu.containerId, 2, 1, ClickType.QUICK_MOVE, mc.player);
 
             currentY++;
             if (currentY > endY.get()) {

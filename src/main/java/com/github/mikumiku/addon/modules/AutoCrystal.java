@@ -453,15 +453,15 @@ public class AutoCrystal extends BaseModule {
             Vector3d vec3 = new Vector3d();
             vec3.set(renderPos.getX() + 0.5, renderPos.getY() + 0.5, renderPos.getZ() + 0.5);
             if (NametagUtils.to2D(vec3, 1.25)) {
-                NametagUtils.begin(vec3, event.graphics);
-                MikuCompat.beginText(TextRenderer.get(), event.graphics, 1.0, true);
+                NametagUtils.begin(vec3, event.drawContext);
+                MikuCompat.beginText(TextRenderer.get(), event.drawContext, 1.0, true);
 
                 String text = String.format("%.1f", renderedDamage);
                 double w = TextRenderer.get().getWidth(text) / 2;
                 TextRenderer.get().render(text, -w, 0, lineColor.get(), true);
 
                 TextRenderer.get().end();
-                NametagUtils.end(event.graphics);
+                NametagUtils.end(event.drawContext);
             }
         }
 
@@ -496,9 +496,9 @@ public class AutoCrystal extends BaseModule {
     }
 
     private boolean shouldPause() {
-        if (pauseOnEat.get() && mc.player.isUsingItem() && mc.player.getActiveItem().getItem() != Items.END_CRYSTAL)
+        if (pauseOnEat.get() && mc.player.isUsingItem() && mc.player.getUseItem().getItem() != Items.END_CRYSTAL)
             return true;
-        if (pauseOnDrink.get() && mc.player.isUsingItem() && mc.player.getActiveItem().getItem() instanceof PotionItem)
+        if (pauseOnDrink.get() && mc.player.isUsingItem() && mc.player.getUseItem().getItem() instanceof PotionItem)
             return true;
         if (!whileMining.get() && mc.gameMode.isDestroying()) return true;
         return false;

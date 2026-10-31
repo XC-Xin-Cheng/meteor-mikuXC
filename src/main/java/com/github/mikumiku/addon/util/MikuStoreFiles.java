@@ -18,7 +18,7 @@
 package com.github.mikumiku.addon.util;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;

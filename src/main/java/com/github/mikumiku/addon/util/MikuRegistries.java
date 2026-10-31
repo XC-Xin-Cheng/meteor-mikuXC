@@ -18,7 +18,7 @@
 package com.github.mikumiku.addon.util;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.lang.reflect.Field;
@@ -63,7 +63,7 @@ public final class MikuRegistries {
         // 1) 注册表：数据层标识，跨版本稳定
         try {
             Object value = BuiltInRegistries.BLOCK_ENTITY_TYPE
-                .getOptional(Identifier.withDefaultNamespace(registryPath))
+                .getOptional(ResourceLocation.withDefaultNamespace(registryPath))
                 .orElse(null);
             if (value instanceof BlockEntityType<?> type) return Optional.of(type);
         } catch (Throwable ignored) {

@@ -30,11 +30,11 @@ import meteordevelopment.orbit.EventHandler;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.NetherFungusBlock;
+import net.minecraft.world.level.block.FungusBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SaplingBlock;
-import net.minecraft.world.level.block.VegetationBlock;
+import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.BoneMealItem;
@@ -185,7 +185,7 @@ public class TreeAura extends BaseModule {
     private boolean isSapling(BlockPos pos) {
         Block block = Minecraft.getInstance().level.getBlockState(pos).getBlock();
         return block instanceof SaplingBlock
-            || block instanceof NetherFungusBlock
+            || block instanceof FungusBlock
             || block.equals(Blocks.CRIMSON_FUNGUS)
             || block.equals(Blocks.WARPED_FUNGUS);
     }
@@ -203,7 +203,7 @@ public class TreeAura extends BaseModule {
             block.defaultBlockState().is(BlockTags.LOGS) ||
             block.defaultBlockState().is(BlockTags.LEAVES) ||
             block instanceof VineBlock ||    // 藤蔓
-            block instanceof VegetationBlock ||   // 植物类方块（草、花等）
+            block instanceof BushBlock ||   // 植物类方块（草、花等）
             block.equals(Blocks.SNOW) ||     // 雪
             block.equals(Blocks.TALL_GRASS) ||
             block.equals(Blocks.SHORT_GRASS) ||
@@ -271,7 +271,7 @@ public class TreeAura extends BaseModule {
 
                     // 如果检查位置是树苗、菌类或树干，则不能种植
                     if (checkBlock instanceof SaplingBlock ||
-                        checkBlock instanceof NetherFungusBlock ||
+                        checkBlock instanceof FungusBlock ||
                         checkBlock.equals(Blocks.CRIMSON_FUNGUS) ||
                         checkBlock.equals(Blocks.WARPED_FUNGUS) ||
                         checkBlock instanceof RotatedPillarBlock) {

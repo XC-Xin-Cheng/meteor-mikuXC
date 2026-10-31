@@ -30,7 +30,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.core.Registry;
 import net.minecraft.core.Holder;
 import net.minecraft.tags.EnchantmentTags;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +74,7 @@ public class EnchantmentSelectScreen extends WindowScreen {
         ca.action = () -> {
             String idtext = cc.get();
             if (idtext.isEmpty()) return;
-            Identifier id = Identifier.tryParse(cc.get());
+            ResourceLocation id = ResourceLocation.tryParse(cc.get());
             if (id == null) return;
             callback.selection(new VillagerRoller.RollingEnchantment(id, 0, 0, true));
             onClose();

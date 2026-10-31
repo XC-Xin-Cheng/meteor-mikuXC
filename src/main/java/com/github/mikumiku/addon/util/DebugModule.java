@@ -57,8 +57,8 @@ import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.inventory.ContainerInput;
-import net.minecraft.network.HashedStack;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -670,10 +670,10 @@ public class DebugModule extends BaseModule {
 
         // 点击槽位
         if (packet instanceof ServerboundContainerClickPacket click) {
-            int slot = click.slotNum(); // 被点击的槽位
-            int button = click.buttonNum(); // 鼠标键
-            ContainerInput actionType = click.containerInput(); // 点击动作类型（PICKUP、QUICK_MOVE等）
-            Int2ObjectMap<HashedStack> modifieded = click.changedSlots();// 被点击槽位上的物品
+            int slot = click.getSlotNum(); // 被点击的槽位
+            int button = click.getButtonNum(); // 鼠标键
+            ClickType actionType = click.getClickType(); // 点击动作类型（PICKUP、QUICK_MOVE等）
+            Int2ObjectMap<ItemStack> modifieded = click.getChangedSlots();// 被点击槽位上的物品
 
             return String.format("""
                     ===ClickSlot===
@@ -863,15 +863,15 @@ public class DebugModule extends BaseModule {
         return str.substring(0, maxLength - 3) + "...";
     }
 
-    private static String formatItemMap(Int2ObjectMap<HashedStack> map) {
+    private static String formatItemMap(Int2ObjectMap<ItemStack> map) {
         if (map == null || map.isEmpty()) return "无修改";
 
         StringBuilder sb = new StringBuilder();
         sb.append("修改槽位:\n");
         map.forEach((slot, stack) -> {
-            HashedStack.ActualItem stackHash = (HashedStack.ActualItem) stack;
-            String itemName = stackHash.item().getRegisteredName();
-            sb.append(String.format("  [%d] %s x%d\n", slot, itemName, stackHash.count()));
+            // 1.21.1 容器点击包直接携带 ItemStack，无需哈希判别
+            String itemName = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+            sb.append(String.format("  [%d] %s x%d\n", slot, itemName, stack.getCount()));
         });
         return sb.toString();
     }

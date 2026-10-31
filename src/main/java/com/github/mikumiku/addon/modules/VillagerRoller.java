@@ -54,7 +54,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -74,7 +74,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -455,7 +455,7 @@ public class VillagerRoller extends BaseModule {
 
         Optional<Registry<Enchantment>> reg;
         if (mc.level != null) {
-            reg = Optional.of(mc.level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT));
+            reg = Optional.of(mc.level.registryAccess().registryOrThrow(Registries.ENCHANTMENT));
         } else {
             reg = Optional.empty();
         }
@@ -464,7 +464,7 @@ public class VillagerRoller extends BaseModule {
             RollingEnchantment e = searchingEnchants.get(i);
             Optional<Holder.Reference<Enchantment>> en;
             if (reg.isPresent()) {
-                en = reg.get().get(e.enchantment);
+                en = reg.get().getHolder(e.enchantment);
             } else {
                 en = Optional.empty();
             }
@@ -558,7 +558,7 @@ public class VillagerRoller extends BaseModule {
             list.clear();
             if (reg.isPresent()) {
                 for (RollingEnchantment e : searchingEnchants) {
-                    reg.get().get(e.enchantment).ifPresent(enchantmentReference -> e.maxCost = getMinimumPrice(enchantmentReference));
+                    reg.get().getHolder(e.enchantment).ifPresent(enchantmentReference -> e.maxCost = getMinimumPrice(enchantmentReference));
                 }
             }
             fillWidget(theme, list);
@@ -618,7 +618,7 @@ public class VillagerRoller extends BaseModule {
         if (mc.level == null) {
             return Collections.emptyList();
         }
-        Registry<Enchantment> reg = mc.level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+        Registry<Enchantment> reg = mc.level.registryAccess().registryOrThrow(Registries.ENCHANTMENT);
         List<Holder<Enchantment>> available = new ArrayList<>();
         if (onlyTradeable) {
             var i = reg.getTagOrEmpty(EnchantmentTags.TRADEABLE);
@@ -649,13 +649,13 @@ public class VillagerRoller extends BaseModule {
             return enchantments;
         }
 
-        Optional<Registry<Enchantment>> reg = Optional.of(mc.level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT));
+        Optional<Registry<Enchantment>> reg = Optional.of(mc.level.registryAccess().registryOrThrow(Registries.ENCHANTMENT));
         if (reg.isEmpty()) {
             return enchantments;
         }
 
         for (Map.Entry<ResourceKey<Enchantment>, Enchantment> entry : reg.get().entrySet()) {
-            String enchantmentId = entry.getKey().identifier().toString();
+            String enchantmentId = entry.getKey().location().toString();
             int maxLevel = entry.getValue().getMaxLevel();
             enchantments.put(enchantmentId, maxLevel);
         }
@@ -676,12 +676,12 @@ public class VillagerRoller extends BaseModule {
             EntityHitResult entityHitResult = ProjectileUtil.getEntityHitResult(mc.player, playerPos, villagerPos, rollingVillager.getBoundingBox(), Entity::isPickable, playerPos.distanceToSqr(villagerPos));
             if (entityHitResult == null) {
                 // Raycast didn't find villager entity?
-                mc.gameMode.interact(mc.player, rollingVillager, new EntityHitResult(rollingVillager), InteractionHand.MAIN_HAND);
+                mc.gameMode.interact(mc.player, rollingVillager, InteractionHand.MAIN_HAND);
                 waitingForTradesTicks = 0;
             } else {
-                InteractionResult actionResult = mc.gameMode.interact(mc.player, rollingVillager, entityHitResult, InteractionHand.MAIN_HAND);
+                InteractionResult actionResult = mc.gameMode.interact(mc.player, rollingVillager, InteractionHand.MAIN_HAND);
                 if (!actionResult.consumesAction()) {
-                    mc.gameMode.interact(mc.player, rollingVillager, new EntityHitResult(rollingVillager), InteractionHand.MAIN_HAND);
+                    mc.gameMode.interact(mc.player, rollingVillager, InteractionHand.MAIN_HAND);
                     waitingForTradesTicks = 0;
                 }
             }
@@ -932,12 +932,12 @@ public class VillagerRoller extends BaseModule {
     }
 
     public static class RollingEnchantment implements ISerializable<RollingEnchantment> {
-        public Identifier enchantment;
+        public ResourceLocation enchantment;
         public int minLevel;
         public int maxCost;
         public boolean enabled;
 
-        public RollingEnchantment(Identifier enchantment, int minLevel, int maxCost, boolean enabled) {
+        public RollingEnchantment(ResourceLocation enchantment, int minLevel, int maxCost, boolean enabled) {
             this.enchantment = enchantment;
             this.minLevel = minLevel;
             this.maxCost = maxCost;
@@ -945,7 +945,7 @@ public class VillagerRoller extends BaseModule {
         }
 
         public RollingEnchantment() {
-            enchantment = Identifier.fromNamespaceAndPath("minecraft", "protection");
+            enchantment = ResourceLocation.fromNamespaceAndPath("minecraft", "protection");
             minLevel = 0;
             maxCost = 0;
             enabled = false;

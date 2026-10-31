@@ -19,7 +19,7 @@ package com.github.mikumiku.addon.modules;
 
 import com.github.mikumiku.addon.BaseModule;
 import com.github.mikumiku.addon.util.*;
-import meteordevelopment.meteorclient.events.meteor.KeyInputEvent;
+import meteordevelopment.meteorclient.events.meteor.KeyEvent;
 import meteordevelopment.meteorclient.events.packets.PacketEvent;
 import meteordevelopment.meteorclient.events.render.Render3DEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
@@ -259,7 +259,7 @@ public class SurroundPlus2 extends BaseModule {
     private void onTick(TickEvent.Pre event) {
         if (!Modules.get().isActive(Blink.class)) {
             if (this.closeByChorus.get()) {
-                this.isEatingChorus = mc.player.getActiveItem().getItem() == Items.CHORUS_FRUIT;
+                this.isEatingChorus = mc.player.getUseItem().getItem() == Items.CHORUS_FRUIT;
             }
 
             if (!this.sendMsg) {
@@ -410,7 +410,7 @@ public class SurroundPlus2 extends BaseModule {
     }
 
     @EventHandler
-    private void onKeyEvent(KeyInputEvent event) {
+    private void onKeyEvent(KeyEvent event) {
         if (event.action != KeyAction.Press) {
             return;
         }

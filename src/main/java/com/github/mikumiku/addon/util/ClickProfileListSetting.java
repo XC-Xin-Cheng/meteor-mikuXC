@@ -132,10 +132,12 @@ public class ClickProfileListSetting extends Setting<List<ClickProfile>> {
     @Override
     protected List<ClickProfile> load(CompoundTag tag) {
         List<ClickProfile> list = new ArrayList<>();
-        ListTag listTag = tag.getList("profiles").orElse(new ListTag());
-        for (Tag entry : listTag) {
-            entry.asCompound().ifPresent(compound -> list.add(ClickProfile.fromTag(compound)));
-        }
+        ListTag listTag = tag.getList("profiles", net.minecraft.nbt.Tag.TAG_LIST);
+        for (net.minecraft.nbt.Tag entry : listTag) {
+                if (entry instanceof net.minecraft.nbt.CompoundTag compound) {
+                    list.add(ClickProfile.fromTag(compound));
+                }
+            }
 
         // Setting.fromTag 不会替我们写回 value，这里必须自己 set。
         set(list);

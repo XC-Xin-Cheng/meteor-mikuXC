@@ -239,7 +239,7 @@ public class Scaffold extends BaseModule {
                     double playerX = mc.player.getX();
                     double playerY = mc.player.getY();
                     double playerZ = mc.player.getZ();
-                    double yLowBound = Math.max(mc.level.getMinY(), playerY - searchRange);
+                    double yLowBound = Math.max(mc.level.getMinBuildHeight(), playerY - searchRange);
                     double yHighBound = Math.min(Via.getTopY(mc), playerY + searchRange);
                     int targetX = targetBlock.getX();
                     int targetY = targetBlock.getY();

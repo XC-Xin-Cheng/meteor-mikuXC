@@ -105,7 +105,7 @@ public class Seeds extends System<Seeds> {
 
     @Override
     public Seeds fromTag(CompoundTag tag) {
-        tag.keySet().forEach(key -> {
+        tag.getAllKeys().forEach(key -> {
             Object compound = tag.getCompound(key);
             CompoundTag key2;
             if (compound instanceof Optional<?> optional) {

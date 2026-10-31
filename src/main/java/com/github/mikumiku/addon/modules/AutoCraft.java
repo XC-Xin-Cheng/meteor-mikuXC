@@ -28,7 +28,7 @@ import net.minecraft.client.gui.screens.recipebook.RecipeCollection;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.inventory.CraftingMenu;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -97,7 +97,7 @@ public class AutoCraft extends BaseModule {
 //
 //                mc.interactionManager.clickRecipe(currentScreenHandler.syncId, recipe, craftAll.get());
 //                mc.interactionManager.clickSlot(currentScreenHandler.syncId, 0, 1,
-//                    drop.get() ? ContainerInput.THROW : ContainerInput.QUICK_MOVE, mc.player);
+//                    drop.get() ? ClickType.THROW : ClickType.QUICK_MOVE, mc.player);
 //            }
 //        }
     }

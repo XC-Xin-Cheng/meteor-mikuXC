@@ -366,7 +366,7 @@ public class StructureFinder extends BaseModule {
     private void reportSeedLibraryInfo(Seed seed) {
         if (seed == null || seed.seed == null || seed.version == null) return;
 
-        String runningVersion = net.minecraft.SharedConstants.getCurrentVersion().name();
+        String runningVersion = net.minecraft.SharedConstants.getCurrentVersion().getName();
         String source;
         // 结构位置首选 cubiomes，所以能建出定位器时数据来源就是 cubiomes，而不是种子库 /
         // 本版原生；只有 cubiomes 不可用时才按下面原有的口径回报。
@@ -460,7 +460,7 @@ public class StructureFinder extends BaseModule {
             // 该版本自己的数据；26.x 对应的库常量是 1.21，不能拿来顶替 26.x。
             boolean libraryData = selected.hasExactLibraryData();
             MCVersion version = selected.toMCVersion();
-            String runningVersionName = net.minecraft.SharedConstants.getCurrentVersion().name();
+            String runningVersionName = net.minecraft.SharedConstants.getCurrentVersion().getName();
 
             // 结构库优先用 cubiomes——https://www.seedmap.app 与 SeedMapper 用的就是
             // 这一套库：版本表、放置算法、频率约简、排除区、要塞同心环与生物群系判定
@@ -961,7 +961,7 @@ public class StructureFinder extends BaseModule {
             return;
         }
 
-        String runningVersion = net.minecraft.SharedConstants.getCurrentVersion().name();
+        String runningVersion = net.minecraft.SharedConstants.getCurrentVersion().getName();
         if (selectedVersion == null || !selectedVersion.sharesNativeWorldgen(runningVersion)) {
             // 双保险：正常情况下调用方已经挡掉了不同族的版本。
             warning("古城需要所选版本自己的世界生成数据；本版运行的是 " + runningVersion
@@ -987,8 +987,8 @@ public class StructureFinder extends BaseModule {
                 }
                 if (pos == null) continue;
 
-                int chunkX = pos.x();
-                int chunkZ = pos.z();
+                int chunkX = pos.x;
+                int chunkZ = pos.z;
 
                 double chunkDistance = Math.sqrt(Math.pow(chunkX - playerChunkX, 2)
                     + Math.pow(chunkZ - playerChunkZ, 2));

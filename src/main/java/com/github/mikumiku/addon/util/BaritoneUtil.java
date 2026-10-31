@@ -45,8 +45,8 @@ import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
-import net.minecraft.world.entity.projectile.arrow.Arrow;
-import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownExperienceBottle;
+import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.ThrownExperienceBottle;
 import net.minecraft.world.item.Item;
 import net.minecraft.network.protocol.game.ServerboundSwingPacket;
 import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket;
@@ -292,9 +292,9 @@ public class BaritoneUtil {
                     .distanceToSqr(
                         Vec3.atCenterOf(pos)
                             .add(
-                                i.getUnitVec3i().getX() * 0.5,
-                                i.getUnitVec3i().getY() * 0.5,
-                                i.getUnitVec3i().getZ() * 0.5
+                                i.getNormal().getX() * 0.5,
+                                i.getNormal().getY() * 0.5,
+                                i.getNormal().getZ() * 0.5
                             )
                     );
                 if (!(Mth.sqrt((float) vecDis) > distance) && (side == null || vecDis < dis)) {
@@ -322,9 +322,9 @@ public class BaritoneUtil {
                         .distanceToSqr(
                             Vec3.atCenterOf(pos)
                                 .add(
-                                    i.getUnitVec3i().getX() * 0.5,
-                                    i.getUnitVec3i().getY() * 0.5,
-                                    i.getUnitVec3i().getZ() * 0.5
+                                    i.getNormal().getX() * 0.5,
+                                    i.getNormal().getY() * 0.5,
+                                    i.getNormal().getZ() * 0.5
                                 )
                         );
                     if (side == null || vecDis < bestRelevancy) {
@@ -621,9 +621,9 @@ public class BaritoneUtil {
         } else {
             Vec3 testVec = Vec3.atCenterOf(pos)
                 .add(
-                    side.getUnitVec3i().getX() * 0.5,
-                    side.getUnitVec3i().getY() * 0.5,
-                    side.getUnitVec3i().getZ() * 0.5
+                    side.getNormal().getX() * 0.5,
+                    side.getNormal().getY() * 0.5,
+                    side.getNormal().getZ() * 0.5
                 );
             HitResult result = mc
                 .level
@@ -1170,13 +1170,13 @@ public class BaritoneUtil {
         Vec3 directionVec = new Vec3(
             pos.getX()
                 + 0.5
-                + side.getUnitVec3i().getX() * 0.5,
+                + side.getNormal().getX() * 0.5,
             pos.getY()
                 + 0.5
-                + side.getUnitVec3i().getY() * 0.5,
+                + side.getNormal().getY() * 0.5,
             pos.getZ()
                 + 0.5
-                + side.getUnitVec3i().getZ() * 0.5
+                + side.getNormal().getZ() * 0.5
         );
         swingHand(hand, swingSide);
         BlockHitResult result = new BlockHitResult(directionVec, side, pos, false);

@@ -36,7 +36,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -105,7 +105,7 @@ public class ItemListMapSetting extends Setting<Map<String, List<Item>>> {
     }
 
     @Override
-    public Iterable<Identifier> getIdentifierSuggestions() {
+    public Iterable<ResourceLocation> getIdentifierSuggestions() {
         return BuiltInRegistries.ITEM.keySet();
     }
 
@@ -135,12 +135,12 @@ public class ItemListMapSetting extends Setting<Map<String, List<Item>>> {
         get().clear();
 
         CompoundTag mapTag = Via.getNbtCompound(tag, "value");
-        for (String key : mapTag.keySet()) {
+        for (String key : mapTag.getAllKeys()) {
             List<Item> items = new ArrayList<>();
-            ListTag itemList = mapTag.getList(key).orElse(new ListTag());
+            ListTag itemList = mapTag.getList(key, net.minecraft.nbt.Tag.TAG_LIST);
 
             for (Tag tagI : itemList) {
-                Item item = BuiltInRegistries.ITEM.getOptional(Identifier.parse(tagI.asString().orElse(""))).orElse(null);
+                Item item = BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(tagI.getAsString())).orElse(null);
                 if (bypassFilterWhenSavingAndLoading || filter == null || filter.test(item)) {
                     items.add(item);
                 }

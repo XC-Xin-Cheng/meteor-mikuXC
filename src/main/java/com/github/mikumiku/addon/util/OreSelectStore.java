@@ -281,7 +281,7 @@ public final class OreSelectStore {
         ensureOldFile(setting);
 
         try {
-            net.minecraft.util.Util.getPlatform().openFile(file);
+            net.minecraft.Util.getPlatform().openFile(file);
             return true;
         } catch (Exception e) {
             return false;

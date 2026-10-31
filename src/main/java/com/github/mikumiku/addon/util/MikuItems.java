@@ -18,7 +18,7 @@
 package com.github.mikumiku.addon.util;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
@@ -95,7 +95,7 @@ public final class MikuItems {
         // 1) 注册表：数据层标识，跨版本稳定
         try {
             Object value = BuiltInRegistries.ITEM
-                .getOptional(Identifier.withDefaultNamespace(registryPath))
+                .getOptional(ResourceLocation.withDefaultNamespace(registryPath))
                 .orElse(null);
             if (value instanceof Item item) return item;
         } catch (Throwable ignored) {

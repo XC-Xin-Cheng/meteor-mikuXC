@@ -189,16 +189,16 @@ public class ClickProfile {
 
     public static ClickProfile fromTag(CompoundTag tag) {
         ClickProfile profile = new ClickProfile();
-        profile.name = tag.getStringOr("name", "方案");
-        profile.enabled = tag.getBooleanOr("enabled", true);
-        profile.method = Method.byName(tag.getStringOr("method", "MIKU"));
-        profile.button = Button.byName(tag.getStringOr("button", "LEFT"));
-        profile.minCps = tag.getIntOr("minCps", 8);
-        profile.maxCps = tag.getIntOr("maxCps", 12);
-        profile.intervalTicks = Math.max(1, Math.min(40, tag.getIntOr("intervalTicks", 2)));
-        profile.holdMs = tag.getIntOr("holdMs", 0);
-        profile.requireTarget = tag.getBooleanOr("requireTarget", false);
-        profile.humanized = tag.getBooleanOr("humanized", true);
+        profile.name = tag.contains("name") ? tag.getString("name") : "方案";
+        profile.enabled = tag.contains("enabled") ? tag.getBoolean("enabled") : true;
+        profile.method = Method.byName(tag.contains("method") ? tag.getString("method") : "MIKU");
+        profile.button = Button.byName(tag.contains("button") ? tag.getString("button") : "LEFT");
+        profile.minCps = tag.contains("minCps") ? tag.getInt("minCps") : 8;
+        profile.maxCps = tag.contains("maxCps") ? tag.getInt("maxCps") : 12;
+        profile.intervalTicks = Math.max(1, Math.min(40, tag.contains("intervalTicks") ? tag.getInt("intervalTicks") : 2));
+        profile.holdMs = tag.contains("holdMs") ? tag.getInt("holdMs") : 0;
+        profile.requireTarget = tag.contains("requireTarget") ? tag.getBoolean("requireTarget") : false;
+        profile.humanized = tag.contains("humanized") ? tag.getBoolean("humanized") : true;
         return profile;
     }
 

@@ -39,7 +39,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.BlockPos;
@@ -200,9 +200,9 @@ public class ChestAura extends BaseModule {
                 // 如果物品槽不为空，则丢出物品
                 if (!stack.isEmpty()) {
                     // 使用鼠标点击丢出物品（Ctrl+点击丢出整个堆）
-                    mc.gameMode.handleContainerInput(mc.player.containerMenu.containerId, i, 0, ContainerInput.PICKUP, mc.player);
+                    mc.gameMode.handleInventoryMouseClick(mc.player.containerMenu.containerId, i, 0, ClickType.PICKUP, mc.player);
                     // 立即丢出
-                    mc.gameMode.handleContainerInput(mc.player.containerMenu.containerId, i, 1, ContainerInput.THROW, mc.player);
+                    mc.gameMode.handleInventoryMouseClick(mc.player.containerMenu.containerId, i, 1, ClickType.THROW, mc.player);
                 }
             }
         }

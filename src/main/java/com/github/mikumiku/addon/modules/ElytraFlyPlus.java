@@ -21,10 +21,10 @@ import com.github.mikumiku.addon.BaseModule;
 import com.github.mikumiku.addon.util.Via;
 import meteordevelopment.meteorclient.events.entity.player.PlayerMoveEvent;
 import meteordevelopment.meteorclient.events.world.PlaySoundEvent;
-import meteordevelopment.meteorclient.mixininterface.IVec3;
+import meteordevelopment.meteorclient.mixininterface.IVec3d;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
@@ -192,7 +192,7 @@ public class ElytraFlyPlus extends BaseModule {
     private void constantiamTick(PlayerMoveEvent event) {
         Vec3 motion = getMotion(mc.player.getDeltaMovement());
         if (motion != null) {
-            Via.setMovement(((IVec3) event.movement), motion.x(), motion.y(), motion.z());
+            Via.setMovement(((IVec3d) event.movement), motion.x(), motion.y(), motion.z());
             event.movement = motion;
         }
     }
@@ -242,7 +242,7 @@ public class ElytraFlyPlus extends BaseModule {
             if (!mc.options.keyShift.isDown() && mc.options.keyJump.isDown()) {
                 y = up.get();
             }
-            Via.setMovement(((IVec3) event.movement), x, y, z);
+            Via.setMovement(((IVec3d) event.movement), x, y, z);
 
             mc.player.setDeltaMovement(0.0, 0.0, 0.0);
         }
@@ -295,7 +295,7 @@ public class ElytraFlyPlus extends BaseModule {
             if (mc.options.keyShift.isDown() && !mc.options.keyJump.isDown()) {
                 y = -(Double) down.get();
             }
-            Via.setMovement(((IVec3) event.movement), x, y, z);
+            Via.setMovement(((IVec3d) event.movement), x, y, z);
 
             mc.player.setDeltaMovement(0.0, 0.0, 0.0);
         }
@@ -334,19 +334,19 @@ public class ElytraFlyPlus extends BaseModule {
 
     @EventHandler
     private void onPlaySound(PlaySoundEvent event) {
-        List<Identifier> armorEquipSounds = List.of(
-            Identifier.parse("minecraft:item.armor.equip_generic"),
-            Identifier.parse("minecraft:item.armor.equip_netherite"),
-            Identifier.parse("minecraft:item.armor.equip_elytra"),
-            Identifier.parse("minecraft:item.armor.equip_diamond"),
-            Identifier.parse("minecraft:item.armor.equip_gold"),
-            Identifier.parse("minecraft:item.armor.equip_iron"),
-            Identifier.parse("minecraft:item.armor.equip_chain"),
-            Identifier.parse("minecraft:item.armor.equip_leather"),
-            Identifier.parse("minecraft:item.elytra.flying")
+        List<ResourceLocation> armorEquipSounds = List.of(
+            ResourceLocation.parse("minecraft:item.armor.equip_generic"),
+            ResourceLocation.parse("minecraft:item.armor.equip_netherite"),
+            ResourceLocation.parse("minecraft:item.armor.equip_elytra"),
+            ResourceLocation.parse("minecraft:item.armor.equip_diamond"),
+            ResourceLocation.parse("minecraft:item.armor.equip_gold"),
+            ResourceLocation.parse("minecraft:item.armor.equip_iron"),
+            ResourceLocation.parse("minecraft:item.armor.equip_chain"),
+            ResourceLocation.parse("minecraft:item.armor.equip_leather"),
+            ResourceLocation.parse("minecraft:item.elytra.flying")
         );
-        for (Identifier identifier : armorEquipSounds) {
-            if (identifier.equals(event.sound.getIdentifier())) {
+        for (ResourceLocation identifier : armorEquipSounds) {
+            if (identifier.equals(event.sound.getLocation())) {
                 event.cancel();
                 break;
             }

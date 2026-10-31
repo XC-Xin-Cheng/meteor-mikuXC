@@ -226,30 +226,30 @@ public class AutoSpray extends Module {
             return;
         }
 
-        checkAndThrow(MobEffects.RESISTANCE, resistance.get(), true);
-        checkAndThrow(MobEffects.SPEED, speed.get(), false);
-        checkAndThrow(MobEffects.STRENGTH, strength.get(), false);
+        checkAndThrow(MobEffects.DAMAGE_RESISTANCE, resistance.get(), true);
+        checkAndThrow(MobEffects.MOVEMENT_SPEED, speed.get(), false);
+        checkAndThrow(MobEffects.DAMAGE_BOOST, strength.get(), false);
         checkAndThrow(MobEffects.SLOW_FALLING, slowFalling.get(), false);
     }
 
     private void handleKeybinds() {
         if (resistanceKey.get().isPressed()) {
-            if (!turtlePress && canThrowPotion(MobEffects.RESISTANCE)) {
-                executeThrow(MobEffects.RESISTANCE);
+            if (!turtlePress && canThrowPotion(MobEffects.DAMAGE_RESISTANCE)) {
+                executeThrow(MobEffects.DAMAGE_RESISTANCE);
                 turtlePress = true;
             }
         } else turtlePress = false;
 
         if (strengthKey.get().isPressed()) {
-            if (!strengthPress && canThrowPotion(MobEffects.STRENGTH)) {
-                executeThrow(MobEffects.STRENGTH);
+            if (!strengthPress && canThrowPotion(MobEffects.DAMAGE_BOOST)) {
+                executeThrow(MobEffects.DAMAGE_BOOST);
                 strengthPress = true;
             }
         } else strengthPress = false;
 
         if (speedKey.get().isPressed()) {
-            if (!speedPress && canThrowPotion(MobEffects.SPEED)) {
-                executeThrow(MobEffects.SPEED);
+            if (!speedPress && canThrowPotion(MobEffects.MOVEMENT_SPEED)) {
+                executeThrow(MobEffects.MOVEMENT_SPEED);
                 speedPress = true;
             }
         } else speedPress = false;

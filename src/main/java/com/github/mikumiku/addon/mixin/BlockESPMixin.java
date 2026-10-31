@@ -50,7 +50,7 @@ public abstract class BlockESPMixin {
         at = @At("HEAD"), cancellable = true)
     private static void injectSearchChunk(ChunkAccess chunk, List<Block> blocks, CallbackInfoReturnable<ESPChunk> cir) {
         try {
-            ESPChunk schunk = new ESPChunk(chunk.getPos().x(), chunk.getPos().z());
+            ESPChunk schunk = new ESPChunk(chunk.getPos().x, chunk.getPos().z);
             if (schunk.shouldBeDeleted()) {
                 cir.setReturnValue(schunk);
                 return;
@@ -68,7 +68,7 @@ public abstract class BlockESPMixin {
             int minZ = chunk.getPos().getMinBlockZ();
             int maxX = chunk.getPos().getMaxBlockX();
             int maxZ = chunk.getPos().getMaxBlockZ();
-            int minY = mc.level.getMinY();
+            int minY = mc.level.getMinBuildHeight();
             int px = playerPos.getX(), py = playerPos.getY(), pz = playerPos.getZ();
 
             for (int x = minX; x <= maxX; x++) {

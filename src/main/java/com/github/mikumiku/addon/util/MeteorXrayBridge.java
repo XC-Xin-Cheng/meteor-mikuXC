@@ -107,7 +107,7 @@ public final class MeteorXrayBridge {
      * 这样即使本体稍后重新扫描覆盖了区块，矿位也不会丢。
      */
     public static void addOverlayTo(ChunkPos chunkPos, ESPChunk chunk) {
-        LongOpenHashSet positions = byChunk.get(chunkPos.pack());
+        LongOpenHashSet positions = byChunk.get(chunkPos.toLong());
         if (positions == null || positions.isEmpty()) return;
 
         LongIterator it = positions.iterator();
@@ -330,7 +330,7 @@ public final class MeteorXrayBridge {
         int x = BlockPos.getX(packed);
         int y = BlockPos.getY(packed);
         int z = BlockPos.getZ(packed);
-        ESPChunk chunk = chunkMap.get(ChunkPos.pack(x >> 4, z >> 4));
+        ESPChunk chunk = chunkMap.get(ChunkPos.asLong(x >> 4, z >> 4));
         if (chunk != null) chunk.remove(new BlockPos(x, y, z));
     }
 

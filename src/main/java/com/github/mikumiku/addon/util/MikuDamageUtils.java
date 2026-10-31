@@ -20,7 +20,7 @@ package com.github.mikumiku.addon.util;
 
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.game.GameJoinedEvent;
-import meteordevelopment.meteorclient.mixininterface.IClipContext;
+import meteordevelopment.meteorclient.mixininterface.IRaycastContext;
 import meteordevelopment.meteorclient.utils.PreInit;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.world.level.block.state.BlockState;
@@ -125,9 +125,9 @@ public class MikuDamageUtils {
             // 都会为每件装备创建一个 Stream 与 lambda 捕获对象；改为普通循环零分配，结果不变。
             for (var entry : enchantments.keySet()) {
                 int level = enchantments.getLevel(entry);
-                if (entry.is(Enchantments.PROTECTION.identifier()))
+                if (entry.is(Enchantments.PROTECTION))
                     mint.add(level);
-                else if (explosion && entry.is(Enchantments.BLAST_PROTECTION.identifier()))
+                else if (explosion && entry.is(Enchantments.BLAST_PROTECTION))
                     mint.add(level * 2);
             }
         }
@@ -150,7 +150,7 @@ public class MikuDamageUtils {
     }
 
     public static double applyResistance(LivingEntity entity, double damage) {
-        int amplifier = entity.hasEffect(MobEffects.RESISTANCE) ? entity.getEffect(MobEffects.RESISTANCE).getAmplifier() : 0;
+        int amplifier = entity.hasEffect(MobEffects.DAMAGE_RESISTANCE) ? entity.getEffect(MobEffects.DAMAGE_RESISTANCE).getAmplifier() : 0;
 
         int j = 25 - (amplifier + 1) * 5;
         return Math.max(damage * j / 25, 0);
@@ -181,7 +181,7 @@ public class MikuDamageUtils {
 
     public static double getExposure(Vec3 source, AABB box, BlockPos ignorePos, BlockPos obbyPos, boolean ignoreTerrain) {
 
-        Via.setRaycast(((IClipContext) raycastContext), source, null, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, mc.player);
+        Via.setRaycast(((IRaycastContext) raycastContext), source, null, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, mc.player);
 
         double lx = box.getXsize();
         double ly = box.getYsize();
@@ -207,7 +207,7 @@ public class MikuDamageUtils {
             for (double y = box.minY; y <= box.maxY; y += stepY) {
                 for (double z = box.minZ + offsetZ, maxZ = box.maxZ + offsetZ; z <= maxZ; z += stepZ) {
                     Vec3 vec3d = new Vec3(x, y, z);
-                    Via.setRaycast(((IClipContext) raycastContext), source, vec3d, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, mc.player);
+                    Via.setRaycast(((IRaycastContext) raycastContext), source, vec3d, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, mc.player);
                     if (raycast(MikuDamageUtils.raycastContext, ignorePos, obbyPos, ignoreTerrain).getType() == HitResult.Type.MISS)
                         ++i;
 
@@ -255,7 +255,7 @@ public class MikuDamageUtils {
             return mc.level.clipWithInteractionOverride(vec3d, vec3d2, pos, voxelShape, blockState);
         }, (contextx) -> {
             Vec3 vec3d = contextx.getFrom().subtract(contextx.getTo());
-            return BlockHitResult.miss(contextx.getTo(), Direction.getApproximateNearest(vec3d.x, vec3d.y, vec3d.z), BlockPos.containing(contextx.getTo()));
+            return BlockHitResult.miss(contextx.getTo(), Direction.getNearest(vec3d.x, vec3d.y, vec3d.z), BlockPos.containing(contextx.getTo()));
         });
     }
 }

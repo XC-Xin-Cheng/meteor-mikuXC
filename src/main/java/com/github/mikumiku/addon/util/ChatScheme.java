@@ -229,19 +229,20 @@ public class ChatScheme {
     public static ChatScheme fromTag(CompoundTag tag, ChatIntervalUnit defaultUnit) {
         ChatIntervalUnit fallback = defaultUnit == null ? ChatIntervalUnit.MILLIS : defaultUnit;
         ChatScheme scheme = new ChatScheme();
-        scheme.name = tag.getStringOr("name", "方案");
-        scheme.enabled = tag.getBooleanOr("enabled", true);
-        scheme.intervalMs = tag.getIntOr("intervalMs", 1500);
-        scheme.intervalUnit = ChatIntervalUnit.byName(tag.getStringOr("intervalUnit", fallback.name()));
-        scheme.random = tag.getBooleanOr("random", false);
-        scheme.avoidRepeat = tag.getBooleanOr("avoidRepeat", false);
+        scheme.name = tag.contains("name") ? tag.getString("name") : "方案";
+        scheme.enabled = tag.contains("enabled") ? tag.getBoolean("enabled") : true;
+        scheme.intervalMs = tag.contains("intervalMs") ? tag.getInt("intervalMs") : 1500;
+        scheme.intervalUnit = ChatIntervalUnit.byName(tag.contains("intervalUnit") ? tag.getString("intervalUnit") : fallback.name());
+        scheme.random = tag.contains("random") ? tag.getBoolean("random") : false;
+        scheme.avoidRepeat = tag.contains("avoidRepeat") ? tag.getBoolean("avoidRepeat") : false;
 
-        ListTag listTag = tag.getList("messages").orElse(new ListTag());
-        for (Tag entry : listTag) {
-            entry.asCompound().ifPresent(compound -> {
-                String message = compound.getStringOr("m", "");
+        ListTag listTag = tag.getList("messages", net.minecraft.nbt.Tag.TAG_LIST);
+        for (net.minecraft.nbt.Tag entry : listTag) {
+            if (entry instanceof net.minecraft.nbt.CompoundTag compound) {
+                String message = compound.contains("m") ? compound.getString("m") : "";
                 if (!message.isEmpty()) scheme.messages.add(message);
-            });
+            
+            }
         }
         return scheme;
     }

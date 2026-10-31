@@ -33,8 +33,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
-import net.minecraft.world.inventory.ContainerInput;
-import net.minecraft.resources.Identifier;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
@@ -79,16 +79,16 @@ public class ElytraFlyPlusPlus extends BaseModule {
     );
 
     // 需要取消的声音
-    private static final List<Identifier> CANCEL_SOUNDS = List.of(
-        Identifier.parse("minecraft:item.armor.equip_generic"),
-        Identifier.parse("minecraft:item.armor.equip_netherite"),
-        Identifier.parse("minecraft:item.armor.equip_elytra"),
-        Identifier.parse("minecraft:item.armor.equip_diamond"),
-        Identifier.parse("minecraft:item.armor.equip_gold"),
-        Identifier.parse("minecraft:item.armor.equip_iron"),
-        Identifier.parse("minecraft:item.armor.equip_chain"),
-        Identifier.parse("minecraft:item.armor.equip_leather"),
-        Identifier.parse("minecraft:item.elytra.flying")
+    private static final List<ResourceLocation> CANCEL_SOUNDS = List.of(
+        ResourceLocation.parse("minecraft:item.armor.equip_generic"),
+        ResourceLocation.parse("minecraft:item.armor.equip_netherite"),
+        ResourceLocation.parse("minecraft:item.armor.equip_elytra"),
+        ResourceLocation.parse("minecraft:item.armor.equip_diamond"),
+        ResourceLocation.parse("minecraft:item.armor.equip_gold"),
+        ResourceLocation.parse("minecraft:item.armor.equip_iron"),
+        ResourceLocation.parse("minecraft:item.armor.equip_chain"),
+        ResourceLocation.parse("minecraft:item.armor.equip_leather"),
+        ResourceLocation.parse("minecraft:item.elytra.flying")
     );
 
     // 状态变量
@@ -158,8 +158,8 @@ public class ElytraFlyPlusPlus extends BaseModule {
     private void onPlaySound(PlaySoundEvent event) {
         if (!cancelSounds.get()) return;
 
-        for (Identifier id : CANCEL_SOUNDS) {
-            if (id.equals(event.sound.getIdentifier())) {
+        for (ResourceLocation id : CANCEL_SOUNDS) {
+            if (id.equals(event.sound.getLocation())) {
                 event.cancel();
                 return;
             }
@@ -246,11 +246,11 @@ public class ElytraFlyPlusPlus extends BaseModule {
      * 装备胸甲到胸甲槽
      */
     private void equipChestplate(int hotbarSlot) {
-        mc.gameMode.handleContainerInput(
+        mc.gameMode.handleInventoryMouseClick(
             mc.player.containerMenu.containerId,
             hotbarSlot + 36,
             6,
-            ContainerInput.SWAP,
+            ClickType.SWAP,
             mc.player
         );
     }

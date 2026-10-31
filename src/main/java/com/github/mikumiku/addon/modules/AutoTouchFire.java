@@ -31,13 +31,14 @@ import meteordevelopment.meteorclient.utils.world.BlockIterator;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -102,7 +103,7 @@ public class AutoTouchFire extends BaseModule {
     private BlockPos blockPos = null;
     private boolean doesWaterBucketWork = true;
 
-    private static final Holder<MobEffect> FIRE_RESISTANCE = BuiltInRegistries.MOB_EFFECT.get(Identifier.parse("fire_resistance")).orElse(null);
+    private static final Holder<MobEffect> FIRE_RESISTANCE = MobEffects.FIRE_RESISTANCE;
 
     public AutoTouchFire() {
         super(CATEGORY_MIKU_BUILD, "自动消防", "自动扑灭你周围的火");
@@ -142,8 +143,8 @@ public class AutoTouchFire extends BaseModule {
                 blockPos = mc.player.blockPosition();
                 final int slot = findSlot(Items.WATER_BUCKET);
                 if (mc.level.getBlockState(blockPos).getBlock() == Blocks.FIRE || mc.level.getBlockState(blockPos).getBlock() == Blocks.SOUL_FIRE) {
-                    float yaw = MikuCompat.mainCamera().yRot() % 360;
-                    float pitch = MikuCompat.mainCamera().xRot() % 360;
+                    float yaw = MikuCompat.mainCamera().getYRot() % 360;
+                    float pitch = MikuCompat.mainCamera().getXRot() % 360;
                     if (center.get()) {
                         PlayerUtils.centerPlayer();
                     }
@@ -179,8 +180,8 @@ public class AutoTouchFire extends BaseModule {
                 PlayerUtils.centerPlayer();
             }
             Via.setSelectedSlot(slot);
-            float yaw = MikuCompat.mainCamera().yRot() % 360;
-            float pitch = MikuCompat.mainCamera().xRot() % 360;
+            float yaw = MikuCompat.mainCamera().getYRot() % 360;
+            float pitch = MikuCompat.mainCamera().getXRot() % 360;
 
             Rotations.rotate(yaw, 90);
             mc.gameMode.useItem(mc.player, InteractionHand.MAIN_HAND);

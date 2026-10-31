@@ -327,7 +327,7 @@ public class EnchantedAppleFinder extends BaseModule {
     private void reportSeedLibraryInfo(Seed seed) {
         if (seed == null || seed.seed == null || seed.version == null) return;
 
-        String runningVersion = net.minecraft.SharedConstants.getCurrentVersion().name();
+        String runningVersion = net.minecraft.SharedConstants.getCurrentVersion().getName();
         String source;
         if (seed.version.hasExactLibraryData()) {
             source = "种子库版本 " + seed.version.toMCVersion().name;
@@ -404,7 +404,7 @@ public class EnchantedAppleFinder extends BaseModule {
             // 才是该版本自己的数据；26.x 对应的是 1.21 的库数据，不能拿来顶替。
             boolean libraryData = selected.hasExactLibraryData();
             MCVersion version = selected.toMCVersion();
-            String runningVersionName = net.minecraft.SharedConstants.getCurrentVersion().name();
+            String runningVersionName = net.minecraft.SharedConstants.getCurrentVersion().getName();
             // 与本版运行版本同族（都是 26.x）时走 SeedMapper 式原生路线：结构位置与
             // 容器内容全部由本版自己的世界生成数据算出，最准也最好拿。
             boolean nativeLoot = registryAccess != null && selected.sharesNativeWorldgen(runningVersionName);
@@ -733,8 +733,8 @@ public class EnchantedAppleFinder extends BaseModule {
                 }
                 if (pos == null) continue;
 
-                int chunkX = pos.x();
-                int chunkZ = pos.z();
+                int chunkX = pos.x;
+                int chunkZ = pos.z;
 
                 double chunkDistance = Math.sqrt(Math.pow(chunkX - playerChunkX, 2)
                     + Math.pow(chunkZ - playerChunkZ, 2));

@@ -33,7 +33,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -43,13 +43,13 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.inventory.MerchantMenu;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.item.trading.MerchantOffer;
-import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.entity.npc.VillagerProfession;
 
 import java.util.*;
 
@@ -729,7 +729,7 @@ public class VillagerTrader extends BaseModule {
         // Shift+左键快速交易
         int maxTrades = offer.getMaxUses() - offer.getUses();
         for (int i = 0; i < maxTrades; i++) {
-            clickSlot(2, 0, ContainerInput.QUICK_MOVE);
+            clickSlot(2, 0, ClickType.QUICK_MOVE);
         }
 
         return true;
@@ -753,14 +753,13 @@ public class VillagerTrader extends BaseModule {
         mc.gameMode.interact(
             mc.player,
             entity,
-            new net.minecraft.world.phys.EntityHitResult(entity),
             InteractionHand.MAIN_HAND
         );
     }
 
-    private void clickSlot(int slot, int button, ContainerInput actionType) {
+    private void clickSlot(int slot, int button, ClickType actionType) {
         if (mc.gameMode == null) return;
-        mc.gameMode.handleContainerInput(
+        mc.gameMode.handleInventoryMouseClick(
             mc.player.containerMenu.containerId,
             slot,
             button,
@@ -774,10 +773,10 @@ public class VillagerTrader extends BaseModule {
         AbstractContainerMenu currentScreenHandler = mc.player.containerMenu;
         if (mc.player.containerMenu instanceof InventoryMenu) {
             // 2️⃣ 拿起整组
-            mc.gameMode.handleContainerInput(currentScreenHandler.containerId, slot, 0, ContainerInput.PICKUP, mc.player);
-            mc.gameMode.handleContainerInput(currentScreenHandler.containerId, 1, 0, ContainerInput.PICKUP, mc.player);
+            mc.gameMode.handleInventoryMouseClick(currentScreenHandler.containerId, slot, 0, ClickType.PICKUP, mc.player);
+            mc.gameMode.handleInventoryMouseClick(currentScreenHandler.containerId, 1, 0, ClickType.PICKUP, mc.player);
 
-            mc.gameMode.handleContainerInput(currentScreenHandler.containerId, 0, 0, ContainerInput.QUICK_MOVE, mc.player);
+            mc.gameMode.handleInventoryMouseClick(currentScreenHandler.containerId, 0, 0, ClickType.QUICK_MOVE, mc.player);
 
             mc.player.closeContainer();
         } else {
@@ -794,7 +793,7 @@ public class VillagerTrader extends BaseModule {
 
             ItemStack stack = mc.player.containerMenu.getSlot(i).getItem();
             if (stack.getItem() == item) {
-                clickSlot(i, 0, ContainerInput.QUICK_MOVE);
+                clickSlot(i, 0, ClickType.QUICK_MOVE);
                 withdrawn++;
             }
         }
@@ -809,7 +808,7 @@ public class VillagerTrader extends BaseModule {
             if (stack.isEmpty()) continue;
 
             if (isBuyTarget(stack.getItem())) {
-                clickSlot(i, 0, ContainerInput.QUICK_MOVE);
+                clickSlot(i, 0, ClickType.QUICK_MOVE);
             }
         }
     }

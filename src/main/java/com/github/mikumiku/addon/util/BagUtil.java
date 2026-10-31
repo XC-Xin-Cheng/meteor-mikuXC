@@ -18,7 +18,7 @@
 package com.github.mikumiku.addon.util;
 
 import meteordevelopment.meteorclient.MeteorClient;
-import meteordevelopment.meteorclient.mixininterface.IMultiPlayerGameMode;
+import meteordevelopment.meteorclient.mixininterface.IClientPlayerInteractionManager;
 import meteordevelopment.meteorclient.utils.player.FindItemResult;
 import meteordevelopment.meteorclient.utils.player.SlotUtils;
 import net.minecraft.world.level.block.Block;
@@ -30,7 +30,7 @@ import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket.Action;
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
 import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.InteractionHand;
 
 import java.util.ArrayList;
@@ -67,20 +67,20 @@ public class BagUtil {
 
             MeteorClient.mc
                 .gameMode
-                .handleContainerInput(MeteorClient.mc.player.containerMenu.containerId, slot, selectedSlot, ContainerInput.SWAP, MeteorClient.mc.player);
+                .handleInventoryMouseClick(MeteorClient.mc.player.containerMenu.containerId, slot, selectedSlot, ClickType.SWAP, MeteorClient.mc.player);
         }
     }
 
     public static void inventorySwapAtTruth(int solt, int slotButton) {
         MeteorClient.mc
             .gameMode
-            .handleContainerInput(MeteorClient.mc.player.containerMenu.containerId, SlotUtils.indexToId(solt), 0, ContainerInput.PICKUP, MeteorClient.mc.player);
+            .handleInventoryMouseClick(MeteorClient.mc.player.containerMenu.containerId, SlotUtils.indexToId(solt), 0, ClickType.PICKUP, MeteorClient.mc.player);
         MeteorClient.mc
             .gameMode
-            .handleContainerInput(MeteorClient.mc.player.containerMenu.containerId, slotButton, 0, ContainerInput.PICKUP, MeteorClient.mc.player);
+            .handleInventoryMouseClick(MeteorClient.mc.player.containerMenu.containerId, slotButton, 0, ClickType.PICKUP, MeteorClient.mc.player);
         MeteorClient.mc
             .gameMode
-            .handleContainerInput(MeteorClient.mc.player.containerMenu.containerId, SlotUtils.indexToId(solt), 0, ContainerInput.PICKUP, MeteorClient.mc.player);
+            .handleInventoryMouseClick(MeteorClient.mc.player.containerMenu.containerId, SlotUtils.indexToId(solt), 0, ClickType.PICKUP, MeteorClient.mc.player);
         Via.sendReleaseShift();
     }
 
@@ -446,7 +446,7 @@ public class BagUtil {
             }
 
             Via.setSelectedSlot(slot);
-            ((IMultiPlayerGameMode) MeteorClient.mc.gameMode).meteor$syncSelected();
+            ((IClientPlayerInteractionManager) MeteorClient.mc.gameMode).meteor$syncSelected();
             return true;
         } else {
             return false;
@@ -464,28 +464,28 @@ public class BagUtil {
     }
 
     public static Action move() {
-        ACTION.type = ContainerInput.PICKUP;
+        ACTION.type = ClickType.PICKUP;
         ACTION.two = true;
         return ACTION;
     }
 
     public static Action click() {
-        ACTION.type = ContainerInput.PICKUP;
+        ACTION.type = ClickType.PICKUP;
         return ACTION;
     }
 
     public static Action quickSwap() {
-        ACTION.type = ContainerInput.SWAP;
+        ACTION.type = ClickType.SWAP;
         return ACTION;
     }
 
     public static Action shiftClick() {
-        ACTION.type = ContainerInput.QUICK_MOVE;
+        ACTION.type = ClickType.QUICK_MOVE;
         return ACTION;
     }
 
     public static Action drop() {
-        ACTION.type = ContainerInput.THROW;
+        ACTION.type = ClickType.THROW;
         ACTION.data = 1;
         return ACTION;
     }
@@ -494,7 +494,7 @@ public class BagUtil {
         if (!MeteorClient.mc.player.containerMenu.getCarried().isEmpty()) {
             MeteorClient.mc
                 .gameMode
-                .handleContainerInput(MeteorClient.mc.player.containerMenu.containerId, -999, 0, ContainerInput.PICKUP, MeteorClient.mc.player);
+                .handleInventoryMouseClick(MeteorClient.mc.player.containerMenu.containerId, -999, 0, ClickType.PICKUP, MeteorClient.mc.player);
         }
     }
 
@@ -505,7 +505,7 @@ public class BagUtil {
 
 
     public static class Action {
-        private ContainerInput type = null;
+        private ClickType type = null;
         private boolean two = false;
         private int from = -1;
         private int to = -1;
@@ -592,7 +592,7 @@ public class BagUtil {
 
         private void run() {
             boolean hadEmptyCursor = MeteorClient.mc.player.containerMenu.getCarried().isEmpty();
-            if (this.type == ContainerInput.SWAP) {
+            if (this.type == ClickType.SWAP) {
                 this.data = this.from;
                 this.from = this.to;
             }
@@ -604,7 +604,7 @@ public class BagUtil {
                 }
             }
 
-            ContainerInput preType = this.type;
+            ClickType preType = this.type;
             boolean preTwo = this.two;
             int preFrom = this.from;
             int preTo = this.to;
@@ -615,7 +615,7 @@ public class BagUtil {
             this.data = 0;
             if (!this.isRecursive
                 && hadEmptyCursor
-                && preType == ContainerInput.PICKUP
+                && preType == ClickType.PICKUP
                 && preTwo
                 && preFrom != -1
                 && preTo != -1
@@ -627,7 +627,7 @@ public class BagUtil {
         }
 
         private void click(int id) {
-            MeteorClient.mc.gameMode.handleContainerInput(MeteorClient.mc.player.containerMenu.containerId, id, this.data, this.type, MeteorClient.mc.player);
+            MeteorClient.mc.gameMode.handleInventoryMouseClick(MeteorClient.mc.player.containerMenu.containerId, id, this.data, this.type, MeteorClient.mc.player);
         }
     }
 }

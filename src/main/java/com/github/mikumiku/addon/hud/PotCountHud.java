@@ -215,7 +215,7 @@ public class PotCountHud extends HudElement {
     private float getResistanceTimeLeft() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return 0.0f;
-        MobEffectInstance resistance = mc.player.getEffect(MobEffects.RESISTANCE);
+        MobEffectInstance resistance = mc.player.getEffect(MobEffects.DAMAGE_RESISTANCE);
         // 原版代码判定 Amplifier >= 3 (即抗性等级 IV 或以上)
         if (resistance != null && resistance.getAmplifier() >= 3) {
             return resistance.getDuration() / 20.0f;

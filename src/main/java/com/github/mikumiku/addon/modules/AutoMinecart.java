@@ -132,7 +132,7 @@ public class AutoMinecart extends BaseModule {
                      float pitch = net.minecraft.util.Mth.clamp((float)Math.toDegrees(Math.atan2(-dy, horiz)), -90.0F, 90.0F);
                      ServerboundMovePlayerPacket packet = Via.getFull(player.getX(), player.getY(), player.getZ(), yaw, pitch, player.onGround());
                      this.mc.getConnection().send(packet);
-                     client.gameMode.interact(player, best, new net.minecraft.world.phys.EntityHitResult(best), net.minecraft.world.InteractionHand.MAIN_HAND);
+                     client.gameMode.interact(player, best, net.minecraft.world.InteractionHand.MAIN_HAND);
                      this.nextMountTick = client.level.getGameTime() + ((Integer)this.cooldown.get()).intValue();
                      if ((Boolean)this.notify.get()) {
                         double d = player.distanceTo(best);

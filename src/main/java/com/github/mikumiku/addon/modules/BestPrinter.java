@@ -1035,7 +1035,7 @@ public class BestPrinter extends BaseModule {
     private boolean isWithinLayerLimit(BlockPos pos) {
         // 26.1：Litematica 的 DataManager 会拖入 malilib（本工程 classpath 上没有该依赖），
         // 改用世界最大建筑高度做兜底，不再叠加渲染层限制。
-        return pos.getY() <= mc.level.getMaxY();
+        return pos.getY() <= mc.level.getMaxBuildHeight();
     }
 
     /**

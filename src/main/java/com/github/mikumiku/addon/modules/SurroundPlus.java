@@ -187,7 +187,7 @@ public class SurroundPlus extends BaseModule {
             }
 
             if (this.chorus.get()) {
-                this.isEatingChorus = mc.player.getActiveItem().getItem() == Items.CHORUS_FRUIT;
+                this.isEatingChorus = mc.player.getUseItem().getItem() == Items.CHORUS_FRUIT;
             }
 
             if (this.death.get() && mc.player.isDeadOrDying()) {
@@ -254,7 +254,7 @@ public class SurroundPlus extends BaseModule {
                                     && entity.getBoundingBox().intersects(new AABB(surroundPos.get(i)))) {
                                     BlockPos entityBlockPos = crystalEntity.blockPosition();
                                     RotationManager.getInstance().register(new Rotation((float) Rotations.getYaw(entityBlockPos), (float) Rotations.getPitch(entityBlockPos)), humanized.profile());
-                                    mc.player.connection.send(new ServerboundInteractPacket(crystalEntity.getId(), InteractionHand.MAIN_HAND, crystalEntity.position(), false));
+                                    mc.player.connection.send(ServerboundInteractPacket.createInteractionPacket(crystalEntity, false, InteractionHand.MAIN_HAND, crystalEntity.position()));
                                     mc.player.swing(InteractionHand.MAIN_HAND);
 
                                 }

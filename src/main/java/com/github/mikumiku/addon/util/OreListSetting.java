@@ -170,23 +170,23 @@ public class OreListSetting extends Setting<Set<Ore.OreKey>> {
     @Override
     protected Set<Ore.OreKey> load(CompoundTag tag) {
         Set<Ore.OreKey> keys = new LinkedHashSet<>();
-        ListTag valueTag = tag.getList("value").orElse(new ListTag());
+        ListTag valueTag = tag.getList("value", net.minecraft.nbt.Tag.TAG_LIST);
         for (Tag tagI : valueTag) {
-            Ore.OreKey key = Ore.OreKey.byId(tagI.asString().orElse(""));
+            Ore.OreKey key = Ore.OreKey.byId(tagI.getAsString());
             if (key != null) keys.add(key);
         }
 
         // 先把样式恢复到默认，再套用配置里存过的覆盖值。
         resetStyles();
         CompoundTag stylesTag = Via.getNbtCompound(tag, "styles");
-        for (String id : stylesTag.keySet()) {
+        for (String id : stylesTag.getAllKeys()) {
             Ore.OreKey key = Ore.OreKey.byId(id);
             if (key == null) continue;
 
             CompoundTag styleTag = Via.getNbtCompound(stylesTag, id);
             Ore.OreStyle style = style(key);
-            style.connected = styleTag.getBooleanOr("connected", false);
-            style.color.set(new Color(styleTag.getIntOr("color", key.type.color.getPacked())));
+            style.connected = styleTag.contains("connected") ? styleTag.getBoolean("connected") : false;
+            style.color.set(new Color(styleTag.contains("color") ? styleTag.getInt("color") : key.type.color.getPacked()));
         }
 
         // Setting.fromTag 不会替我们写回 value，这里必须自己 set，否则选择读不回来。

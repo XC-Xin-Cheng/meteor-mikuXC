@@ -41,7 +41,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MaceItem;
 import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
@@ -265,7 +265,7 @@ public class MaceCombo extends BaseModule {
         for (Object2IntMap.Entry<Holder<Enchantment>> entry : enchants.entrySet()) {
             Holder<?> enchant = entry.getKey();
             if (enchant.unwrapKey().isPresent()) {
-                Identifier id = enchant.unwrapKey().get().identifier();
+                ResourceLocation id = enchant.unwrapKey().get().location();
                 if (id.getPath().equals("breach")) {
                     return true;
                 }

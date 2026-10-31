@@ -57,7 +57,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.ShulkerBoxMenu;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.core.BlockPos;
@@ -612,9 +612,9 @@ public class AutoElytraHarvester extends BaseModule {
                         if (!stack.isEmpty() && stack.getItem() instanceof BlockItem bi
                             && bi.getBlock() instanceof ShulkerBoxBlock) {
                             // 背包槽位 i → 容器槽位 = 36 + i（offset 36）
-                            mc.gameMode.handleContainerInput(
+                            mc.gameMode.handleInventoryMouseClick(
                                 mc.player.containerMenu.containerId,
-                                36 + i, 0, ContainerInput.QUICK_MOVE, mc.player
+                                36 + i, 0, ClickType.QUICK_MOVE, mc.player
                             );
                             eChestMoved = true;
                             break;

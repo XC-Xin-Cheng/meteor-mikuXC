@@ -31,7 +31,7 @@ import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEnderpearl;
+import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
@@ -231,7 +231,7 @@ public class PearlMark extends BaseModule {
             CompoundTag cacheTag = Via.getNbtCompound(tag, CACHE_TAG);
             pearlOwnerCache.clear();
 
-            cacheTag.keySet().forEach(key -> {
+            cacheTag.getAllKeys().forEach(key -> {
                 try {
                     UUID pearlId = UUID.fromString(key);
                     Object string = cacheTag.getString(key);
