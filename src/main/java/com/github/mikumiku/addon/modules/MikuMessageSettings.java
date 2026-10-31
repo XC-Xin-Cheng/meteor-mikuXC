@@ -149,12 +149,16 @@ public class MikuMessageSettings extends BaseModule {
      * 导致前缀变透明。</p>
      */
     /**
-     * 给 mixin 用：模块被开关时调用（覆盖 Meteor 自带模块与本插件全部模块）。
+     * 给 mixin 用：模块被开关时调用（由 {@code mixin/MixinModule} 挂在 Meteor 的
+     * {@code Module.toggle()} 尾部触发，覆盖所有模块）。
      *
-     * <p>「模块开关提示」开启且已进世界时，按开关后的状态在聊天栏提示
-     * 「模块名 已开启/已关闭」，颜色与其它版本的 Meteor 开关提示一致。</p>
+     * <p>只对本插件（BaseModule 子类）的模块生效；「模块开关提示」开启且已进世界时，
+     * 按图片格式在聊天栏显示「Toggled 模块名 on./off.」——模块名加粗，on 绿色、off 红色，
+     * 前缀仍为 [Meteor]。</p>
      */
     public static void onModuleToggled(meteordevelopment.meteorclient.systems.modules.Module module) {
+        if (!(module instanceof BaseModule)) return;
+
         MikuMessageSettings self = Modules.get().get(MikuMessageSettings.class);
         if (self == null || !self.isActive() || !self.toggleNotifications.get()) return;
         if (!Utils.canUpdate()) return;
@@ -162,7 +166,7 @@ public class MikuMessageSettings extends BaseModule {
         boolean active = module.isActive();
         ChatUtils.sendMsg(module.title.hashCode(),
             active ? net.minecraft.ChatFormatting.GREEN : net.minecraft.ChatFormatting.RED,
-            module.title + (active ? " 已开启" : " 已关闭"));
+            "Toggled " + module.title + (active ? " on." : " off."));
     }
 
     public static Component buildPrefix() {
