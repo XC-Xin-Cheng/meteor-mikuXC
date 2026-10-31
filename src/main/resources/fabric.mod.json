@@ -33,7 +33,9 @@
   },
   "depends": {
     "java": ">=21",
-    "minecraft": "1.21.11",
+    "minecraft": [
+      "1.21.11"
+    ],
     "fabric-api": "*",
     "meteor-client": "*",
     "xaerominimap": "*",
