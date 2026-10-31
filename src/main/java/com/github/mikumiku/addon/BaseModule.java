@@ -26,6 +26,7 @@ import meteordevelopment.meteorclient.pathing.NopPathManager;
 import meteordevelopment.meteorclient.pathing.PathManagers;
 import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.prediction.BlockStatePredictionHandler;
@@ -119,6 +120,18 @@ public abstract class BaseModule extends Module implements MEnum {
             }
         } catch (Throwable e) {
 
+        }
+    }
+
+    /**
+     * 1.21.11 的 Meteor 移除了开关模块的聊天提示，这里在基类统一补回：
+     * 无论是快捷键还是 GUI 触发，开关本插件的模块都会在聊天栏提示。
+     */
+    @Override
+    public void toggle() {
+        super.toggle();
+        if (Utils.canUpdate()) {
+            sendToggledMsg();
         }
     }
 
