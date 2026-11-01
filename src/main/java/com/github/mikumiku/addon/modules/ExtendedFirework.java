@@ -141,7 +141,7 @@ public class ExtendedFirework extends BaseModule {
     private void onReceivePacket(PacketEvent.Receive event) {
         // Cancel firework destroy packet
         if (event.packet instanceof ClientboundRemoveEntitiesPacket packet && firework != null) {
-            for (int id : packet.getEntityIds()) {
+            for (int id : packet.entityIds()) {
                 if (id == firework.getId()) {
                     event.cancel();
                     extendFirework = true;

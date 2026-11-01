@@ -45,12 +45,11 @@ import meteordevelopment.orbit.EventHandler;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MaceItem;
@@ -374,12 +373,12 @@ public class KillAuraMiku extends BaseModule {
 
         if (autoSwitch.get()) {
             Predicate<ItemStack> predicate = switch (weapon.get()) {
-                case Axe -> stack -> stack.getItem() instanceof AxeItem;
+                case Axe -> stack -> MikuUtil.isAxeItem(stack.getItem());
                 case Sword -> stack -> MikuUtil.isSwordItem(stack.getItem());
                 case Mace -> stack -> stack.getItem() instanceof MaceItem;
                 case Trident -> stack -> stack.getItem() instanceof TridentItem;
                 case All ->
-                    stack -> stack.getItem() instanceof AxeItem || MikuUtil.isSwordItem(stack.getItem()) || stack.getItem() instanceof MaceItem || stack.getItem() instanceof TridentItem;
+                    stack -> MikuUtil.isAxeItem(stack.getItem()) || MikuUtil.isSwordItem(stack.getItem()) || stack.getItem() instanceof MaceItem || stack.getItem() instanceof TridentItem;
                 default -> o -> true;
             };
             FindItemResult weaponResult = InvUtils.findInHotbar(predicate);
@@ -457,7 +456,7 @@ public class KillAuraMiku extends BaseModule {
 //            }
         }
         if (ignorePassive.get()) {
-            if (entity instanceof EnderMan enderman && !enderman.isAngry()) return false;
+            if (entity instanceof Enderman enderman && !enderman.isAngry()) return false;
             if (entity instanceof ZombifiedPiglin piglin && !piglin.isAggressive()) return false;
             if (entity instanceof Wolf wolf && !wolf.isAggressive()) return false;
         }
@@ -524,18 +523,18 @@ public class KillAuraMiku extends BaseModule {
         RotationManager.getInstance().register(rotation, humanized.profile());
 
         mc.gameMode.attack(mc.player, target);
-        mc.player.swing(InteractionHand.MAIN_HAND);
+        mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
 
         if (packetAttack.get()) {
 
             mc.gameMode.attack(mc.player, target);
 //            mc.getNetworkHandler().send(new HandSwingC2SPacket(InteractionHand.MAIN_HAND));
-            mc.player.swing(InteractionHand.MAIN_HAND);
+            mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
 
         } else {
 
             mc.gameMode.attack(mc.player, target);
-            mc.player.swing(InteractionHand.MAIN_HAND);
+            mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
 
         }
 
@@ -548,15 +547,15 @@ public class KillAuraMiku extends BaseModule {
 
     private boolean itemInHand() {
         Item item = mc.player.getMainHandItem().getItem();
-        if (shouldShieldBreak()) return item instanceof AxeItem;
+        if (shouldShieldBreak()) return MikuUtil.isAxeItem(item);
 
         return switch (weapon.get()) {
-            case Axe -> item instanceof AxeItem;
+            case Axe -> MikuUtil.isAxeItem(item);
             case Sword -> MikuUtil.isSwordItem(item);
             case Mace -> item instanceof MaceItem;
             case Trident -> item instanceof TridentItem;
             case All ->
-                item instanceof AxeItem || MikuUtil.isSwordItem(item) || item instanceof MaceItem || item instanceof TridentItem;
+                MikuUtil.isAxeItem(item) || MikuUtil.isSwordItem(item) || item instanceof MaceItem || item instanceof TridentItem;
             default -> true;
         };
     }

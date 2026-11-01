@@ -255,7 +255,7 @@ public class SurroundPlus extends BaseModule {
                                     BlockPos entityBlockPos = crystalEntity.blockPosition();
                                     RotationManager.getInstance().register(new Rotation((float) Rotations.getYaw(entityBlockPos), (float) Rotations.getPitch(entityBlockPos)), humanized.profile());
                                     mc.player.connection.send(new ServerboundInteractPacket(crystalEntity.getId(), InteractionHand.MAIN_HAND, crystalEntity.position(), false));
-                                    mc.player.swing(InteractionHand.MAIN_HAND);
+                                    mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
 
                                 }
                             }

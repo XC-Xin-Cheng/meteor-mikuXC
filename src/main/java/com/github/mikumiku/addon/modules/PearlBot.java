@@ -267,7 +267,7 @@ public class PearlBot extends BaseModule {
                     BlockPos pos = new BlockPos(px + dx, py + dy, pz + dz);
                     var blockEntity = mc.level.getBlockEntity(pos);
                     if (blockEntity instanceof net.minecraft.world.level.block.entity.SignBlockEntity sign) {
-                        for (var line : sign.getFrontText().getMessages(false)) {
+                        for (var line : sign.getText(net.minecraft.world.level.block.entity.SignTextSlot.FRONT).getMessages(false)) {
                             if (line.getString().toLowerCase().contains(username.toLowerCase())) {
                                 info("找到包含名字的告示牌: " + pos.toShortString());
                                 return pos.below(); // 珍珠位置通常在告示牌下方

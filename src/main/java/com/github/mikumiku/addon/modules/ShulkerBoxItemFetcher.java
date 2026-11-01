@@ -255,7 +255,7 @@ public class ShulkerBoxItemFetcher extends BaseModule {
                                 boolean hasHighDurabilityElytra = false;
                                 int elytraCount = 0;
 
-                                for (ItemStack itemStack : container.allItemsCopyStream().toList()) {
+                                for (ItemStack itemStack : container.itemCopies().toList()) {
                                     if (!itemStack.isEmpty() && itemStack.getItem() == Items.ELYTRA) {
                                         elytraCount++;
                                         if (isElytraHighDurability(itemStack)) {
@@ -330,7 +330,7 @@ public class ShulkerBoxItemFetcher extends BaseModule {
         if (container == null) return false;
 
         // Check each item in the container
-        for (ItemStack stack : container.allItemsCopyStream().toList()) {
+        for (ItemStack stack : container.itemCopies().toList()) {
             if (!stack.isEmpty() && stack.getItem() == targetItem) {
                 return true;
             }
@@ -344,7 +344,7 @@ public class ShulkerBoxItemFetcher extends BaseModule {
         if (container == null) return 0;
 
         int groupCount = 0;
-        for (ItemStack stack : container.allItemsCopyStream().toList()) {
+        for (ItemStack stack : container.itemCopies().toList()) {
             if (!stack.isEmpty() && stack.getItem() == targetItem) {
                 groupCount++;
             }
@@ -358,7 +358,7 @@ public class ShulkerBoxItemFetcher extends BaseModule {
         if (container == null) return 0;
 
         int totalCount = 0;
-        for (ItemStack stack : container.allItemsCopyStream().toList()) {
+        for (ItemStack stack : container.itemCopies().toList()) {
             if (!stack.isEmpty() && stack.getItem() == targetItem) {
                 totalCount += stack.getCount();
             }

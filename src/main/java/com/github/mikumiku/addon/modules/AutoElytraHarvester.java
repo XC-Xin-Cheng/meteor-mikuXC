@@ -503,7 +503,7 @@ public class AutoElytraHarvester extends BaseModule {
                 ItemFrame harvestFrame = findItemFrame();
                 if (harvestFrame != null) {
                     mc.gameMode.attack(mc.player, harvestFrame);
-                    mc.player.swing(InteractionHand.MAIN_HAND);
+                    mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
                 }
                 markVisited(currentShipCandidate);
                 tickDelay = 15; // 等待 0.75 秒让物品吸入背包

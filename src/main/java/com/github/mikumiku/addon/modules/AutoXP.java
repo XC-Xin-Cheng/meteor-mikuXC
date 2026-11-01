@@ -206,7 +206,7 @@ public class AutoXP extends BaseModule {
             // 发送使用物品包
             BaseModule.sendSequencedPacket(id -> new ServerboundUseItemPacket(InteractionHand.MAIN_HAND, id, mc.player.getYRot(), mc.player.getXRot()));
             // 挥手
-            mc.player.swing(InteractionHand.MAIN_HAND);
+            mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
         }
     }
 

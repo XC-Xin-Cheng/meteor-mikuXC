@@ -48,7 +48,7 @@ import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.projectile.arrow.Arrow;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownExperienceBottle;
 import net.minecraft.world.item.Item;
-import net.minecraft.network.protocol.game.ServerboundSwingPacket;
+import net.minecraft.network.protocol.game.ServerboundPunchPacket;
 import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.InteractionResult;
@@ -481,7 +481,7 @@ public class BaritoneUtil {
         if (!BlockUtils.canBreak(blockPos, mc.level.getBlockState(blockPos))) {
             return false;
         } else {
-            BlockPos pos = blockPos instanceof BlockPos.MutableBlockPos ? new BlockPos(blockPos) : blockPos;
+            BlockPos pos = blockPos.immutable();
             InstantRebreak ir = Modules.get().get(InstantRebreak.class);
             if (ir != null && ir.isActive() && ir.blockPos.equals(pos) && ir.shouldMine()) {
                 ir.sendPacket();
@@ -498,7 +498,7 @@ public class BaritoneUtil {
                 } else {
                     mc.gameMode.startDestroyBlock(pos, BlockUtils.getDirection(blockPos));
                 }
-                mc.player.swing(InteractionHand.MAIN_HAND);
+                mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
 
                 return true;
             }
@@ -884,9 +884,9 @@ public class BaritoneUtil {
         InteractionResult actionResult = placeBlockInternally(result);
         if (actionResult.consumesAction()) {
             if (clientSwing) {
-                mc.player.swing(InteractionHand.MAIN_HAND);
+                mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
             } else {
-                mc.getConnection().send(new ServerboundSwingPacket(InteractionHand.MAIN_HAND));
+                mc.getConnection().send(new ServerboundPunchPacket());
             }
         }
 
@@ -1200,13 +1200,13 @@ public class BaritoneUtil {
     public static void swingHand(InteractionHand hand, SwingSide side) {
         switch (side) {
             case All:
-                mc.player.swing(hand);
+                mc.player.swing(hand, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
                 break;
             case Client:
-                mc.player.swing(hand, false);
+                mc.player.swing(hand, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
                 break;
             case Server:
-                mc.getConnection().send(new ServerboundSwingPacket(hand));
+                mc.getConnection().send(new ServerboundPunchPacket());
         }
     }
 

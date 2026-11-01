@@ -45,7 +45,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.MaceItem;
 import net.minecraft.world.item.TridentItem;
@@ -272,7 +271,7 @@ public class LegitKillAura extends BaseModule {
         if (mc.player.getAttackStrengthScale(0.5f) < 1.0f) return;
 
         mc.gameMode.attack(mc.player, primary);
-        if (swing.get()) mc.player.swing(InteractionHand.MAIN_HAND);
+        if (swing.get()) mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
 
         nextClickAt = now + Humanized.clickInterval(hp, clickIntervalMs.get()) + Humanized.latencyMs(hp);
     }
@@ -281,12 +280,12 @@ public class LegitKillAura extends BaseModule {
     private boolean weaponInHand() {
         Item item = mc.player.getMainHandItem().getItem();
         return switch (weapon.get()) {
-            case Axe -> item instanceof AxeItem;
+            case Axe -> MikuUtil.isAxeItem(item);
             case Sword -> MikuUtil.isSwordItem(item);
             case Mace -> item instanceof MaceItem;
             case Trident -> item instanceof TridentItem;
             case All ->
-                item instanceof AxeItem || MikuUtil.isSwordItem(item) || item instanceof MaceItem || item instanceof TridentItem;
+                MikuUtil.isAxeItem(item) || MikuUtil.isSwordItem(item) || item instanceof MaceItem || item instanceof TridentItem;
             case Any -> true;
         };
     }
@@ -312,10 +311,17 @@ public class LegitKillAura extends BaseModule {
      */
     private int threatTier(Entity entity) {
         EntityType<?> type = entity.getType();
-        if (type == EntityType.WITHER || type == EntityType.ENDER_DRAGON || type == EntityType.CREEPER) return 0;
-        if (type == EntityType.WITCH || type == EntityType.SKELETON
-            || type == EntityType.STRAY || type == EntityType.WITHER_SKELETON) return 1;
+        if (type == et("wither") || type == et("ender_dragon") || type == et("creeper")) return 0;
+        if (type == et("witch") || type == et("skeleton")
+            || type == et("stray") || type == et("wither_skeleton")) return 1;
         return 2;
+    }
+
+
+    /** 26.2 起实体类型常量移入注册表，按 id 取。 */
+    private static EntityType<?> et(String name) {
+        return net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE
+            .getValue(net.minecraft.resources.Identifier.withDefaultNamespace(name));
     }
 
     /** 综合分：同一威胁档位内，距离占比 + 血量占比，越小越优先。 */

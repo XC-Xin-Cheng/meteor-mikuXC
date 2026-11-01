@@ -469,7 +469,7 @@ public class Nuker extends BaseModule {
     private void breakBlock(BlockPos blockPos) {
         if (packetMine.get()) {
             mc.getConnection().send(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, blockPos, BlockUtils.getDirection(blockPos)));
-            mc.player.swing(InteractionHand.MAIN_HAND);
+            mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
             mc.getConnection().send(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.STOP_DESTROY_BLOCK, blockPos, BlockUtils.getDirection(blockPos)));
         } else {
             BlockUtils.breakBlock(blockPos, swingHand.get());

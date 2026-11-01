@@ -535,7 +535,7 @@ public class SurroundPlus2 extends BaseModule {
                         mc.gameMode.attack(mc.player, entity);
                         //fixme via
 //                        mc.player.resetLastAttackedTicks();
-                        mc.player.swing(InteractionHand.MAIN_HAND);
+                        mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
                         RotationManager.getInstance().sync();
                         this.breakDelay.reset();
                         if (!this.breakPositions.contains(entity.blockPosition())) {
@@ -563,7 +563,7 @@ public class SurroundPlus2 extends BaseModule {
                         mc.gameMode.attack(mc.player, entity);
                         //fixme via
 //                        mc.player.resetLastAttackedTicks();
-                        mc.player.swing(InteractionHand.MAIN_HAND);
+                        mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
                         RotationManager.getInstance().sync();
                         this.breakDelay.reset();
                         if (!this.breakPositions.contains(entity.blockPosition())) {
@@ -612,7 +612,7 @@ public class SurroundPlus2 extends BaseModule {
                             BlockPos entityBlockPos = entity.blockPosition();
                             RotationManager.getInstance().register(new Rotation((float) Rotations.getYaw(entityBlockPos), (float) Rotations.getPitch(entityBlockPos)), humanized.profile());
                             mc.gameMode.attack(mc.player, entity);
-                            mc.player.swing(InteractionHand.MAIN_HAND);
+                            mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
                             RotationManager.getInstance().sync();
                             this.breakDelay.reset();
                         }

@@ -1049,7 +1049,7 @@ public class UniversalSupply extends BaseModule {
         if (container == null) return;
 
         // 遍历潜影盒中的所有物品
-        for (ItemStack stack : container.allItemsCopyStream().toList()) {
+        for (ItemStack stack : container.itemCopies().toList()) {
             if (stack.isEmpty()) continue;
 
             Item item = stack.getItem();

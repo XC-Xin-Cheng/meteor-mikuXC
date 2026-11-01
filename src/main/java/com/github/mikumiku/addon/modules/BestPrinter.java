@@ -651,7 +651,7 @@ public class BestPrinter extends BaseModule {
             return;
         }
         mc.gameMode.useItem(mc.player, InteractionHand.MAIN_HAND);
-        mc.player.swing(InteractionHand.MAIN_HAND);
+        mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
 
     }
 
@@ -671,7 +671,7 @@ public class BestPrinter extends BaseModule {
             return;
         }
         mc.gameMode.useItem(mc.player, InteractionHand.MAIN_HAND);
-        mc.player.swing(InteractionHand.MAIN_HAND);
+        mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
     }
 
     /**

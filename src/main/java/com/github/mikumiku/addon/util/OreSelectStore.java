@@ -281,7 +281,7 @@ public final class OreSelectStore {
         ensureOldFile(setting);
 
         try {
-            net.minecraft.util.Util.getPlatform().openFile(file);
+            MikuStoreFiles.openFileViaDesktop(file);
             return true;
         } catch (Exception e) {
             return false;

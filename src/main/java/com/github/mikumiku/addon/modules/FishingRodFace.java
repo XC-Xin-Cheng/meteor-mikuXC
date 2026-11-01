@@ -300,7 +300,7 @@ public class FishingRodFace extends BaseModule {
 
         // 使用鱼竿（右键）
         mc.gameMode.startDestroyBlock(mc.player.blockPosition(), Direction.UP);
-        mc.player.swing(InteractionHand.MAIN_HAND);
+        mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
 
         info("丢钓鱼竿向目标: " + String.format("(%.1f, %.1f, %.1f)",
             targetPos.x, targetPos.y, targetPos.z));

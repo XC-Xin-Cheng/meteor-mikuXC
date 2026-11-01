@@ -363,7 +363,7 @@ public class HoleSnap extends BaseModule {
                 (mc.player.getBlockY() - 2 <= pos.getY() || mc.level.isEmptyBlock(pos.above(4)))
         );
 
-        boolean standCheck = !canStand || mc.level.getBlockState(pos.below()).blocksMotion();
+        boolean standCheck = !canStand || mc.level.getBlockState(pos.below()).isSolid();
 
         return trapCheck && blockProgress > 3 && standCheck;
     }

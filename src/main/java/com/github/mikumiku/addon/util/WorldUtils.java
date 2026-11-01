@@ -91,7 +91,7 @@ public class WorldUtils {
             mc.player.setShiftKeyDown(false);
             InvUtils.swap(findItemResult.slot(), true);
             mc.gameMode.useItemOn(mc.player, InteractionHand.MAIN_HAND, new BlockHitResult(Vec3.upFromBottomCenterOf(pos, 0), Direction.UP, pos, false));
-            mc.player.swing(InteractionHand.MAIN_HAND);
+            mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
             InvUtils.swapBack();
             mc.player.setShiftKeyDown(wasSneaking);
         };

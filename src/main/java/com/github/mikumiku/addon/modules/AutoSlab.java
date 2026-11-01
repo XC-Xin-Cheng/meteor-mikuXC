@@ -49,7 +49,7 @@ import net.minecraft.world.level.block.LanternBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.NoteBlock;
 import net.minecraft.world.level.block.PressurePlateBlock;
-import net.minecraft.world.level.block.RedStoneWireBlock;
+import net.minecraft.world.level.block.RedstoneWireBlock;
 import net.minecraft.world.level.block.RedstoneTorchBlock;
 import net.minecraft.world.level.block.RepeaterBlock;
 import net.minecraft.world.level.block.SaplingBlock;
@@ -320,7 +320,7 @@ public class AutoSlab extends BaseModule {
         TORCH(TorchBlock.class, "火把"),
         LANTERN(LanternBlock.class, "灯笼"),
         GLASS(StainedGlassBlock.class, "染色玻璃"),
-        REDSTONE_WIRE(RedStoneWireBlock.class, "红石线"),
+        REDSTONE_WIRE(RedstoneWireBlock.class, "红石线"),
         REDSTONE_TORCH(RedstoneTorchBlock.class, "红石火把"),
         REPEATER(RepeaterBlock.class, "红石中继器"),
         COMPARATOR(ComparatorBlock.class, "红石比较器"),

@@ -52,7 +52,7 @@ import net.minecraft.network.protocol.game.ServerboundContainerSlotStateChangedP
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
-import net.minecraft.network.protocol.game.ServerboundSwingPacket;
+import net.minecraft.network.protocol.game.ServerboundPunchPacket;
 import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.ParticleTypes;
@@ -599,8 +599,8 @@ public class DebugModule extends BaseModule {
 
         // 打印方块交互包
         if (packet instanceof ServerboundUseItemOnPacket p) {
-            InteractionHand hand = p.getHand();
-            BlockHitResult hit = p.getHitResult();
+            InteractionHand hand = p.hand();
+            BlockHitResult hit = p.hitResult();
             BlockPos pos = hit.getBlockPos();
             Direction face = hit.getDirection();
             Vec3 hitPos = hit.getLocation();
@@ -717,15 +717,12 @@ public class DebugModule extends BaseModule {
             );
         }
 
-        // 挥手（动画）
-        if (packet instanceof ServerboundSwingPacket swing) {
-            InteractionHand hand = swing.getHand();
-            return String.format("""
+        // 挥手（动画）：26.3 的 ServerboundPunchPacket 不再携带手部信息
+        if (packet instanceof ServerboundPunchPacket) {
+            return """
                     ===HandSwing===
-                    手: %s
-                    """,
-                hand
-            );
+                    挥手动画
+                    """;
         }
 
 

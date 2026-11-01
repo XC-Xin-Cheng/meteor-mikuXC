@@ -226,7 +226,7 @@ public class ItemClassifier {
             }
 
             // 获取容器内的物品列表
-            List<ItemStack> containerItems = container.allItemsCopyStream().toList();
+            List<ItemStack> containerItems = container.itemCopies().toList();
 
             if (containerItems == null || containerItems.isEmpty()) {
                 return null;

@@ -44,7 +44,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
-import net.minecraft.network.protocol.game.ServerboundSwingPacket;
+import net.minecraft.network.protocol.game.ServerboundPunchPacket;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerCombatKillPacket;
 import net.minecraft.world.InteractionHand;
@@ -385,7 +385,7 @@ public class Surround extends BaseModule {
                 RotationManager.getInstance().register(new Rotation((float) Rotations.getYaw(crystal), (float) Rotations.getPitch(crystal)), humanized.profile());
                 mc.gameMode.attack(mc.player, crystal);
 
-                mc.getConnection().send(new ServerboundSwingPacket(InteractionHand.MAIN_HAND));
+                mc.getConnection().send(new ServerboundPunchPacket());
             }
         }
 

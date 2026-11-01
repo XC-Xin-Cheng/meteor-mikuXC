@@ -45,6 +45,24 @@ public final class MikuUtil {
     // 性能：这些集合原本在方法体内用 Set.of(...) 现建，而 isArmor/isSwordItem/isPickaxeItem
     // 会在背包 36~45 个槽位的谓词循环里被逐个调用，等于每次扫描都要重建几十次集合。
     // 提升为 static final 常量后只构建一次。
+    private static final Set<Item> AXES = Set.of(
+        Items.WOODEN_AXE,
+        Items.STONE_AXE,
+        Items.IRON_AXE,
+        Items.GOLDEN_AXE,
+        Items.DIAMOND_AXE,
+        Items.NETHERITE_AXE
+    );
+
+    private static final Set<Item> SHOVELS = Set.of(
+        Items.WOODEN_SHOVEL,
+        Items.STONE_SHOVEL,
+        Items.IRON_SHOVEL,
+        Items.GOLDEN_SHOVEL,
+        Items.DIAMOND_SHOVEL,
+        Items.NETHERITE_SHOVEL
+    );
+
     private static final Set<Item> PICKAXES = Set.of(
         Items.WOODEN_PICKAXE,
         Items.STONE_PICKAXE,
@@ -295,6 +313,14 @@ public final class MikuUtil {
 
     public static boolean isPickaxeItem(Item item) {
         return PICKAXES.contains(item);
+    }
+
+    public static boolean isAxeItem(Item item) {
+        return AXES.contains(item);
+    }
+
+    public static boolean isShovelItem(Item item) {
+        return SHOVELS.contains(item);
     }
 
     public static boolean isSwordItem(Item item) {

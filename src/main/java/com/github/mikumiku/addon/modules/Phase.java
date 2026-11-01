@@ -34,7 +34,7 @@ import meteordevelopment.orbit.EventHandler;
 import net.minecraft.world.level.block.ScaffoldingBlock;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.Items;
-import net.minecraft.network.protocol.game.ServerboundSwingPacket;
+import net.minecraft.network.protocol.game.ServerboundPunchPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.network.protocol.game.ServerboundUseItemPacket;
@@ -211,7 +211,7 @@ public class Phase extends BaseModule {
             BagUtil.doSwap(slot);
             mc.player.connection.send(new ServerboundUseItemPacket(InteractionHand.MAIN_HAND, 0, yaw, pitch.get()));
 
-            mc.player.swing(InteractionHand.MAIN_HAND);
+            mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
             BagUtil.doSwap(slot);
         });
 
@@ -228,7 +228,7 @@ public class Phase extends BaseModule {
         for (var entity : mc.level.getEntities(null, box)) {
             if (entity instanceof ItemFrame) {
                 mc.gameMode.attack(mc.player, entity);
-                mc.player.connection.send(new ServerboundSwingPacket(InteractionHand.MAIN_HAND));
+                mc.player.connection.send(new ServerboundPunchPacket());
             }
         }
     }
@@ -294,7 +294,7 @@ public class Phase extends BaseModule {
             for (int y = Mth.floor(bb.minY); y < Mth.floor(bb.maxY) + 1; y++) {
                 for (int z = Mth.floor(bb.minZ); z < Mth.floor(bb.maxZ) + 1; z++) {
                     BlockPos pos = new BlockPos(x, y, z);
-                    if (mc.level.getBlockState(pos).blocksMotion()) {
+                    if (mc.level.getBlockState(pos).isSolid()) {
                         if (bb.intersects(new AABB(x, y, z, x + 1.0, y + 1.0, z + 1.0))) {
                             return true;
                         }

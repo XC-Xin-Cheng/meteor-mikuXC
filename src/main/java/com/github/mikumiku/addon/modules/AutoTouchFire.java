@@ -149,7 +149,7 @@ public class AutoTouchFire extends BaseModule {
                     }
                     Rotations.rotate(yaw, 90);
                     mc.getConnection().send(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, blockPos, Direction.UP));
-                    mc.player.swing(InteractionHand.MAIN_HAND);
+                    mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
                     mc.getConnection().send(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.STOP_DESTROY_BLOCK, blockPos, Direction.UP));
 
                     Rotations.rotate(yaw, pitch);
@@ -192,7 +192,7 @@ public class AutoTouchFire extends BaseModule {
 
     private void extinguishFire(BlockPos blockPos) {
         mc.getConnection().send(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, blockPos, Direction.UP));
-        mc.player.swing(InteractionHand.MAIN_HAND);
+        mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
         mc.getConnection().send(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.STOP_DESTROY_BLOCK, blockPos, Direction.UP));
     }
 

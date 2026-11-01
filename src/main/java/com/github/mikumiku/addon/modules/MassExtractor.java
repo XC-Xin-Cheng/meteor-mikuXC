@@ -3389,7 +3389,7 @@ public class MassExtractor extends BaseModule {
      */
     private boolean hasContents(ItemStack stack) {
         var c = stack.get(DataComponents.CONTAINER);
-        return c != null && c.allItemsCopyStream().findAny().isPresent();
+        return c != null && c.itemCopies().findAny().isPresent();
     }
 
     private int countShulkers(java.util.function.Predicate<ItemStack> p) {
@@ -4094,7 +4094,7 @@ public class MassExtractor extends BaseModule {
         if (!isShulker(s)) return false;
         var c = s.get(DataComponents.CONTAINER);
         if (c == null) return false;
-        return c.allItemsCopyStream().anyMatch(this::isGoodFood);
+        return c.itemCopies().anyMatch(this::isGoodFood);
     }
 
     /**
@@ -4158,7 +4158,7 @@ public class MassExtractor extends BaseModule {
         var c = s.get(DataComponents.CONTAINER);
         if (c == null) return false;
         final ToolType t = toolType.get() == ToolType.Auto ? autoToolType() : toolType.get();
-        return c.allItemsCopyStream().anyMatch(inner -> requireFresh ? isFreshTool(inner, t) : isToolOfType(inner, t));
+        return c.itemCopies().anyMatch(inner -> requireFresh ? isFreshTool(inner, t) : isToolOfType(inner, t));
     }
 
     // ---------------- Container interaction ----------------

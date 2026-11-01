@@ -17,6 +17,8 @@
  */
 package com.github.mikumiku.addon.modules;
 
+import com.github.mikumiku.addon.util.MikuUtil;
+
 
 import com.github.mikumiku.addon.BaseModule;
 import com.github.mikumiku.addon.util.*;
@@ -50,7 +52,6 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MaceItem;
@@ -477,7 +478,7 @@ public class AutoCrystal extends BaseModule {
         }
 
         if (event.packet instanceof ClientboundRemoveEntitiesPacket packet) {
-            for (int id : packet.getEntityIds()) {
+            for (int id : packet.entityIds()) {
                 attackedCrystals.remove(id);
             }
         }
@@ -686,7 +687,7 @@ public class AutoCrystal extends BaseModule {
 
     private void attackCrystal(EndCrystal crystal) {
         mc.gameMode.attack(mc.player, crystal);
-        mc.player.swing(InteractionHand.MAIN_HAND);
+        mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
         attackedCrystals.put(crystal.getId(), System.currentTimeMillis());
     }
 
@@ -715,7 +716,7 @@ public class AutoCrystal extends BaseModule {
         BlockHitResult result = new BlockHitResult(Vec3.upFromBottomCenterOf(pos, 0), direction, pos, false);
 
         sendSequencedPacket(id -> new ServerboundUseItemOnPacket(InteractionHand.MAIN_HAND, result, id));
-        mc.player.swing(InteractionHand.MAIN_HAND);
+        mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
         placedCrystals.put(pos, System.currentTimeMillis());
     }
 
@@ -811,7 +812,7 @@ public class AutoCrystal extends BaseModule {
 
         return BagUtil.findItemInventorySlot(stack -> MikuUtil.isSwordItem(stack.getItem())
             || stack.getItem() instanceof MaceItem
-            || stack.getItem() instanceof AxeItem);
+            || MikuUtil.isAxeItem(stack.getItem()));
     }
 
     private void debug(String message) {

@@ -373,7 +373,7 @@ public class AutoHoleFill extends BaseModule {
             if (entity instanceof EndCrystal) {
                 RotationManager.getInstance().register(new Rotation((float) Rotations.getYaw(entity), (float) Rotations.getPitch(entity)), humanized.profile());
                 mc.gameMode.attack(mc.player, entity);
-                mc.player.swing(InteractionHand.MAIN_HAND);
+                mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
             }
 
             // 找到第一个符合条件的实体后执行操作并退出循环

@@ -107,7 +107,7 @@ public class AutoMinecart extends BaseModule {
          net.minecraft.client.player.LocalPlayer player = client.player;
          if (player != null && client.level != null) {
             net.minecraft.world.entity.Entity veh = player.getVehicle();
-            boolean ridingCart = veh != null && veh.getType() == net.minecraft.world.entity.EntityType.MINECART;
+            boolean ridingCart = veh instanceof net.minecraft.world.entity.vehicle.minecart.Minecart;
             if (ridingCart) {
                this.lastCartId = veh.getId();
                this.wasRiding = true;
@@ -153,7 +153,7 @@ public class AutoMinecart extends BaseModule {
       double bestDist = Double.MAX_VALUE;
       if (this.lastCartId >= 0) {
          net.minecraft.world.entity.Entity last = client.level.getEntity(this.lastCartId);
-         if (last != null && last.getType() == net.minecraft.world.entity.EntityType.MINECART && !last.isRemoved() && last.isAlive()) {
+         if (last instanceof net.minecraft.world.entity.vehicle.minecart.Minecart && !last.isRemoved() && last.isAlive()) {
             double d = player.distanceTo(last);
             if (d <= (Double)this.range.get()) {
                best = last;
@@ -163,7 +163,7 @@ public class AutoMinecart extends BaseModule {
       }
 
       for (net.minecraft.world.entity.Entity e : client.level.entitiesForRendering()) {
-         if (e != player && e != best && e.getType() == net.minecraft.world.entity.EntityType.MINECART && !e.isRemoved() && e.isAlive()) {
+         if (e instanceof net.minecraft.world.entity.vehicle.minecart.Minecart && e != player && e != best && !e.isRemoved() && e.isAlive()) {
             double d = player.distanceTo(e);
             if (d <= (Double)this.range.get() && d < bestDist) {
                bestDist = d;

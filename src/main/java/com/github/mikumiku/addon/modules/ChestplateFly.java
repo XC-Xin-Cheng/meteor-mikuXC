@@ -240,11 +240,11 @@ public class ChestplateFly extends BaseModule {
         if (itemResult.found()) {
             if (itemResult.isOffhand()) {
                 this.mc.gameMode.useItem(this.mc.player, InteractionHand.OFF_HAND);
-                this.mc.player.swing(InteractionHand.OFF_HAND);
+                this.mc.player.swing(InteractionHand.OFF_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
             } else {
                 InvUtils.swap(itemResult.slot(), true);
                 this.mc.gameMode.useItem(this.mc.player, InteractionHand.MAIN_HAND);
-                this.mc.player.swing(InteractionHand.MAIN_HAND);
+                this.mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
                 InvUtils.swapBack();
             }
 

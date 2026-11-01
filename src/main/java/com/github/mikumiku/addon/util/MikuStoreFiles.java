@@ -48,6 +48,15 @@ import java.util.List;
  */
 public final class MikuStoreFiles {
 
+    /** 26.3 移除了 net.minecraft.Util#getPlatform()，改用桌面 API 打开文件/文件夹。 */
+    public static void openFileViaDesktop(java.io.File file) {
+        try {
+            java.awt.Desktop.getDesktop().open(file);
+        } catch (Throwable ignored) {
+        }
+    }
+
+
     /** 存放所有 meteor-miku 文本文件的子文件夹名。 */
     public static final String FOLDER_NAME = "meteor-miku";
 
@@ -166,7 +175,7 @@ public final class MikuStoreFiles {
     /** 用资源管理器/访达打开 {@code meteor-miku} 文件夹。 */
     public static boolean openFolder() {
         try {
-            Util.getPlatform().openFile(storeDir());
+            openFileViaDesktop(storeDir());
             return true;
         } catch (Exception e) {
             return false;

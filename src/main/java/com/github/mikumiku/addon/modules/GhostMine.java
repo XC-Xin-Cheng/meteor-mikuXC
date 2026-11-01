@@ -35,9 +35,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ShovelItem;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket.Action;
 import net.minecraft.world.InteractionHand;
@@ -634,7 +632,7 @@ public class GhostMine extends BaseModule {
      * - 主挖完成后发真实 STOP + 绕过技术
      */
     public void mineBlock(BlockPos pos, Direction direction) {
-        if (swingHand.get()) mc.player.swing(InteractionHand.MAIN_HAND);
+        if (swingHand.get()) mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
 
         // 1. 发送 START 包
         mc.player.connection.send(
@@ -693,7 +691,7 @@ public class GhostMine extends BaseModule {
         BaseModule.sendSequencedPacket(id ->
             new ServerboundPlayerActionPacket(Action.STOP_DESTROY_BLOCK, pos, direction, id));
 
-        if (swingHand.get()) mc.player.swing(InteractionHand.MAIN_HAND);
+        if (swingHand.get()) mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
     }
 
     // ==================== 事件处理 ====================
@@ -842,8 +840,8 @@ public class GhostMine extends BaseModule {
         }
 
         Item item = mc.player.getInventory().getItem(bestSlot).getItem();
-        return !(MikuUtil.isPickaxeItem(item)) && !(item instanceof AxeItem)
-            && !(item instanceof ShovelItem) && !(MikuUtil.isSwordItem(item)) ? -1 : bestSlot;
+        return !(MikuUtil.isPickaxeItem(item)) && !(MikuUtil.isAxeItem(item))
+            && !(MikuUtil.isShovelItem(item)) && !(MikuUtil.isSwordItem(item)) ? -1 : bestSlot;
     }
 
     public BlockDate getBlockDate(BlockPos pos, Direction direction) {

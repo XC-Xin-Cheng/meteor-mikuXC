@@ -426,7 +426,7 @@ public class SelfTrapPlusPlus extends BaseModule {
 
         // Swing hand if needed
         if (placeSwing.get()) {
-            mc.player.swing(hand);
+            mc.player.swing(hand, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
         }
 
         // Switch back if we changed slots
