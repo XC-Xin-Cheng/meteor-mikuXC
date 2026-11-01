@@ -33,10 +33,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = net.minecraft.client.player.LocalPlayer.class, priority = 800)
 public abstract class ClientPlayerEntity extends AbstractClientPlayer {
 
-    // 26.1：yarn 时代的 getPitch(float) 在官方映射里叫 getViewXRot(float)
-    @Shadow
-    public abstract float getViewXRot(float tickDelta);
-
+    // 26.3：LocalPlayer 不再覆写 getViewXRot(float)（继承自 Entity），且本 mixin 未使用，已移除 shadow
     private ClientPlayerEntity(ClientLevel world, GameProfile profile) {
         super(world, profile);
     }
