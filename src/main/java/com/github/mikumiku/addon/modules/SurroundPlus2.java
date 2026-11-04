@@ -518,18 +518,38 @@ public class SurroundPlus2 extends BaseModule {
                 return;
             }
 
+            // 优化：三种模式的邻居偏移只与 pos 相关，循环外构造一次（原每个实体每次比较都
+            // pos.offset(...) 新建 BlockPos，恐惧模式每个实体最多 33 个）；List.contains 与
+            // 原来的 == 链等价（同为对固定偏移集合的成员判断）。
+            List<BlockPos> normalNeighbors = List.of(
+                pos.offset(-1, 0, 0), pos.offset(1, 0, 0), pos.offset(0, 0, 1), pos.offset(0, 0, -1)
+            );
+            List<BlockPos> fearNeighbors = List.of(
+                pos.offset(2, 0, 0), pos.offset(-2, 0, 0), pos.offset(0, 0, 2), pos.offset(0, 0, -2),
+                pos.offset(1, 0, 1), pos.offset(-1, 0, 1), pos.offset(1, 0, -1),
+                pos.offset(-1, 0, 0), pos.offset(1, 0, 0), pos.offset(0, 0, 1), pos.offset(0, 0, -1)
+            );
+            List<BlockPos> terrorNeighbors = List.of(
+                pos.offset(2, 0, 0), pos.offset(-2, 0, 0), pos.offset(0, 0, 2), pos.offset(0, 0, -2),
+                pos.offset(1, 0, 1), pos.offset(-1, 0, 1), pos.offset(1, 0, -1),
+                pos.offset(-1, 0, 0), pos.offset(1, 0, 0), pos.offset(0, 0, 1), pos.offset(0, 0, -1),
+                pos.offset(-1, 0, -1),
+                pos.offset(-1, 1, 0), pos.offset(1, 1, 0), pos.offset(0, 1, 1), pos.offset(0, 1, -1),
+                pos.offset(-2, 1, 0), pos.offset(2, 1, 0), pos.offset(0, 1, 2), pos.offset(0, 1, -2),
+                pos.offset(1, 1, -1), pos.offset(1, 1, 1), pos.offset(-1, 1, -1), pos.offset(-1, 1, 1),
+                pos.offset(-1, 2, 0), pos.offset(1, 2, 0), pos.offset(0, 2, 1), pos.offset(0, 2, -1),
+                pos.offset(0, 3, 0), pos.offset(0, -1, 1), pos.offset(0, -1, -1),
+                pos.offset(1, -1, 0), pos.offset(-1, -1, 0)
+            );
+
             while (iterator.hasNext()) {
                 Entity entity = (Entity) iterator.next();
-                if (entity instanceof EndCrystal && PlayerUtils.distanceTo(entity) <= 5) {
+                if (entity instanceof EndCrystal && PlayerUtils.squaredDistanceTo(entity) <= 25) {
+                    // 优化：blockPosition() 提升为局部变量，同一点位不再重复取（同一 tick 内实体位置不变）。
+                    BlockPos entityBlockPos = entity.blockPosition();
                     if (this.breakTypeSetting.get() == SurroundType.正常
-                        && (
-                        entity.blockPosition().equals(pos.offset(-1, 0, 0))
-                            || entity.blockPosition().equals(pos.offset(1, 0, 0))
-                            || entity.blockPosition().equals(pos.offset(0, 0, 1))
-                            || entity.blockPosition().equals(pos.offset(0, 0, -1))
-                    )
+                        && normalNeighbors.contains(entityBlockPos)
                         && this.breakDelay.passed(this.breakSetting.get().intValue())) {
-                        BlockPos entityBlockPos = entity.blockPosition();
                         RotationManager.getInstance().register(new Rotation((float) Rotations.getYaw(entityBlockPos), (float) Rotations.getPitch(entityBlockPos)), humanized.profile());
 
                         mc.gameMode.attack(mc.player, entity);
@@ -538,27 +558,14 @@ public class SurroundPlus2 extends BaseModule {
                         mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
                         RotationManager.getInstance().sync();
                         this.breakDelay.reset();
-                        if (!this.breakPositions.contains(entity.blockPosition())) {
-                            this.breakPositions.add(entity.blockPosition());
+                        if (!this.breakPositions.contains(entityBlockPos)) {
+                            this.breakPositions.add(entityBlockPos);
                         }
                     }
 
                     if (this.breakTypeSetting.get() == SurroundType.害怕
-                        && (
-                        entity.blockPosition().equals(pos.offset(2, 0, 0))
-                            || entity.blockPosition().equals(pos.offset(-2, 0, 0))
-                            || entity.blockPosition().equals(pos.offset(0, 0, 2))
-                            || entity.blockPosition().equals(pos.offset(0, 0, -2))
-                            || entity.blockPosition().equals(pos.offset(1, 0, 1))
-                            || entity.blockPosition().equals(pos.offset(-1, 0, 1))
-                            || entity.blockPosition().equals(pos.offset(1, 0, -1))
-                            || entity.blockPosition().equals(pos.offset(-1, 0, 0))
-                            || entity.blockPosition().equals(pos.offset(1, 0, 0))
-                            || entity.blockPosition().equals(pos.offset(0, 0, 1))
-                            || entity.blockPosition().equals(pos.offset(0, 0, -1))
-                    )
+                        && fearNeighbors.contains(entityBlockPos)
                         && this.breakDelay.passed(this.breakSetting.get().intValue())) {
-                        BlockPos entityBlockPos = entity.blockPosition();
                         RotationManager.getInstance().register(new Rotation((float) Rotations.getYaw(entityBlockPos), (float) Rotations.getPitch(entityBlockPos)), humanized.profile());
                         mc.gameMode.attack(mc.player, entity);
                         //fixme via
@@ -566,50 +573,15 @@ public class SurroundPlus2 extends BaseModule {
                         mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
                         RotationManager.getInstance().sync();
                         this.breakDelay.reset();
-                        if (!this.breakPositions.contains(entity.blockPosition())) {
-                            this.breakPositions.add(entity.blockPosition());
+                        if (!this.breakPositions.contains(entityBlockPos)) {
+                            this.breakPositions.add(entityBlockPos);
                         }
                     }
 
                     if (this.breakTypeSetting.get() == SurroundType.恐惧
-                        && (
-                        entity.blockPosition().equals(pos.offset(2, 0, 0))
-                            || entity.blockPosition().equals(pos.offset(-2, 0, 0))
-                            || entity.blockPosition().equals(pos.offset(0, 0, 2))
-                            || entity.blockPosition().equals(pos.offset(0, 0, -2))
-                            || entity.blockPosition().equals(pos.offset(1, 0, 1))
-                            || entity.blockPosition().equals(pos.offset(-1, 0, 1))
-                            || entity.blockPosition().equals(pos.offset(1, 0, -1))
-                            || entity.blockPosition().equals(pos.offset(-1, 0, 0))
-                            || entity.blockPosition().equals(pos.offset(1, 0, 0))
-                            || entity.blockPosition().equals(pos.offset(0, 0, 1))
-                            || entity.blockPosition().equals(pos.offset(0, 0, -1))
-                            || entity.blockPosition().equals(pos.offset(-1, 0, -1))
-                            || entity.blockPosition().equals(pos.offset(-1, 1, 0))
-                            || entity.blockPosition().equals(pos.offset(1, 1, 0))
-                            || entity.blockPosition().equals(pos.offset(0, 1, 1))
-                            || entity.blockPosition().equals(pos.offset(0, 1, -1))
-                            || entity.blockPosition().equals(pos.offset(-2, 1, 0))
-                            || entity.blockPosition().equals(pos.offset(2, 1, 0))
-                            || entity.blockPosition().equals(pos.offset(0, 1, 2))
-                            || entity.blockPosition().equals(pos.offset(0, 1, -2))
-                            || entity.blockPosition().equals(pos.offset(1, 1, -1))
-                            || entity.blockPosition().equals(pos.offset(1, 1, 1))
-                            || entity.blockPosition().equals(pos.offset(-1, 1, -1))
-                            || entity.blockPosition().equals(pos.offset(-1, 1, 1))
-                            || entity.blockPosition().equals(pos.offset(-1, 2, 0))
-                            || entity.blockPosition().equals(pos.offset(1, 2, 0))
-                            || entity.blockPosition().equals(pos.offset(0, 2, 1))
-                            || entity.blockPosition().equals(pos.offset(0, 2, -1))
-                            || entity.blockPosition().equals(pos.offset(0, 3, 0))
-                            || entity.blockPosition().equals(pos.offset(0, -1, 1))
-                            || entity.blockPosition().equals(pos.offset(0, -1, -1))
-                            || entity.blockPosition().equals(pos.offset(1, -1, 0))
-                            || entity.blockPosition().equals(pos.offset(-1, -1, 0))
-                    )
+                        && terrorNeighbors.contains(entityBlockPos)
                         && this.breakDelay.passed(this.breakSetting.get().intValue())) {
                         if (entity.tickCount > this.waitTicks.get()) {
-                            BlockPos entityBlockPos = entity.blockPosition();
                             RotationManager.getInstance().register(new Rotation((float) Rotations.getYaw(entityBlockPos), (float) Rotations.getPitch(entityBlockPos)), humanized.profile());
                             mc.gameMode.attack(mc.player, entity);
                             mc.player.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
@@ -617,8 +589,8 @@ public class SurroundPlus2 extends BaseModule {
                             this.breakDelay.reset();
                         }
 
-                        if (!this.breakPositions.contains(entity.blockPosition())) {
-                            this.breakPositions.add(entity.blockPosition());
+                        if (!this.breakPositions.contains(entityBlockPos)) {
+                            this.breakPositions.add(entityBlockPos);
                         }
                     }
                 }

@@ -187,13 +187,23 @@ public class Via {
         return villager.getVillagerData().profession().value();
     }
 
+    // 26.1：KeyboardInput.tick 里 moveVector 是 new Vec2(sideways, forward).normalized() 之后才存的，
+    // 斜向移动时 x/y 幅值为 0.707 而非 1，消费方（== 0.0F、> 0.0F、幅值运算）语义会变。
+    // 老版 forwardImpulse/leftImpulse 是原始冲量（-1/0/1），这里用按键状态重建，语义等价。
     public static float movementForward(ClientInput input) {
-        return input.getMoveVector().y;
+        return calculateImpulse(input.keyPresses.forward(), input.keyPresses.backward());
     }
 
 
     public static float movementSideways(ClientInput input) {
-        return input.getMoveVector().x;
+        return calculateImpulse(input.keyPresses.left(), input.keyPresses.right());
+    }
+
+    private static float calculateImpulse(boolean positive, boolean negative) {
+        if (positive == negative) {
+            return 0.0F;
+        }
+        return positive ? 1.0F : -1.0F;
     }
 
     public static void tagRollingEnchantment(CompoundTag tag, VillagerRoller.RollingEnchantment rolling) {
