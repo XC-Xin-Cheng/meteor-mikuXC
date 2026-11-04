@@ -189,6 +189,7 @@ public class ClickProfile {
 
     public static ClickProfile fromTag(CompoundTag tag) {
         ClickProfile profile = new ClickProfile();
+        // 1.21.4 旧 NBT API：getXxx 直接返回值，用 contains 判缺省（getXxxOr 是 1.21.5+）
         profile.name = tag.contains("name") ? tag.getString("name") : "方案";
         profile.enabled = tag.contains("enabled") ? tag.getBoolean("enabled") : true;
         profile.method = Method.byName(tag.contains("method") ? tag.getString("method") : "MIKU");

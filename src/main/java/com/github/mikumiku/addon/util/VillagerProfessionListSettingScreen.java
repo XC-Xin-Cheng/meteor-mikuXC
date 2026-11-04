@@ -4,14 +4,16 @@ import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.gui.screens.settings.RegistryListSettingScreen;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.npc.VillagerProfession;
 
 import java.util.function.Predicate;
 
+// 1.21.4 meteor：RegistryListSettingScreen 仍存在（DynamicRegistryListSettingScreen /
+// CollectionListSettingScreen 是 1.21.5+ 才引入的），直接继承它即可。
+// VillagerProfession.NONE 在 1.21.4 还是实例常量（ResourceKey 化是 1.21.5+）。
 public class VillagerProfessionListSettingScreen extends RegistryListSettingScreen<VillagerProfession> {
     public VillagerProfessionListSettingScreen(GuiTheme theme, VillagerProfessionListSetting setting) {
-        super(theme, "选择", setting, setting.get(), BuiltInRegistries.VILLAGER_PROFESSION);
+        super(theme, "选择", setting, setting.get(), net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION);
     }
 
     @Override
@@ -19,7 +21,7 @@ public class VillagerProfessionListSettingScreen extends RegistryListSettingScre
         Predicate<VillagerProfession> filter = ((VillagerProfessionListSetting) setting).filter;
         if (filter != null && !filter.test(value)) return false;
 
-return value != VillagerProfession.NONE;
+        return value != VillagerProfession.NONE;
     }
 
     @Override

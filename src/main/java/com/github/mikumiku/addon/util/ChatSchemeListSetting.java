@@ -147,6 +147,7 @@ public class ChatSchemeListSetting extends Setting<List<ChatScheme>> {
         // 读旧配置时拿它给还没带单位的方案兜底，之后不再写回这个全局字段。
         ChatIntervalUnit legacyUnit =
             ChatIntervalUnit.byName(tag.contains("intervalUnit") ? tag.getString("intervalUnit") : ChatIntervalUnit.MILLIS.name());
+        // 1.21.4 旧 NBT API：getString 直接返回值、getList 带类型参数（getStringOr/getListOrEmpty 是 1.21.5+）
         ListTag listTag = tag.getList("schemes", net.minecraft.nbt.Tag.TAG_LIST);
         for (net.minecraft.nbt.Tag entry : listTag) {
                 if (entry instanceof net.minecraft.nbt.CompoundTag compound) {

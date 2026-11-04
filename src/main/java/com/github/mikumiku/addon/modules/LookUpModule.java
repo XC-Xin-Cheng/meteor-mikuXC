@@ -147,7 +147,9 @@ public class LookUpModule extends BaseModule {
             mc.player.connection.send(new ServerboundMovePlayerPacket.Rot(
                 mc.player.getYRot(),
                 mc.player.getXRot(),
-                mc.player.onGround()
+                mc.player.onGround(),
+                // 1.21.2+：Rot 构造器新增 horizontalCollision 参数
+                mc.player.horizontalCollision
             ));
         }
     }
@@ -229,7 +231,9 @@ public class LookUpModule extends BaseModule {
         player.connection.send(new ServerboundMovePlayerPacket.Rot(
             player.getYRot(),
             pitch,
-            player.onGround()
+            player.onGround(),
+            // 1.21.2+：Rot 构造器新增 horizontalCollision 参数
+            player.horizontalCollision
         ));
 }
 }

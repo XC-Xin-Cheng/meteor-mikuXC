@@ -135,6 +135,7 @@ public class ItemListMapSetting extends Setting<Map<String, List<Item>>> {
         get().clear();
 
         CompoundTag mapTag = Via.getNbtCompound(tag, "value");
+        // 1.21.4 旧 NBT API：getAllKeys()、getList 带类型参数、StringTag 用 getAsString()（keySet/getListOrEmpty/value() 是 1.21.5+）
         for (String key : mapTag.getAllKeys()) {
             List<Item> items = new ArrayList<>();
             ListTag itemList = mapTag.getList(key, net.minecraft.nbt.Tag.TAG_LIST);

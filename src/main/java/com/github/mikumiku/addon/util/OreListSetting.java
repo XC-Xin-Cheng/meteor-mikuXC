@@ -170,6 +170,7 @@ public class OreListSetting extends Setting<Set<Ore.OreKey>> {
     @Override
     protected Set<Ore.OreKey> load(CompoundTag tag) {
         Set<Ore.OreKey> keys = new LinkedHashSet<>();
+        // 1.21.4 旧 NBT API：getList 带类型参数、StringTag 用 getAsString()（getListOrEmpty/value() 是 1.21.5+）
         ListTag valueTag = tag.getList("value", net.minecraft.nbt.Tag.TAG_LIST);
         for (Tag tagI : valueTag) {
             Ore.OreKey key = Ore.OreKey.byId(tagI.getAsString());
@@ -179,6 +180,7 @@ public class OreListSetting extends Setting<Set<Ore.OreKey>> {
         // 先把样式恢复到默认，再套用配置里存过的覆盖值。
         resetStyles();
         CompoundTag stylesTag = Via.getNbtCompound(tag, "styles");
+        // 1.21.4 旧 NBT API：getAllKeys() + getXxx 直接返回值（keySet/getXxxOr 是 1.21.5+）
         for (String id : stylesTag.getAllKeys()) {
             Ore.OreKey key = Ore.OreKey.byId(id);
             if (key == null) continue;

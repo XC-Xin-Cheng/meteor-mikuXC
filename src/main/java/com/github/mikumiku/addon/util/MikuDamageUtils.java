@@ -255,7 +255,8 @@ public class MikuDamageUtils {
             return mc.level.clipWithInteractionOverride(vec3d, vec3d2, pos, voxelShape, blockState);
         }, (contextx) -> {
             Vec3 vec3d = contextx.getFrom().subtract(contextx.getTo());
-            return BlockHitResult.miss(contextx.getTo(), Direction.getNearest(vec3d.x, vec3d.y, vec3d.z), BlockPos.containing(contextx.getTo()));
+            // 1.21.4：Direction.getNearest(double,double,double) 已删除，改用 int 版本（需带兜底方向）
+            return BlockHitResult.miss(contextx.getTo(), Direction.getNearest((int) Math.round(vec3d.x), (int) Math.round(vec3d.y), (int) Math.round(vec3d.z), Direction.UP), BlockPos.containing(contextx.getTo()));
         });
     }
 }

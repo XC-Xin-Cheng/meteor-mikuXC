@@ -670,6 +670,7 @@ public class DebugModule extends BaseModule {
 
         // 点击槽位
         if (packet instanceof ServerboundContainerClickPacket click) {
+            // 1.21.4 旧 API：getter 形式，changedSlots 直接携带完整 ItemStack（record 访问器 + HashedStack 摘要是 1.21.5+）
             int slot = click.getSlotNum(); // 被点击的槽位
             int button = click.getButtonNum(); // 鼠标键
             ClickType actionType = click.getClickType(); // 点击动作类型（PICKUP、QUICK_MOVE等）
@@ -869,7 +870,7 @@ public class DebugModule extends BaseModule {
         StringBuilder sb = new StringBuilder();
         sb.append("修改槽位:\n");
         map.forEach((slot, stack) -> {
-            // 1.21.1 容器点击包直接携带 ItemStack，无需哈希判别
+            // 1.21.4 容器点击包直接携带完整 ItemStack（HashedStack 哈希摘要是 1.21.5+）
             String itemName = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
             sb.append(String.format("  [%d] %s x%d\n", slot, itemName, stack.getCount()));
         });

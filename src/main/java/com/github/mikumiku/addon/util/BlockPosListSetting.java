@@ -87,6 +87,7 @@ public class BlockPosListSetting extends Setting<List<BlockPos>> {
     protected List<BlockPos> load(CompoundTag tag) {
         get().clear();
 
+        // 1.21.4 旧 NBT API：getList 带类型参数（getListOrEmpty 是 1.21.5+）
         ListTag valueTag = tag.getList("value", net.minecraft.nbt.Tag.TAG_LIST);
         for (Tag element : valueTag) {
             int[] coords = ((IntArrayTag) element).getAsIntArray();

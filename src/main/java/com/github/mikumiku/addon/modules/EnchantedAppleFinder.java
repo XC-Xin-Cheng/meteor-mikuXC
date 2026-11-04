@@ -327,7 +327,7 @@ public class EnchantedAppleFinder extends BaseModule {
     private void reportSeedLibraryInfo(Seed seed) {
         if (seed == null || seed.seed == null || seed.version == null) return;
 
-        String runningVersion = net.minecraft.SharedConstants.getCurrentVersion().getName();
+        String runningVersion = net.minecraft.SharedConstants.getCurrentVersion().getName(); // 1.21.4 差异：WorldVersion 版本名访问器仍是 getName()（1.21.6 起才改名 name()）
         String source;
         if (seed.version.hasExactLibraryData()) {
             source = "种子库版本 " + seed.version.toMCVersion().name;

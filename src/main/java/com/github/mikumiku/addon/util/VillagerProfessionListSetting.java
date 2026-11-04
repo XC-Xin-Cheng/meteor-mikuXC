@@ -99,6 +99,7 @@ public class VillagerProfessionListSetting extends Setting<List<VillagerProfessi
     public List<VillagerProfession> load(CompoundTag tag) {
         get().clear();
 
+        // 1.21.4 旧 NBT API：getList 带类型参数、StringTag 用 getAsString()（getListOrEmpty/value() 是 1.21.5+）
         ListTag valueTag = tag.getList("value", net.minecraft.nbt.Tag.TAG_LIST);
         for (Tag tagI : valueTag) {
             VillagerProfession profession = BuiltInRegistries.VILLAGER_PROFESSION.getOptional(ResourceLocation.tryParse(tagI.getAsString())).orElse(null);

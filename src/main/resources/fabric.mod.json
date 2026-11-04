@@ -34,7 +34,7 @@
   "depends": {
     "java": ">=21",
     "minecraft": [
-      "1.21.1"
+      "1.21.4"
     ],
     "fabric-api": "*",
     "meteor-client": "*",

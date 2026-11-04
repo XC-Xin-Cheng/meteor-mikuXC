@@ -229,6 +229,7 @@ public class ChatScheme {
     public static ChatScheme fromTag(CompoundTag tag, ChatIntervalUnit defaultUnit) {
         ChatIntervalUnit fallback = defaultUnit == null ? ChatIntervalUnit.MILLIS : defaultUnit;
         ChatScheme scheme = new ChatScheme();
+        // 1.21.4 旧 NBT API：getXxx 直接返回值，用 contains 判缺省（getXxxOr 是 1.21.5+）
         scheme.name = tag.contains("name") ? tag.getString("name") : "方案";
         scheme.enabled = tag.contains("enabled") ? tag.getBoolean("enabled") : true;
         scheme.intervalMs = tag.contains("intervalMs") ? tag.getInt("intervalMs") : 1500;

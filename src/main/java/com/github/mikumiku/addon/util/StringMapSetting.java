@@ -93,6 +93,7 @@ public class StringMapSetting extends Setting<Map<String, String>> {
 
         CompoundTag valueTag = Via.getNbtCompound(tag, "map");
 
+        // 1.21.4 旧 NBT API：getAllKeys() + getString 直接返回值（keySet/getStringOr 是 1.21.5+）
         for (String key : valueTag.getAllKeys()) {
             get().put(key, valueTag.getString(key));
         }

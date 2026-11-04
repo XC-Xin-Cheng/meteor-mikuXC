@@ -105,6 +105,7 @@ public class Seeds extends System<Seeds> {
 
     @Override
     public Seeds fromTag(CompoundTag tag) {
+        // 1.21.4 旧 NBT API：getAllKeys() + getCompound 直接返回 CompoundTag（keySet/getCompoundOrEmpty 是 1.21.5+）
         tag.getAllKeys().forEach(key -> {
             Object compound = tag.getCompound(key);
             CompoundTag key2;
@@ -113,7 +114,6 @@ public class Seeds extends System<Seeds> {
             } else {
                 key2 = (CompoundTag) compound;
             }
-
             seeds.put(key, Seed.fromTag(key2));
         });
         return this;
