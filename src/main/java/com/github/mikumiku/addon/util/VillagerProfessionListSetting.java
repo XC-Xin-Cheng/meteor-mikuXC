@@ -99,9 +99,10 @@ public class VillagerProfessionListSetting extends Setting<List<VillagerProfessi
     public List<VillagerProfession> load(CompoundTag tag) {
         get().clear();
 
-        ListTag valueTag = tag.getList("value").get();
+        // 修复：1.21.11 getList/asString 都返回 Optional，键缺失或元素非字符串标签时 .get() 抛 NoSuchElementException。
+        ListTag valueTag = tag.getListOrEmpty("value");
         for (Tag tagI : valueTag) {
-            VillagerProfession profession = BuiltInRegistries.VILLAGER_PROFESSION.getOptional(Identifier.parse(tagI.asString().get())).orElse(null);
+            VillagerProfession profession = BuiltInRegistries.VILLAGER_PROFESSION.getOptional(Identifier.parse(tagI.asString().orElse(""))).orElse(null);
 
             if (bypassFilterWhenSavingAndLoading || (filter == null || filter.test(profession))) {
                 get().add(profession);

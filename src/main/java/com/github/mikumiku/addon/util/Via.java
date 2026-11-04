@@ -162,7 +162,8 @@ public class Via {
         return tag.getListOrEmpty(key);
     }
     public static boolean isNoneProfession(VillagerData data) {
-        return data.profession() == VillagerProfession.NONE;
+        // 1.21.11+：VillagerProfession.NONE 是 ResourceKey， Holder == ResourceKey 永远为 false（javac 因 Holder 是接口不报错，属于隐蔽 bug），改用 is(ResourceKey)
+        return data.profession().is(VillagerProfession.NONE);
     }
     public static void sendPressShift() {
         Input playerInput = new Input(false, false, false, false, false, true, false);
@@ -187,13 +188,24 @@ public class Via {
         return villager.getVillagerData().profession().value();
     }
 
+    // 1.21.9+：ClientInput.getMoveVector() 是归一化后的向量（KeyboardInput.tick 里 Vec2.normalized()），
+    // 斜向时幅值不是 1；老版 forwardImpulse/leftImpulse 是原始冲量（等价 KeyboardInput.calculateImpulse），
+    // 为保持语义直接从 keyPresses 布尔方向推导冲量。
     public static float movementForward(ClientInput input) {
-        return input.getMoveVector().y;
+        return calculateImpulse(input.keyPresses.forward(), input.keyPresses.backward());
     }
 
 
     public static float movementSideways(ClientInput input) {
-        return input.getMoveVector().x;
+        return calculateImpulse(input.keyPresses.left(), input.keyPresses.right());
+    }
+
+    // 与 vanilla KeyboardInput.calculateImpulse 一致：两键同按/都松为 0，正键为 1，负键为 -1
+    private static float calculateImpulse(boolean positive, boolean negative) {
+        if (positive == negative) {
+            return 0.0F;
+        }
+        return positive ? 1.0F : -1.0F;
     }
 
     public static void tagRollingEnchantment(CompoundTag tag, VillagerRoller.RollingEnchantment rolling) {

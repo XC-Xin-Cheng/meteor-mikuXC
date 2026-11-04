@@ -106,13 +106,9 @@ public class Seeds extends System<Seeds> {
     @Override
     public Seeds fromTag(CompoundTag tag) {
         tag.keySet().forEach(key -> {
-            Object compound = tag.getCompound(key);
-            CompoundTag key2;
-            if (compound instanceof Optional<?> optional) {
-                key2 = (CompoundTag) optional.get();
-            } else {
-                key2 = (CompoundTag) compound;
-            }
+            // 修复：1.21.11 getCompound 返回 Optional，键对应值不是 CompoundTag（损坏/旧数据）时
+            // .get() 抛 NoSuchElementException；改用 getCompoundOrEmpty（正常数据语义一致）。
+            CompoundTag key2 = tag.getCompoundOrEmpty(key);
 
             seeds.put(key, Seed.fromTag(key2));
         });

@@ -1,3 +1,9 @@
+buildscript {
+    repositories {
+        maven { url = uri('libs/m2repo') }
+    }
+}
+
 plugins {
     id 'fabric-loom' version "${loom_version}"
 }
@@ -107,5 +113,5 @@ tasks.withType(JavaCompile).configureEach { options.release = 21; options.encodi
     options.compilerArgs.addAll(['-Xmaxerrs', '100000'])
 }
 
-java { toolchain.languageVersion = JavaLanguageVersion.of(21); withSourcesJar() }
+java { toolchain.languageVersion = JavaLanguageVersion.of(21) }
 base { archivesName = project.archives_base_name }

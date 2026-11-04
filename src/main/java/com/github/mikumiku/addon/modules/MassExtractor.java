@@ -3452,7 +3452,9 @@ public class MassExtractor extends BaseModule {
      */
     private boolean isRiskyFood(ItemStack s) {
         if (RISKY_FOODS.contains(s.getItem())) return true;
-        return s.hasNonDefault(DataComponents.FOOD) && s.getMaxStackSize() == 1; // stews / specialty foods
+        // 修复：hasNonDefault(type) 只检测"相对物品原型的补丁"（PatchedDataComponentMap.patch.containsKey），
+        // 普通面包/工具的 FOOD/TOOL 组件在原型里、无 patch → 误判为否；恢复 has(type)（= 完整组件表里存在，语义正确）。
+        return s.has(DataComponents.FOOD) && s.getMaxStackSize() == 1; // stews / specialty foods
     }
 
     /**
@@ -3466,10 +3468,10 @@ public class MassExtractor extends BaseModule {
             if (keepInventoryItems.get().contains(s.getItem())) continue;
             if (isShulker(s)) continue;
             if (s.getItem() == Items.ENDER_CHEST) continue;
-            if (s.hasNonDefault(DataComponents.TOOL)) continue;
+            if (s.has(DataComponents.TOOL)) continue; // 修复：同上，hasNonDefault 对原型组件漏判，新鲜工具会被误丢
             // Keep good food for AutoEat, but let risky foods (rotten flesh, stews, poison/teleport
             // foods) fall through to be dropped when 'drop-bad-food' is on.
-            if (s.hasNonDefault(DataComponents.FOOD) && !(dropBadFood.get() && isRiskyFood(s))) continue;
+            if (s.has(DataComponents.FOOD) && !(dropBadFood.get() && isRiskyFood(s))) continue; // 修复：同上
             InvUtils.drop().slot(i);
             return true;
         }
@@ -4046,7 +4048,7 @@ public class MassExtractor extends BaseModule {
      * An edible food we're happy to keep/eat: has the FOOD component and isn't a risky (harmful/teleport/stew) food.
      */
     private boolean isGoodFood(ItemStack s) {
-        return !s.isEmpty() && s.hasNonDefault(DataComponents.FOOD) && !isRiskyFood(s);
+        return !s.isEmpty() && s.has(DataComponents.FOOD) && !isRiskyFood(s); // 修复：同上
     }
 
     /**
@@ -4368,7 +4370,7 @@ public class MassExtractor extends BaseModule {
      * durability (tools / weapons / armour). Targets, shulkers and ender chests are NOT pinned.
      */
     private boolean isHotbarPinned(ItemStack s) {
-        return s.hasNonDefault(DataComponents.FOOD) || s.isDamageableItem();
+        return s.has(DataComponents.FOOD) || s.isDamageableItem(); // 修复：同上
     }
 
     /**
@@ -4411,7 +4413,7 @@ public class MassExtractor extends BaseModule {
     private boolean hasEdibleFood() {
         for (int i = 0; i < 36; i++) {
             ItemStack s = mc.player.getInventory().getItem(i);
-            if (!s.isEmpty() && s.hasNonDefault(DataComponents.FOOD)) return true;
+            if (!s.isEmpty() && s.has(DataComponents.FOOD)) return true; // 修复：同上
         }
         return false;
     }

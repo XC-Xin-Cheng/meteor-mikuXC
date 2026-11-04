@@ -128,9 +128,17 @@ public class ChestAura extends BaseModule {
 
         if (timer > 0 && MikuCompat.screen() != null) return;
 
+        // 优化：眼位提到循环外（原每个方块实体取一次）；阈值比较改为平方距离（>= r 等价于平方 >= r*r）。
+        // 注意保持原语义：原代码 upFromBottomCenterOf(pos, pos.getY()) = (x+0.5, 2y, z+0.5)。
+        Vec3 eyePos = mc.player.getEyePosition();
+        double rangeSq = range.get() * range.get();
         for (BlockEntity block : Utils.blockEntities()) {
             if (!blocks.get().contains(block.getType())) continue;
-            if (mc.player.getEyePosition().distanceTo(Vec3.upFromBottomCenterOf(block.getBlockPos(), block.getBlockPos().getY())) >= range.get()) continue;
+            BlockPos bpos = block.getBlockPos();
+            double dx = eyePos.x - (bpos.getX() + 0.5);
+            double dy = eyePos.y - (bpos.getY() + bpos.getY());
+            double dz = eyePos.z - (bpos.getZ() + 0.5);
+            if (dx * dx + dy * dy + dz * dz >= rangeSq) continue;
 
             BlockPos pos = block.getBlockPos();
             if (openedBlocks.containsKey(pos)) continue;

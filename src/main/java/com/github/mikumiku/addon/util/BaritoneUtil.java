@@ -250,17 +250,22 @@ public class BaritoneUtil {
     }
 
     public static boolean hasEntityHere(BlockPos pos, boolean ignoreCrystal) {
-        for (Entity entity : getEntities(new AABB(pos))) {
-            if (entity.isAlive()
-                && !(entity instanceof ItemEntity)
-                && !(entity instanceof ExperienceOrb)
-                && !(entity instanceof ThrownExperienceBottle)
-                && !(entity instanceof Arrow)
-                && (!ignoreCrystal || !(entity instanceof EndCrystal))) {
-                if (entity instanceof ArmorStand) {
-                }
+        // 优化：只需存在性判断，直接遍历并提前退出，不再先构造完整的相交实体列表（结果与原来一致，
+        // getEntities 本身也是 entitiesForRendering + 相交判断，原实现也只消费第一个匹配项）。
+        AABB box = new AABB(pos);
+        for (Entity entity : mc.level.entitiesForRendering()) {
+            if (entity != null && entity.getBoundingBox().intersects(box)) {
+                if (entity.isAlive()
+                    && !(entity instanceof ItemEntity)
+                    && !(entity instanceof ExperienceOrb)
+                    && !(entity instanceof ThrownExperienceBottle)
+                    && !(entity instanceof Arrow)
+                    && (!ignoreCrystal || !(entity instanceof EndCrystal))) {
+                    if (entity instanceof ArmorStand) {
+                    }
 
-                return true;
+                    return true;
+                }
             }
         }
 
@@ -284,20 +289,23 @@ public class BaritoneUtil {
         double dis = Integer.MAX_VALUE;
         Direction side = null;
 
+        // 优化：眼位与方块中心在整轮循环内不变，提到循环外；sqrt 阈值比较改为平方距离比较（阈值语义不变，
+        // 原判断 Mth.sqrt(vecDis) > distance 等价于 vecDis > distance*distance）；射线检测 canSeeBlockFace
+        // 挪到廉价判断之后执行（无副作用纯谓词，候选与最终选择结果不变）。
+        Vec3 eyePos = mc.player.getEyePosition();
+        Vec3 center = Vec3.atCenterOf(pos);
+        double rangeSq = distance * distance;
+
         for (Direction i : DIRECTIONS) {
-            if (canClick(pos.relative(i)) && !canReplace(pos.relative(i)) && canSeeBlockFace(pos.relative(i), i.getOpposite())) {
-                double vecDis = mc
-                    .player
-                    .getEyePosition()
-                    .distanceToSqr(
-                        Vec3.atCenterOf(pos)
-                            .add(
-                                i.getUnitVec3i().getX() * 0.5,
-                                i.getUnitVec3i().getY() * 0.5,
-                                i.getUnitVec3i().getZ() * 0.5
-                            )
-                    );
-                if (!(Mth.sqrt((float) vecDis) > distance) && (side == null || vecDis < dis)) {
+            if (canClick(pos.relative(i)) && !canReplace(pos.relative(i))) {
+                double vecDis = eyePos.distanceToSqr(
+                    center.add(
+                        i.getUnitVec3i().getX() * 0.5,
+                        i.getUnitVec3i().getY() * 0.5,
+                        i.getUnitVec3i().getZ() * 0.5
+                    )
+                );
+                if (vecDis <= rangeSq && (side == null || vecDis < dis) && canSeeBlockFace(pos.relative(i), i.getOpposite())) {
                     side = i;
                     dis = vecDis;
                 }
@@ -314,19 +322,19 @@ public class BaritoneUtil {
             double bestRelevancy = 999999.0;
             Direction side = null;
 
+            // 优化：眼位与方块中心提到循环外（循环内不变）。
+            Vec3 eyePos = mc.player.getEyePosition();
+            Vec3 center = Vec3.atCenterOf(pos);
+
             for (Direction i : DIRECTIONS) {
                 if (canClick(pos.relative(i)) && !canReplace(pos.relative(i)) && isStrictDirection(pos.relative(i), i.getOpposite())) {
-                    double vecDis = mc
-                        .player
-                        .getEyePosition()
-                        .distanceToSqr(
-                            Vec3.atCenterOf(pos)
-                                .add(
-                                    i.getUnitVec3i().getX() * 0.5,
-                                    i.getUnitVec3i().getY() * 0.5,
-                                    i.getUnitVec3i().getZ() * 0.5
-                                )
-                        );
+                    double vecDis = eyePos.distanceToSqr(
+                        center.add(
+                            i.getUnitVec3i().getX() * 0.5,
+                            i.getUnitVec3i().getY() * 0.5,
+                            i.getUnitVec3i().getZ() * 0.5
+                        )
+                    );
                     if (side == null || vecDis < bestRelevancy) {
                         side = i;
                         bestRelevancy = vecDis;

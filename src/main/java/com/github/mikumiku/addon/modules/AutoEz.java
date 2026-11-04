@@ -319,7 +319,8 @@ public class AutoEz extends BaseModule {
                 Entity entity = packet.getEntity(mc.level);
                 if (pop.get() && mc.player != null && mc.level != null && entity instanceof Player) {
                     if (entity != mc.player && !Friends.get().isFriend((Player) entity) &&
-                        Via.getEntityPos(mc.player).distanceTo(Via.getEntityPos(entity)) <= range.get()) {
+                        // 优化：阈值比较改用平方距离（distanceTo <= r 等价于 distanceToSqr <= r*r）。
+                        Via.getEntityPos(mc.player).distanceToSqr(Via.getEntityPos(entity)) <= range.get() * range.get()) {
                         sendPopMessage(entity.getName().getString());
                     }
                 }
@@ -329,8 +330,12 @@ public class AutoEz extends BaseModule {
 
     @SuppressWarnings("DataFlowIssue")
     private boolean anyDead(double range) {
+        // 优化：阈值比较改用平方距离（r → r*r），合格集不变。
+        double rangeSq = range * range;
         for (Player pl : mc.level.players()) {
-            if (pl != mc.player && !Friends.get().isFriend(pl) && Via.getEntityPos(pl).distanceTo(Via.getEntityPos(mc.player)) <= range
+            if (pl != mc.player && !Friends.get().isFriend(pl)
+                // 优化：阈值比较改用平方距离，语义不变。
+                && Via.getEntityPos(pl).distanceToSqr(Via.getEntityPos(mc.player)) <= rangeSq
                 && pl.getHealth() <= 0) {
                 name = pl.getName().getString();
                 return true;

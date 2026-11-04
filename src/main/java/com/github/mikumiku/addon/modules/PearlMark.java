@@ -234,13 +234,9 @@ public class PearlMark extends BaseModule {
             cacheTag.keySet().forEach(key -> {
                 try {
                     UUID pearlId = UUID.fromString(key);
-                    Object string = cacheTag.getString(key);
-                    String ownerName;
-                    if (string instanceof Optional<?> s) {
-                        ownerName = (String) s.get();
-                    } else {
-                        ownerName = (String) string;
-                    }
+                    // 修复：1.21.11 getString 返回 Optional，值类型非字符串时 .get() 抛 NoSuchElementException
+                    // 且不被外层 catch (IllegalArgumentException) 覆盖；改用 getStringOr 兜底（正常数据语义一致）。
+                    String ownerName = cacheTag.getStringOr(key, "");
 
                     if (!ownerName.isEmpty()) {
                         pearlOwnerCache.put(pearlId, ownerName);

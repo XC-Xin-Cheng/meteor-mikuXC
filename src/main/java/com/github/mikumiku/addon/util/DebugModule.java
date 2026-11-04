@@ -869,9 +869,14 @@ public class DebugModule extends BaseModule {
         StringBuilder sb = new StringBuilder();
         sb.append("修改槽位:\n");
         map.forEach((slot, stack) -> {
-            HashedStack.ActualItem stackHash = (HashedStack.ActualItem) stack;
-            String itemName = stackHash.item().getRegisteredName();
-            sb.append(String.format("  [%d] %s x%d\n", slot, itemName, stackHash.count()));
+            // 修复：1.21.11 changedSlots 的值类型是实现类 HashedStack.ActualItem 或 HashedStack.EMPTY
+            // （点击后变空的槽位），对 EMPTY 强转会抛 ClassCastException，先 instanceof 判别再取字段。
+            if (stack instanceof HashedStack.ActualItem stackHash) {
+                String itemName = stackHash.item().getRegisteredName();
+                sb.append(String.format("  [%d] %s x%d\n", slot, itemName, stackHash.count()));
+            } else {
+                sb.append(String.format("  [%d] 空（HashedStack.EMPTY）\n", slot));
+            }
         });
         return sb.toString();
     }
