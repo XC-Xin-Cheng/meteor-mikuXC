@@ -61,7 +61,8 @@ public class VillagerRollerFileUtils {
             return false;
         }
 
-        ListTag nbtList = nbtData.getList("rolling", net.minecraft.nbt.Tag.TAG_LIST);
+        // 1.21.5+ NBT：getList 不再带类型参数，改用 getListOrEmpty
+        ListTag nbtList = nbtData.getListOrEmpty("rolling");
         searchingEnchants.clear();
 
         for (Tag element : nbtList) {

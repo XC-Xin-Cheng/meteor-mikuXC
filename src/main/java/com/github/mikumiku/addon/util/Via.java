@@ -25,12 +25,15 @@ import meteordevelopment.meteorclient.mixininterface.IVec3d;
 import meteordevelopment.meteorclient.utils.player.Rotations;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.player.Input;
+import net.minecraft.client.player.ClientInput;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.entity.player.Input;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -62,30 +65,38 @@ import java.util.Optional;
 
 public class Via {
     public static ItemStack getEnchantedBookWith(Optional<Holder.Reference<Enchantment>> en) {
-        return EnchantedBookItem.createForEnchantment(new EnchantmentInstance(en.get(), en.get().value().getMaxLevel()));
+        // 1.21.7：EnchantedBookItem 已删除，改用数据组件直接写入 STORED_ENCHANTMENTS
+        Holder.Reference<Enchantment> holder = en.get();
+        ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+        mutable.set(holder, holder.value().getMaxLevel());
+        ItemStack stack = new ItemStack(Items.ENCHANTED_BOOK);
+        stack.set(DataComponents.STORED_ENCHANTMENTS, mutable.toImmutable());
+        return stack;
     }
 
     public static Registry<Enchantment> getEnchantmentRegistry() {
         RegistryAccess registryManager = Minecraft.getInstance().level.registryAccess();
-        return registryManager.registryOrThrow(Registries.ENCHANTMENT);
+        // 1.21.2+：RegistryAccess.registryOrThrow 改名 lookupOrThrow
+        return registryManager.lookupOrThrow(Registries.ENCHANTMENT);
     }
 
 
     // 26.1：ServerboundMovePlayerPacket 的嵌套类改名为 Rot/PosRot/Pos/StatusOnly
+    // 1.21.2+：构造器多一个 horizontalCollision 参数，与 Meteor 自身 Rotations 的做法一致
     public static ServerboundMovePlayerPacket get(float currentYaw, float pitch, boolean onGround) {
-        return new ServerboundMovePlayerPacket.Rot(currentYaw, pitch, onGround);
+        return new ServerboundMovePlayerPacket.Rot(currentYaw, pitch, onGround, Minecraft.getInstance().player.horizontalCollision);
     }
 
     public static ServerboundMovePlayerPacket getFull(double x, double y, double z, float yaw, float pitch, boolean onGround) {
-        return new ServerboundMovePlayerPacket.PosRot(x, y, z, yaw, pitch, onGround);
+        return new ServerboundMovePlayerPacket.PosRot(x, y, z, yaw, pitch, onGround, Minecraft.getInstance().player.horizontalCollision);
     }
 
     public static ServerboundMovePlayerPacket getPositionAndOnGround(double x, double y, double z, boolean onGround) {
-        return new ServerboundMovePlayerPacket.Pos(x, y, z, onGround);
+        return new ServerboundMovePlayerPacket.Pos(x, y, z, onGround, Minecraft.getInstance().player.horizontalCollision);
     }
 
     public static ServerboundMovePlayerPacket getOnGroundOnly(boolean onGround) {
-        return new ServerboundMovePlayerPacket.StatusOnly(onGround);
+        return new ServerboundMovePlayerPacket.StatusOnly(onGround, Minecraft.getInstance().player.horizontalCollision);
     }
 
 
@@ -94,12 +105,12 @@ public class Via {
     }
 
     public static boolean isJumping(Minecraft mc) {
-        return mc.player.input.jumping;
+        // 1.21.7：ClientInput 的 jumping 字段改为 Input record 的 jump() 访问器
+        return mc.player.input.keyPresses.jump();
     }
 
     public static boolean isSneaking(Minecraft mc) {
-        return mc.player.input.shiftKeyDown;
-
+        return mc.player.input.keyPresses.shift();
     }
 
     public static int getTopY(Minecraft mc) {
@@ -117,80 +128,92 @@ public class Via {
         return value;
     }
 
+    // 1.21.7 meteor：注入接口方法统一加 meteor$ 前缀，末参放宽为 Entity
     public static void setRaycast(IRaycastContext raycastContext, Vec3 source, Vec3 vec3d, ClipContext.Block shapeType, ClipContext.Fluid fluidHandling, LocalPlayer player) {
-        raycastContext.set(source, vec3d, shapeType, fluidHandling, player);
+        raycastContext.meteor$set(source, vec3d, shapeType, fluidHandling, player);
     }
 
     public static void setMovement(IRaycastContext raycastContext, Vec3 source, Vec3 vec3d, ClipContext.Block shapeType, ClipContext.Fluid fluidHandling, LocalPlayer player) {
-        raycastContext.set(source, vec3d, shapeType, fluidHandling, player);
+        raycastContext.meteor$set(source, vec3d, shapeType, fluidHandling, player);
     }
 
     public static void setMovement(IVec3d movement, double x, double y, double z) {
-        movement.set(x, y, z);
+        movement.meteor$set(x, y, z);
     }
 
     public static void drawTexture(GuiGraphics drawContext, ResourceLocation texture2, int i, int i1, int i2, int i3) {
     }
 
     public static Vec3 playerKnockback(ClientboundExplodePacket packet) {
-        return new Vec3(packet.getKnockbackX(), packet.getKnockbackY(), packet.getKnockbackZ());
+        // 1.21.2+：ClientboundExplodePacket 改为 record，击退合并成一个 Optional<Vec3>
+        return packet.playerKnockback().orElse(Vec3.ZERO);
     }
 
     public static int getSelectedSlot() {
         Minecraft mc = Minecraft.getInstance();
-        return mc.player.getInventory().selected;
+        return mc.player.getInventory().getSelectedSlot();
     }
 
     public static void setSelectedSlot(int selectedSlot) {
         Minecraft mc = Minecraft.getInstance();
-        mc.player.getInventory().selected = selectedSlot;
+        mc.player.getInventory().setSelectedSlot(selectedSlot);
     }
 
     public static CompoundTag getNbtCompound(CompoundTag tag, String key) {
-        return tag.getCompound(key);
+        // 1.21.5+ NBT：getCompound 返回 Optional，改用 getCompoundOrEmpty
+        return tag.getCompoundOrEmpty(key);
     }
 
     public static ListTag getNbtList(CompoundTag tag, String key) {
-        return tag.getList(key, net.minecraft.nbt.Tag.TAG_LIST);
+        // 1.21.5+ NBT：getList 不再带类型参数，改用 getListOrEmpty
+        return tag.getListOrEmpty(key);
     }
     public static boolean isNoneProfession(VillagerData data) {
-        return data.getProfession() == VillagerProfession.NONE;
+        // 1.21.7：VillagerData 是 record，profession() 返回 Holder；NONE 是 ResourceKey
+        return data.profession().is(VillagerProfession.NONE);
     }
     public static void sendPressShift() {
-        MeteorClient.mc.player.connection.send(new ServerboundPlayerInputPacket(0, 0, false, true));
+        // 1.21.7：ServerboundPlayerInputPacket 改收 Input record（forward,backward,left,right,jump,shift,sprint）
+        MeteorClient.mc.player.connection.send(new ServerboundPlayerInputPacket(new Input(false, false, false, false, false, true, false)));
     }
 
     public static void sendReleaseShift() {
-        MeteorClient.mc.player.connection.send(new ServerboundPlayerInputPacket(0, 0, false, false));
+        MeteorClient.mc.player.connection.send(new ServerboundPlayerInputPacket(Input.EMPTY));
     }
 
 
     public static int getSyncId(ClientboundContainerSetContentPacket inventoryS2CPacket) {
-        return inventoryS2CPacket.getContainerId();
+        // 1.21.7：改为 record 访问器
+        return inventoryS2CPacket.containerId();
     }
 
     public static List<ItemStack> getInvContent(ClientboundContainerSetContentPacket inventoryS2CPacket) {
-        return inventoryS2CPacket.getItems();
+        return inventoryS2CPacket.items();
     }
 
     public static VillagerProfession getVillagerProfession(Villager villager) {
-        return villager.getVillagerData().getProfession();
+        return villager.getVillagerData().profession().value();
     }
 
-    public static float movementForward(Input input) {
-        return input.forwardImpulse;
+    // 1.21.7：mc.player.input 是 ClientInput，方向冲量从 keyPresses（Input record）推导，
+    // 与原版 KeyboardInput.calculateImpulse 的语义一致（等价旧 forwardImpulse/leftImpulse）
+    public static float movementForward(ClientInput input) {
+        Input kp = input.keyPresses;
+        return kp.forward() == kp.backward() ? 0.0F : (kp.forward() ? 1.0F : -1.0F);
     }
 
 
-    public static float movementSideways(Input input) {
-        return input.leftImpulse;
+    public static float movementSideways(ClientInput input) {
+        Input kp = input.keyPresses;
+        return kp.left() == kp.right() ? 0.0F : (kp.left() ? 1.0F : -1.0F);
     }
 
     public static void tagRollingEnchantment(CompoundTag tag, VillagerRoller.RollingEnchantment rolling) {
-        rolling.enchantment = ResourceLocation.tryParse(tag.contains("enchantment") ? tag.getString("enchantment") : "");
-        rolling.minLevel = tag.contains("minLevel") ? tag.getInt("minLevel") : 1;
-        rolling.maxCost = tag.contains("maxCost") ? tag.getInt("maxCost") : 64;
-        rolling.enabled = tag.contains("enabled") ? tag.getBoolean("enabled") : true;
+        // 1.21.5+ NBT：getString/getInt/getBoolean 返回 Optional，改用带默认值的 getXxxOr
+        rolling.enchantment = ResourceLocation.tryParse(tag.getStringOr("enchantment", ""));
+        rolling.minLevel = tag.getIntOr("minLevel", 1);
+        rolling.maxCost = tag.getIntOr("maxCost", 64);
+        rolling.enabled = tag.getBooleanOr("enabled", true);
     }
     public  static Vec3 getEntityPos(Entity entity) {
         return entity.position();

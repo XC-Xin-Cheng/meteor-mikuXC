@@ -300,9 +300,9 @@ public class BaritoneUtil {
             if (canClick(pos.relative(i)) && !canReplace(pos.relative(i))) {
                 double vecDis = eyePos.distanceToSqr(
                     center.add(
-                        i.getNormal().getX() * 0.5,
-                        i.getNormal().getY() * 0.5,
-                        i.getNormal().getZ() * 0.5
+                        i.getStepX() * 0.5,
+                        i.getStepY() * 0.5,
+                        i.getStepZ() * 0.5
                     )
                 );
                 if (vecDis <= rangeSq && (side == null || vecDis < dis) && canSeeBlockFace(pos.relative(i), i.getOpposite())) {
@@ -330,9 +330,9 @@ public class BaritoneUtil {
                 if (canClick(pos.relative(i)) && !canReplace(pos.relative(i)) && isStrictDirection(pos.relative(i), i.getOpposite())) {
                     double vecDis = eyePos.distanceToSqr(
                         center.add(
-                            i.getNormal().getX() * 0.5,
-                            i.getNormal().getY() * 0.5,
-                            i.getNormal().getZ() * 0.5
+                            i.getStepX() * 0.5,
+                            i.getStepY() * 0.5,
+                            i.getStepZ() * 0.5
                         )
                     );
                     if (side == null || vecDis < bestRelevancy) {
@@ -629,9 +629,9 @@ public class BaritoneUtil {
         } else {
             Vec3 testVec = Vec3.atCenterOf(pos)
                 .add(
-                    side.getNormal().getX() * 0.5,
-                    side.getNormal().getY() * 0.5,
-                    side.getNormal().getZ() * 0.5
+                    side.getStepX() * 0.5,
+                    side.getStepY() * 0.5,
+                    side.getStepZ() * 0.5
                 );
             HitResult result = mc
                 .level
@@ -1178,13 +1178,13 @@ public class BaritoneUtil {
         Vec3 directionVec = new Vec3(
             pos.getX()
                 + 0.5
-                + side.getNormal().getX() * 0.5,
+                + side.getStepX() * 0.5,
             pos.getY()
                 + 0.5
-                + side.getNormal().getY() * 0.5,
+                + side.getStepY() * 0.5,
             pos.getZ()
                 + 0.5
-                + side.getNormal().getZ() * 0.5
+                + side.getStepZ() * 0.5
         );
         swingHand(hand, swingSide);
         BlockHitResult result = new BlockHitResult(directionVec, side, pos, false);

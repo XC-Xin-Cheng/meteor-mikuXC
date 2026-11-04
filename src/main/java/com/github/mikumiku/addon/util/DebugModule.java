@@ -44,6 +44,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.network.HashedStack;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ServerboundContainerButtonClickPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
@@ -670,10 +671,11 @@ public class DebugModule extends BaseModule {
 
         // 点击槽位
         if (packet instanceof ServerboundContainerClickPacket click) {
-            int slot = click.getSlotNum(); // 被点击的槽位
-            int button = click.getButtonNum(); // 鼠标键
-            ClickType actionType = click.getClickType(); // 点击动作类型（PICKUP、QUICK_MOVE等）
-            Int2ObjectMap<ItemStack> modifieded = click.getChangedSlots();// 被点击槽位上的物品
+            // 1.21.5+：包改成 record，访问器改名；changedSlots 携带 HashedStack（物品哈希摘要）而非完整 ItemStack
+            int slot = click.slotNum(); // 被点击的槽位
+            int button = click.buttonNum(); // 鼠标键
+            ClickType actionType = click.clickType(); // 点击动作类型（PICKUP、QUICK_MOVE等）
+            Int2ObjectMap<HashedStack> modifieded = click.changedSlots();// 被点击槽位上的物品摘要
 
             return String.format("""
                     ===ClickSlot===
@@ -863,15 +865,23 @@ public class DebugModule extends BaseModule {
         return str.substring(0, maxLength - 3) + "...";
     }
 
-    private static String formatItemMap(Int2ObjectMap<ItemStack> map) {
+    private static String formatItemMap(Int2ObjectMap<HashedStack> map) {
         if (map == null || map.isEmpty()) return "无修改";
 
         StringBuilder sb = new StringBuilder();
         sb.append("修改槽位:\n");
-        map.forEach((slot, stack) -> {
-            // 1.21.1 容器点击包直接携带 ItemStack，无需哈希判别
-            String itemName = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
-            sb.append(String.format("  [%d] %s x%d\n", slot, itemName, stack.getCount()));
+        map.forEach((slot, hashed) -> {
+            // 1.21.7 容器点击包只携带哈希摘要（Item + 数量 + 组件补丁），拿不到完整 ItemStack
+            String itemName;
+            int count;
+            if (hashed instanceof HashedStack.ActualItem actual) {
+                itemName = actual.item().getRegisteredName();
+                count = actual.count();
+            } else {
+                itemName = "空/未知";
+                count = 0;
+            }
+            sb.append(String.format("  [%d] %s x%d\n", slot, itemName, count));
         });
         return sb.toString();
     }

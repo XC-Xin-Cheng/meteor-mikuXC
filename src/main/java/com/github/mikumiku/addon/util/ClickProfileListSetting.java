@@ -132,7 +132,8 @@ public class ClickProfileListSetting extends Setting<List<ClickProfile>> {
     @Override
     protected List<ClickProfile> load(CompoundTag tag) {
         List<ClickProfile> list = new ArrayList<>();
-        ListTag listTag = tag.getList("profiles", net.minecraft.nbt.Tag.TAG_LIST);
+        // 1.21.5+ NBT：getList 不再带类型参数，改用 getListOrEmpty
+        ListTag listTag = tag.getListOrEmpty("profiles");
         for (net.minecraft.nbt.Tag entry : listTag) {
                 if (entry instanceof net.minecraft.nbt.CompoundTag compound) {
                     list.add(ClickProfile.fromTag(compound));
