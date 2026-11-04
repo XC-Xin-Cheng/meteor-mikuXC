@@ -3452,7 +3452,9 @@ public class MassExtractor extends BaseModule {
      */
     private boolean isRiskyFood(ItemStack s) {
         if (RISKY_FOODS.contains(s.getItem())) return true;
-        return s.hasNonDefault(DataComponents.FOOD) && s.getMaxStackSize() == 1; // stews / specialty foods
+        // 26.1：has() 经 DataComponentHolder 默认方法仍存在，语义 = 组件存在（含原型默认值）；
+        // hasNonDefault() = patch.containsKey，会漏掉未修改过组件的普通食物/新鲜工具，不能用。
+        return s.has(DataComponents.FOOD) && s.getMaxStackSize() == 1; // stews / specialty foods
     }
 
     /**
@@ -3466,10 +3468,10 @@ public class MassExtractor extends BaseModule {
             if (keepInventoryItems.get().contains(s.getItem())) continue;
             if (isShulker(s)) continue;
             if (s.getItem() == Items.ENDER_CHEST) continue;
-            if (s.hasNonDefault(DataComponents.TOOL)) continue;
+            if (s.has(DataComponents.TOOL)) continue;
             // Keep good food for AutoEat, but let risky foods (rotten flesh, stews, poison/teleport
             // foods) fall through to be dropped when 'drop-bad-food' is on.
-            if (s.hasNonDefault(DataComponents.FOOD) && !(dropBadFood.get() && isRiskyFood(s))) continue;
+            if (s.has(DataComponents.FOOD) && !(dropBadFood.get() && isRiskyFood(s))) continue;
             InvUtils.drop().slot(i);
             return true;
         }
@@ -4046,7 +4048,7 @@ public class MassExtractor extends BaseModule {
      * An edible food we're happy to keep/eat: has the FOOD component and isn't a risky (harmful/teleport/stew) food.
      */
     private boolean isGoodFood(ItemStack s) {
-        return !s.isEmpty() && s.hasNonDefault(DataComponents.FOOD) && !isRiskyFood(s);
+        return !s.isEmpty() && s.has(DataComponents.FOOD) && !isRiskyFood(s);
     }
 
     /**
@@ -4368,7 +4370,7 @@ public class MassExtractor extends BaseModule {
      * durability (tools / weapons / armour). Targets, shulkers and ender chests are NOT pinned.
      */
     private boolean isHotbarPinned(ItemStack s) {
-        return s.hasNonDefault(DataComponents.FOOD) || s.isDamageableItem();
+        return s.has(DataComponents.FOOD) || s.isDamageableItem();
     }
 
     /**
@@ -4411,7 +4413,7 @@ public class MassExtractor extends BaseModule {
     private boolean hasEdibleFood() {
         for (int i = 0; i < 36; i++) {
             ItemStack s = mc.player.getInventory().getItem(i);
-            if (!s.isEmpty() && s.hasNonDefault(DataComponents.FOOD)) return true;
+            if (!s.isEmpty() && s.has(DataComponents.FOOD)) return true;
         }
         return false;
     }

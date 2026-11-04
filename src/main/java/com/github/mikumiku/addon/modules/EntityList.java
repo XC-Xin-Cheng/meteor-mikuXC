@@ -196,6 +196,21 @@ public class EntityList extends BaseModule {
         super("实体列表Plus", "显示实体、玩家、凋落物列表.");
     }
 
+    // 优化：渲染每帧都要用的集合改为字段复用（clear 后重建），避免每帧多次哈希表分配；
+    // 材质分类串（注册表 key 字符串 → 中文标签）对同一 Item 是恒定的，用静态缓存免掉每帧
+    // 的 getKey().toString() 与包含链计算。渲染单线程执行，复用集合无共享可变状态问题。
+    private final Set<Item> items1SetCache = new HashSet<>();
+    private final Set<Item> items2SetCache = new HashSet<>();
+    private final Set<Item> blackListSetCache = new HashSet<>();
+    private final Map<Item, Integer> items1MapCache = new HashMap<>();
+    private final Map<Item, Integer> items2MapCache = new HashMap<>();
+    private final Map<Item, Integer> itemsMapCache = new HashMap<>();
+    private final Map<EntityType<?>, Integer> entitysMapCache = new HashMap<>();
+    private final Map<String, Double> playersMapCache = new HashMap<>();
+    private final Map<String, String> playerArmorMapCache = new HashMap<>();
+    private static final Map<Item, String> ARMOR_TYPE_CACHE = new HashMap<>();
+    private final Map<String, Integer> TYPE_COUNT_CACHE = new HashMap<>();
+
     @Override
     public void onActivate() {
         super.onActivate();
@@ -204,15 +219,27 @@ public class EntityList extends BaseModule {
     @EventHandler
     private void onRender2D(Render2DEvent event) {
         if (!Utils.isLoading() && isActive()) {
-            Set<Item> items1Set = new HashSet<>(items1.get());
-            Set<Item> items2Set = new HashSet<>(items2.get());
-            Set<Item> blackListSet = new HashSet<>(blackList.get());
-            Map<Item, Integer> items1Map = new HashMap<>();
-            Map<Item, Integer> items2Map = new HashMap<>();
-            Map<Item, Integer> itemsMap = new HashMap<>();
-            Map<EntityType<?>, Integer> entitysMap = new HashMap<>();
-            Map<String, Double> playersMap = new HashMap<>();
-            Map<String, String> playerArmorMap = new HashMap<>();
+            Set<Item> items1Set = items1SetCache;
+            Set<Item> items2Set = items2SetCache;
+            Set<Item> blackListSet = blackListSetCache;
+            Map<Item, Integer> items1Map = items1MapCache;
+            Map<Item, Integer> items2Map = items2MapCache;
+            Map<Item, Integer> itemsMap = itemsMapCache;
+            Map<EntityType<?>, Integer> entitysMap = entitysMapCache;
+            Map<String, Double> playersMap = playersMapCache;
+            Map<String, String> playerArmorMap = playerArmorMapCache;
+            items1Set.clear();
+            items1Set.addAll(items1.get());
+            items2Set.clear();
+            items2Set.addAll(items2.get());
+            blackListSet.clear();
+            blackListSet.addAll(blackList.get());
+            items1Map.clear();
+            items2Map.clear();
+            itemsMap.clear();
+            entitysMap.clear();
+            playersMap.clear();
+            playerArmorMap.clear();
             ResourceKey<Level> registryKey = Via.getEntityWorld(mc.player).dimension();
 
             for (Entity entity : mc.level.entitiesForRendering()) {
@@ -353,24 +380,26 @@ public class EntityList extends BaseModule {
         }
 
         // 记录每种材质的数量
-        Map<String, Integer> typeCount = new HashMap<>();
-        ItemStack[] items = {head, chest, legs, feet};
+        // 优化：typeCount 复用类内缓存（clear 后重建），材质标签对同一 Item 恒定，
+        // 用 ARMOR_TYPE_CACHE 免掉每帧的 getKey().toString() 与包含链判断（分类结果一致）。
+        Map<String, Integer> typeCount = TYPE_COUNT_CACHE;
+        typeCount.clear();
 
-        for (ItemStack item : items) {
+        for (int i = 0; i < 4; i++) {
+            ItemStack item = i == 0 ? head : i == 1 ? chest : i == 2 ? legs : feet;
             if (MikuUtil.isArmor(item.getItem())) {
-                String matId = BuiltInRegistries.ITEM.getKey(item.getItem()).toString();
-
-                // 转中文标签
-                String type;
-                if (matId.contains("netherite")) type = "合金";
-                else if (matId.contains("diamond")) type = "钻石";
-                else if (matId.contains("iron")) type = "铁";
-                else if (matId.contains("gold")) type = "金";
-                else if (matId.contains("chain")) type = "锁链";
-                else if (matId.contains("leather")) type = "皮革";
-                else if (matId.contains("turtle")) type = "海龟";
-                else if (matId.contains("armadillo")) type = "犰狳";
-                else type = matId; // 支持模组护甲
+                String type = ARMOR_TYPE_CACHE.computeIfAbsent(item.getItem(), itemKey -> {
+                    String matId = BuiltInRegistries.ITEM.getKey(itemKey).toString();
+                    if (matId.contains("netherite")) return "合金";
+                    if (matId.contains("diamond")) return "钻石";
+                    if (matId.contains("iron")) return "铁";
+                    if (matId.contains("gold")) return "金";
+                    if (matId.contains("chain")) return "锁链";
+                    if (matId.contains("leather")) return "皮革";
+                    if (matId.contains("turtle")) return "海龟";
+                    if (matId.contains("armadillo")) return "犰狳";
+                    return matId; // 支持模组护甲
+                });
 
                 typeCount.merge(type, 1, Integer::sum);
             }

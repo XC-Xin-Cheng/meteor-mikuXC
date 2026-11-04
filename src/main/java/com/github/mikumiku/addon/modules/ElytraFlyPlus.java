@@ -168,6 +168,20 @@ public class ElytraFlyPlus extends BaseModule {
         super("鞘翅平飞", "更多控制鞘翅方法。");
     }
 
+    // 优化：装备音效 ID 列表不变，原来在每次 PlaySoundEvent 都重新 List.of + 9 次 Identifier.parse，
+    // 提升为 static final（Identifier 不可变，行为一致）。
+    private static final List<Identifier> ARMOR_EQUIP_SOUNDS = List.of(
+            Identifier.parse("minecraft:item.armor.equip_generic"),
+            Identifier.parse("minecraft:item.armor.equip_netherite"),
+            Identifier.parse("minecraft:item.armor.equip_elytra"),
+            Identifier.parse("minecraft:item.armor.equip_diamond"),
+            Identifier.parse("minecraft:item.armor.equip_gold"),
+            Identifier.parse("minecraft:item.armor.equip_iron"),
+            Identifier.parse("minecraft:item.armor.equip_chain"),
+            Identifier.parse("minecraft:item.armor.equip_leather"),
+            Identifier.parse("minecraft:item.elytra.flying")
+        );
+
     @EventHandler(
         priority = 200
     )
@@ -334,18 +348,7 @@ public class ElytraFlyPlus extends BaseModule {
 
     @EventHandler
     private void onPlaySound(PlaySoundEvent event) {
-        List<Identifier> armorEquipSounds = List.of(
-            Identifier.parse("minecraft:item.armor.equip_generic"),
-            Identifier.parse("minecraft:item.armor.equip_netherite"),
-            Identifier.parse("minecraft:item.armor.equip_elytra"),
-            Identifier.parse("minecraft:item.armor.equip_diamond"),
-            Identifier.parse("minecraft:item.armor.equip_gold"),
-            Identifier.parse("minecraft:item.armor.equip_iron"),
-            Identifier.parse("minecraft:item.armor.equip_chain"),
-            Identifier.parse("minecraft:item.armor.equip_leather"),
-            Identifier.parse("minecraft:item.elytra.flying")
-        );
-        for (Identifier identifier : armorEquipSounds) {
+        for (Identifier identifier : ARMOR_EQUIP_SOUNDS) {
             if (identifier.equals(event.sound.getIdentifier())) {
                 event.cancel();
                 break;

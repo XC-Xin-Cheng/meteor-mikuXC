@@ -45,16 +45,18 @@ public class VillagerProfessionListSettingScreen extends CollectionListSettingSc
 
     @Override
     protected WWidget getValueWidget(VillagerProfession profession) {
-
-        String key = "entity.minecraft.villager." + profession.name();
+        // 26.1：profession.name() 是 Component.translatable("entity.<ns>.villager.<path>")，
+        // 拼接/getString 会得到本地化文本（或 Component 的调试串），拼不出正确的翻译键，
+        // 必须用注册表键的 path 还原 "entity.minecraft.villager.<path>"（与 1.21.10 语义一致）。
+        String key = "entity.minecraft.villager." + BuiltInRegistries.VILLAGER_PROFESSION.getKey(profession).getPath();
         String translated = I18n.get(key);
         return theme.label(translated);
     }
 
     @Override
     protected String[] getValueNames(VillagerProfession profession) {
-
-        return new String[]{profession.name().getString(), profession.name().toString()};
+        // 展示名沿用注册表路径（与 1.21.10 一致），避免 Component.toString() 的调试串混入搜索匹配。
+        return new String[]{BuiltInRegistries.VILLAGER_PROFESSION.getKey(profession).getPath()};
     }
 
 }

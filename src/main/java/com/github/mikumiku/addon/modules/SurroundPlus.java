@@ -248,10 +248,13 @@ public class SurroundPlus extends BaseModule {
                     for (int i = 0; i < placeSize; i++) {
                         BagUtil.doSwap(slot);
                         if (this.attack.get()) {
+                            // 优化：目标 AABB 只依赖当前位置，提到实体循环外（原来每个实体都 new 一个）；
+                            // 距离阈值比较改为平方距离（distanceTo(entity) < 3 等价于 squaredDistanceTo < 9）。
+                            AABB targetBox = new AABB(surroundPos.get(i));
                             for (Entity entity : mc.level.entitiesForRendering()) {
                                 if (entity instanceof EndCrystal crystalEntity
-                                    && PlayerUtils.distanceTo(entity) < 3
-                                    && entity.getBoundingBox().intersects(new AABB(surroundPos.get(i)))) {
+                                    && PlayerUtils.squaredDistanceTo(entity) < 9
+                                    && entity.getBoundingBox().intersects(targetBox)) {
                                     BlockPos entityBlockPos = crystalEntity.blockPosition();
                                     RotationManager.getInstance().register(new Rotation((float) Rotations.getYaw(entityBlockPos), (float) Rotations.getPitch(entityBlockPos)), humanized.profile());
                                     mc.player.connection.send(new ServerboundInteractPacket(crystalEntity.getId(), InteractionHand.MAIN_HAND, crystalEntity.position(), false));
