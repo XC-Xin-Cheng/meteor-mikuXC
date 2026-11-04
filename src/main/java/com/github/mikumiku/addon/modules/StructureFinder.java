@@ -366,7 +366,7 @@ public class StructureFinder extends BaseModule {
     private void reportSeedLibraryInfo(Seed seed) {
         if (seed == null || seed.seed == null || seed.version == null) return;
 
-        String runningVersion = net.minecraft.SharedConstants.getCurrentVersion().getName();
+        String runningVersion = net.minecraft.SharedConstants.getCurrentVersion().getName(); // 1.21.5 差异：WorldVersion 版本名访问器仍是 getName()（1.21.6 起才改名 name()）
         String source;
         // 结构位置首选 cubiomes，所以能建出定位器时数据来源就是 cubiomes，而不是种子库 /
         // 本版原生；只有 cubiomes 不可用时才按下面原有的口径回报。

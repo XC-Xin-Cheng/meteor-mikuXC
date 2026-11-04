@@ -1005,7 +1005,7 @@ public class SeedMine extends BaseModule {
         }
 
         for (Direction direction : Direction.values()) {
-            if (!world.getBlockState(orePos.offset(direction.getNormal())).canOcclude() && discardOnAir != 1F) {
+            if (!world.getBlockState(orePos.offset(direction.getStepX(), direction.getStepY(), direction.getStepZ())).canOcclude() && discardOnAir != 1F) {
                 return false;
             }
         }

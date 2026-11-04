@@ -146,8 +146,9 @@ public class ChatSchemeListSetting extends Setting<List<ChatScheme>> {
         // r72 及以前的单位是全局一份存在 "intervalUnit" 里的；现在改成每套方案各存各的，
         // 读旧配置时拿它给还没带单位的方案兜底，之后不再写回这个全局字段。
         ChatIntervalUnit legacyUnit =
-            ChatIntervalUnit.byName(tag.contains("intervalUnit") ? tag.getString("intervalUnit") : ChatIntervalUnit.MILLIS.name());
-        ListTag listTag = tag.getList("schemes", net.minecraft.nbt.Tag.TAG_LIST);
+            ChatIntervalUnit.byName(tag.getStringOr("intervalUnit", ChatIntervalUnit.MILLIS.name()));
+        // 1.21.5+ NBT：getList 不再带类型参数，改用 getListOrEmpty
+        ListTag listTag = tag.getListOrEmpty("schemes");
         for (net.minecraft.nbt.Tag entry : listTag) {
                 if (entry instanceof net.minecraft.nbt.CompoundTag compound) {
                     list.add(ChatScheme.fromTag(compound, legacyUnit));

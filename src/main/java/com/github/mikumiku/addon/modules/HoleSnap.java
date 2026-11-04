@@ -466,9 +466,9 @@ public class HoleSnap extends BaseModule {
             Direction facing = is3Block(holePos);
             if (facing != null) {
                 targetPos = targetPos.add(
-                    facing.getNormal().getX() * 0.5,
-                    facing.getNormal().getY() * 0.5,
-                    facing.getNormal().getZ() * 0.5
+                    facing.getStepX() * 0.5,
+                    facing.getStepY() * 0.5,
+                    facing.getStepZ() * 0.5
                 );
             }
         }
