@@ -487,7 +487,8 @@ public class AutoCrystal extends BaseModule {
                 && packet.getSource() == SoundSource.BLOCKS) {
                 Vec3 pos = new Vec3(packet.getX(), packet.getY(), packet.getZ());
                 mc.level.entitiesForRendering().forEach(e -> {
-                    if (e instanceof EndCrystal && Via.getEntityPos(e).distanceTo(pos) < 12) {
+                    // 优化：阈值比较改用平方距离（distanceTo < 12 等价于 distanceToSqr < 144）。
+                    if (e instanceof EndCrystal && Via.getEntityPos(e).distanceToSqr(pos) < 144) {
                         attackedCrystals.remove(e.getId());
                     }
                 });
@@ -565,30 +566,46 @@ public class AutoCrystal extends BaseModule {
         EndCrystal best = null;
         double bestDamage = 0;
 
+        // 优化：眼位/阈值/开关在整轮循环内不变，全部提到循环外；距离比较用平方距离避免每候选 sqrt；
+        // 昂贵的射线检测（canSee）挪到全部廉价判断之后执行（这些都是无副作用的纯谓词，判定结果不变）。
+        Vec3 eyePos = mc.player.getEyePosition();
+        double breakRangeSq = breakRange.get() * breakRange.get();
+        double breakWallRangeSq = breakWallRange.get() * breakWallRange.get();
+        double minDamageV = minDamage.get();
+        double maxSelfDamageV = maxSelfDamage.get();
+        double inhibitDelayTicks = removeInhibitDelay.get() * 50L;
+        boolean antiSuicideV = antiSuicide.get();
+        double totalHealth = antiSuicideV ? EntityUtils.getTotalHealth(mc.player) : 0;
+        boolean removeInhibitV = removeInhibit.get();
+        long now = System.currentTimeMillis();
+
         for (Entity entity : mc.level.entitiesForRendering()) {
             if (!(entity instanceof EndCrystal crystal)) continue;
             if (!crystal.isAlive()) continue;
 
-            // Range check
-            if (mc.player.getEyePosition().distanceTo(Via.getEntityPos(crystal)) > breakRange.get()) continue;
+            Vec3 crystalPos = Via.getEntityPos(crystal);
 
-            // Wall check
-            if (!canSee(Via.getEntityPos(crystal)) && mc.player.getEyePosition().distanceTo(Via.getEntityPos(crystal)) > breakWallRange.get())
-                continue;
+            // Range check（平方距离）
+            double distSq = eyePos.distanceToSqr(crystalPos);
+            if (distSq > breakRangeSq) continue;
 
-            // Already attacked check
-            if (removeInhibit.get() && attackedCrystals.containsKey(crystal.getId())) {
-                long time = attackedCrystals.get(crystal.getId());
-                if (System.currentTimeMillis() - time < removeInhibitDelay.get() * 50L) continue;
+            // Already attacked check（一次 map 查询代替 containsKey+get，先于射线检测）
+            if (removeInhibitV) {
+                Long time = attackedCrystals.get(crystal.getId());
+                if (time != null && now - time < inhibitDelayTicks) continue;
             }
 
-            // Calculate damage
-            double targetDamage = DamageUtils.crystalDamage(target, Via.getEntityPos(crystal));
-            double selfDamage = DamageUtils.crystalDamage(mc.player, Via.getEntityPos(crystal));
+            // Wall check（先平方距离，再射线检测）
+            if (distSq > breakWallRangeSq && !canSee(eyePos, crystalPos))
+                continue;
 
-            if (targetDamage < minDamage.get()) continue;
-            if (selfDamage > maxSelfDamage.get()) continue;
-            if (antiSuicide.get() && selfDamage >= EntityUtils.getTotalHealth(mc.player)) continue;
+            // Calculate damage
+            double targetDamage = DamageUtils.crystalDamage(target, crystalPos);
+            double selfDamage = DamageUtils.crystalDamage(mc.player, crystalPos);
+
+            if (targetDamage < minDamageV) continue;
+            if (selfDamage > maxSelfDamageV) continue;
+            if (antiSuicideV && selfDamage >= totalHealth) continue;
 
             if (targetDamage > bestDamage) {
                 best = crystal;
@@ -605,29 +622,38 @@ public class AutoCrystal extends BaseModule {
 
         // 性能：眼位在整轮循环内不变，提到循环外；同一个 up 位置也复用一次 Vec3（原来每候选最多构造 3 次）。
         Vec3 eyePos = mc.player.getEyePosition();
+        double placeRangeSq = placeRange.get() * placeRange.get();
+        double placeWallRangeSq = placeWallRange.get() * placeWallRange.get();
+        double minDamageV = minDamage.get();
+        double maxSelfDamageV = maxSelfDamage.get();
+        boolean antiSuicideV = antiSuicide.get();
+        double totalHealth = antiSuicideV ? EntityUtils.getTotalHealth(mc.player) : 0;
+        boolean armorBreakerV = armorBreaker.get();
+
         for (BlockPos pos : WorldUtils.getSphere(placeRange.get())) {
             if (!canPlaceCrystal(pos)) continue;
 
-            Vec3 upPos = Vec3.upFromBottomCenterOf(pos, 0);
-            double eyeDist = eyePos.distanceTo(upPos);
+            // 优化：直接一步构造目标向量，替代 atLowerCornerOf().add() / upFromBottomCenterOf() 的两次中间分配。
+            Vec3 upPos = new Vec3(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+            double distSq = eyePos.distanceToSqr(upPos);
 
-            // Range check
-            if (eyeDist > placeRange.get()) continue;
+            // Range check（平方距离）
+            if (distSq > placeRangeSq) continue;
 
-            // Wall check
-            if (!canSee(upPos) && eyeDist > placeWallRange.get())
+            // Wall check（先平方距离，再射线检测）
+            if (distSq > placeWallRangeSq && !canSee(eyePos, upPos))
                 continue;
 
             // Calculate damage
-            Vec3 crystalPos = Vec3.atLowerCornerOf(pos).add(0.5, 1, 0.5);
+            Vec3 crystalPos = new Vec3(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5);
             double targetDamage = DamageUtils.crystalDamage(target, crystalPos);
             double selfDamage = DamageUtils.crystalDamage(mc.player, crystalPos);
 
-            if (targetDamage < minDamage.get()) continue;
-            if (selfDamage > maxSelfDamage.get()) continue;
-            if (antiSuicide.get() && selfDamage >= EntityUtils.getTotalHealth(mc.player)) continue;
+            if (targetDamage < minDamageV) continue;
+            if (selfDamage > maxSelfDamageV) continue;
+            if (antiSuicideV && selfDamage >= totalHealth) continue;
 
-            if (armorBreaker.get()) {
+            if (armorBreakerV) {
                 targetDamage += getArmorDamageBonus(target);
             }
 
@@ -800,6 +826,17 @@ public class AutoCrystal extends BaseModule {
     private boolean canSee(Vec3 pos) {
         return mc.level.clip(new ClipContext(
             mc.player.getEyePosition(),
+            pos,
+            ClipContext.Block.COLLIDER,
+            ClipContext.Fluid.NONE,
+            mc.player
+        )).getType() == HitResult.Type.MISS;
+    }
+
+    // 优化：循环内复用已提升的眼位向量，避免每次射线检测再取一次眼位（结果一致）。
+    private boolean canSee(Vec3 eye, Vec3 pos) {
+        return mc.level.clip(new ClipContext(
+            eye,
             pos,
             ClipContext.Block.COLLIDER,
             ClipContext.Fluid.NONE,

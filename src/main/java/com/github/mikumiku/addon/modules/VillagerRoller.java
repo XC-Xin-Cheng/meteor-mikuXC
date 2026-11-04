@@ -704,6 +704,10 @@ public class VillagerRoller extends BaseModule {
     }
 
     public void triggerTradeCheck(MerchantOffers l) {
+        // 优化：注册表查找提到双层循环外（同一 tick 内不变）；附魔 ID 用 Identifier.equals 直接比较，
+        // 避免每个 offer/附魔都构造两个字符串（Identifier.toString 与 equals 语义一致，结果不变）。
+        var reg = Via.getEnchantmentRegistry();
+
         for (MerchantOffer offer : l) {
             ItemStack sellItem = offer.getResult();
             if (!sellItem.is(Items.ENCHANTED_BOOK) || sellItem.get(DataComponents.STORED_ENCHANTMENTS) == null)
@@ -711,14 +715,13 @@ public class VillagerRoller extends BaseModule {
 
             for (Pair<Holder<Enchantment>, Integer> enchant : getEnchants(sellItem)) {
                 int enchantLevel = enchant.right();
-                var reg = Via.getEnchantmentRegistry();
 
-                String enchantIdString = reg.getKey(enchant.key().value()).toString();
+                Identifier enchantId = reg.getKey(enchant.key().value());
                 String enchantName = Names.get(enchant.key());
 
                 boolean found = false;
                 for (RollingEnchantment e : searchingEnchants) {
-                    if (!e.enabled || !e.enchantment.toString().equals(enchantIdString)) continue;
+                    if (!e.enabled || !e.enchantment.equals(enchantId)) continue;
                     found = true;
                     if (e.minLevel <= 0) {
                         int ml = enchant.key().value().getMaxLevel();

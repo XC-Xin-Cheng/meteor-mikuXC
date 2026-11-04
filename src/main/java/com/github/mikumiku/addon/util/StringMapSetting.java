@@ -94,7 +94,9 @@ public class StringMapSetting extends Setting<Map<String, String>> {
         CompoundTag valueTag = Via.getNbtCompound(tag, "map");
 
         for (String key : valueTag.keySet()) {
-            get().put(key, valueTag.getString(key).get());
+            // 26.1：getString 返回 Optional；keySet 里的值可能是非字符串类型（手改文件/旧版本数据），
+            // 直接 .get() 会抛 NoSuchElementException，改用 getStringOr 兜底（语义与 1.21.10 一致）。
+            get().put(key, valueTag.getStringOr(key, ""));
         }
 
         return get();

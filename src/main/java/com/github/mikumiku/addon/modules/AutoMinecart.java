@@ -150,23 +150,25 @@ public class AutoMinecart extends BaseModule {
 
    private net.minecraft.world.entity.Entity findTarget(net.minecraft.client.Minecraft client, net.minecraft.client.player.LocalPlayer player) {
       net.minecraft.world.entity.Entity best = null;
-      double bestDist = Double.MAX_VALUE;
+      // 优化：最近者选择与阈值比较统一改为平方距离（sqrt 单调，阈值 r → r*r），结果一致。
+      double bestDistSq = Double.MAX_VALUE;
+      double rangeSq = ((Double) this.range.get()) * ((Double) this.range.get());
       if (this.lastCartId >= 0) {
          net.minecraft.world.entity.Entity last = client.level.getEntity(this.lastCartId);
          if (last instanceof net.minecraft.world.entity.vehicle.minecart.Minecart && !last.isRemoved() && last.isAlive()) {
-            double d = player.distanceTo(last);
-            if (d <= (Double)this.range.get()) {
+            double dSq = player.distanceToSqr(last);
+            if (dSq <= rangeSq) {
                best = last;
-               bestDist = d;
+               bestDistSq = dSq;
             }
          }
       }
 
       for (net.minecraft.world.entity.Entity e : client.level.entitiesForRendering()) {
          if (e instanceof net.minecraft.world.entity.vehicle.minecart.Minecart && e != player && e != best && !e.isRemoved() && e.isAlive()) {
-            double d = player.distanceTo(e);
-            if (d <= (Double)this.range.get() && d < bestDist) {
-               bestDist = d;
+            double dSq = player.distanceToSqr(e);
+            if (dSq <= rangeSq && dSq < bestDistSq) {
+               bestDistSq = dSq;
                best = e;
             }
          }
