@@ -670,10 +670,12 @@ public class DebugModule extends BaseModule {
 
         // 点击槽位
         if (packet instanceof ServerboundContainerClickPacket click) {
-            int slot = click.getSlotNum(); // 被点击的槽位
-            int button = click.getButtonNum(); // 鼠标键
-            ClickType actionType = click.getClickType(); // 点击动作类型（PICKUP、QUICK_MOVE等）
-            Int2ObjectMap<ItemStack> modifieded = click.getChangedSlots();// 被点击槽位上的物品
+            // 1.21.10：ServerboundContainerClickPacket 变为 record，访问器去掉 get 前缀；
+            // changedSlots 携带的是网络侧 HashedStack（只含哈希，没有完整物品）
+            int slot = click.slotNum(); // 被点击的槽位
+            int button = click.buttonNum(); // 鼠标键
+            ClickType actionType = click.clickType(); // 点击动作类型（PICKUP、QUICK_MOVE等）
+            Int2ObjectMap<net.minecraft.network.HashedStack> modifieded = click.changedSlots();// 被点击槽位上的物品（哈希）
 
             return String.format("""
                     ===ClickSlot===
@@ -863,15 +865,14 @@ public class DebugModule extends BaseModule {
         return str.substring(0, maxLength - 3) + "...";
     }
 
-    private static String formatItemMap(Int2ObjectMap<ItemStack> map) {
+    private static String formatItemMap(Int2ObjectMap<net.minecraft.network.HashedStack> map) {
         if (map == null || map.isEmpty()) return "无修改";
 
         StringBuilder sb = new StringBuilder();
         sb.append("修改槽位:\n");
         map.forEach((slot, stack) -> {
-            // 1.21.1 容器点击包直接携带 ItemStack，无需哈希判别
-            String itemName = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
-            sb.append(String.format("  [%d] %s x%d\n", slot, itemName, stack.getCount()));
+            // 1.21.10 容器点击包只携带 HashedStack（网络侧哈希），拿不到物品名，降级为打印哈希对象
+            sb.append(String.format("  [%d] %s\n", slot, stack == null || stack == net.minecraft.network.HashedStack.EMPTY ? "空" : stack.getClass().getSimpleName()));
         });
         return sb.toString();
     }

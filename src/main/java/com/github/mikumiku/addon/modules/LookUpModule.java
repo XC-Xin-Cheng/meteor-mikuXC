@@ -147,7 +147,8 @@ public class LookUpModule extends BaseModule {
             mc.player.connection.send(new ServerboundMovePlayerPacket.Rot(
                 mc.player.getYRot(),
                 mc.player.getXRot(),
-                mc.player.onGround()
+                mc.player.onGround(),
+                false
             ));
         }
     }
@@ -229,7 +230,8 @@ public class LookUpModule extends BaseModule {
         player.connection.send(new ServerboundMovePlayerPacket.Rot(
             player.getYRot(),
             pitch,
-            player.onGround()
+            player.onGround(),
+            false
         ));
 }
 }

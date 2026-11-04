@@ -87,7 +87,7 @@ public class BlockPosListSetting extends Setting<List<BlockPos>> {
     protected List<BlockPos> load(CompoundTag tag) {
         get().clear();
 
-        ListTag valueTag = tag.getList("value", net.minecraft.nbt.Tag.TAG_LIST);
+        ListTag valueTag = tag.getListOrEmpty("value");
         for (Tag element : valueTag) {
             int[] coords = ((IntArrayTag) element).getAsIntArray();
             if (coords.length == 3) {

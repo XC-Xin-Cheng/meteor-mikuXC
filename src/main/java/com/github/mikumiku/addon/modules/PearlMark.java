@@ -231,16 +231,12 @@ public class PearlMark extends BaseModule {
             CompoundTag cacheTag = Via.getNbtCompound(tag, CACHE_TAG);
             pearlOwnerCache.clear();
 
-            cacheTag.getAllKeys().forEach(key -> {
+            cacheTag.keySet().forEach(key -> {
                 try {
                     UUID pearlId = UUID.fromString(key);
-                    Object string = cacheTag.getString(key);
-                    String ownerName;
-                    if (string instanceof Optional<?> s) {
-                        ownerName = (String) s.get();
-                    } else {
-                        ownerName = (String) string;
-                    }
+                    // 修复：1.21.5+ 的 getString 返回 Optional，值类型非字符串时 .get() 抛 NoSuchElementException，
+                    // 且不被外层 catch(IllegalArgumentException) 覆盖；改用 getStringOr（正常数据语义不变）。
+                    String ownerName = cacheTag.getStringOr(key, "");
 
                     if (!ownerName.isEmpty()) {
                         pearlOwnerCache.put(pearlId, ownerName);

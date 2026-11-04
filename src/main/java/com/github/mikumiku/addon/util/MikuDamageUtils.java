@@ -150,7 +150,7 @@ public class MikuDamageUtils {
     }
 
     public static double applyResistance(LivingEntity entity, double damage) {
-        int amplifier = entity.hasEffect(MobEffects.DAMAGE_RESISTANCE) ? entity.getEffect(MobEffects.DAMAGE_RESISTANCE).getAmplifier() : 0;
+        int amplifier = entity.hasEffect(MobEffects.RESISTANCE) ? entity.getEffect(MobEffects.RESISTANCE).getAmplifier() : 0;
 
         int j = 25 - (amplifier + 1) * 5;
         return Math.max(damage * j / 25, 0);
@@ -255,7 +255,15 @@ public class MikuDamageUtils {
             return mc.level.clipWithInteractionOverride(vec3d, vec3d2, pos, voxelShape, blockState);
         }, (contextx) -> {
             Vec3 vec3d = contextx.getFrom().subtract(contextx.getTo());
-            return BlockHitResult.miss(contextx.getTo(), Direction.getNearest(vec3d.x, vec3d.y, vec3d.z), BlockPos.containing(contextx.getTo()));
+            return BlockHitResult.miss(contextx.getTo(), nearestDirection(vec3d.x, vec3d.y, vec3d.z), BlockPos.containing(contextx.getTo()));
         });
+    }
+
+    // 1.21.10：Direction.getNearest(double,double,double) 已移除，按绝对值最大的轴取方向
+    private static Direction nearestDirection(double x, double y, double z) {
+        double ax = Math.abs(x), ay = Math.abs(y), az = Math.abs(z);
+        if (ay >= ax && ay >= az) return y > 0 ? Direction.UP : Direction.DOWN;
+        if (ax >= az) return x > 0 ? Direction.EAST : Direction.WEST;
+        return z > 0 ? Direction.SOUTH : Direction.NORTH;
     }
 }

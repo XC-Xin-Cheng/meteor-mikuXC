@@ -36,13 +36,13 @@ def cubiomesJar = files('libs/cubiomes-0.0.0-2026.10.2.1790944595+4f04235f3e6e25
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
-    modImplementation "meteordevelopment:meteor-client:1.21.1-local"
-    modCompileOnly "xaero:xaerominimap:1.21.1-local"
-    modCompileOnly "xaero:xaeroworldmap:1.21.1-local"
-    modCompileOnly "litematica:litematica:1.21.1-local"
-    modCompileOnly "minihud:minihud:1.21.1-local"
-    modCompileOnly "malilib:malilib:1.21.1-local"
-    modCompileOnly "baritone:baritone:1.21.1-local"
+    modImplementation "meteordevelopment:meteor-client:1.21.10-local"
+    modCompileOnly "baritone:baritone:1.21.10-local"
+    modCompileOnly "xaero:xaerominimap:1.21.10-local"
+    modCompileOnly "xaero:xaeroworldmap:1.21.10-local"
+    modCompileOnly "litematica:litematica:1.21.10-local"
+    modCompileOnly "minihud:minihud:1.21.10-local"
+    modCompileOnly "malilib:malilib:1.21.10-local"
     compileOnly files('libs/orbit-0.2.4.jar')
     compileOnly files('libs/sponge-mixin-0.17.4+mixin.0.8.7.jar')
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
@@ -113,5 +113,5 @@ tasks.withType(JavaCompile).configureEach { options.release = 21; options.encodi
     options.compilerArgs.addAll(['-Xmaxerrs', '100000'])
 }
 
-java { toolchain.languageVersion = JavaLanguageVersion.of(21); withSourcesJar() }
+java { toolchain.languageVersion = JavaLanguageVersion.of(21) }
 base { archivesName = project.archives_base_name }

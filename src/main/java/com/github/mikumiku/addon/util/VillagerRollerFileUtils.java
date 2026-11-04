@@ -61,7 +61,7 @@ public class VillagerRollerFileUtils {
             return false;
         }
 
-        ListTag nbtList = nbtData.getList("rolling", net.minecraft.nbt.Tag.TAG_LIST);
+        ListTag nbtList = nbtData.getListOrEmpty("rolling");
         searchingEnchants.clear();
 
         for (Tag element : nbtList) {

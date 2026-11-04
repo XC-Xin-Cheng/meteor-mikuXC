@@ -99,9 +99,9 @@ public class VillagerProfessionListSetting extends Setting<List<VillagerProfessi
     public List<VillagerProfession> load(CompoundTag tag) {
         get().clear();
 
-        ListTag valueTag = tag.getList("value", net.minecraft.nbt.Tag.TAG_LIST);
+        ListTag valueTag = tag.getListOrEmpty("value");
         for (Tag tagI : valueTag) {
-            VillagerProfession profession = BuiltInRegistries.VILLAGER_PROFESSION.getOptional(ResourceLocation.tryParse(tagI.getAsString())).orElse(null);
+            VillagerProfession profession = BuiltInRegistries.VILLAGER_PROFESSION.getOptional(ResourceLocation.tryParse(((net.minecraft.nbt.StringTag) tagI).value())).orElse(null);
 
             if (bypassFilterWhenSavingAndLoading || (filter == null || filter.test(profession))) {
                 get().add(profession);
