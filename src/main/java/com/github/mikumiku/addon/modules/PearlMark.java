@@ -231,16 +231,11 @@ public class PearlMark extends BaseModule {
             CompoundTag cacheTag = Via.getNbtCompound(tag, CACHE_TAG);
             pearlOwnerCache.clear();
 
-            cacheTag.getAllKeys().forEach(key -> {
+            // 1.21.5+ NBT：getAllKeys() → keySet()；getString 返回 Optional，改用 getStringOr
+            cacheTag.keySet().forEach(key -> {
                 try {
                     UUID pearlId = UUID.fromString(key);
-                    Object string = cacheTag.getString(key);
-                    String ownerName;
-                    if (string instanceof Optional<?> s) {
-                        ownerName = (String) s.get();
-                    } else {
-                        ownerName = (String) string;
-                    }
+                    String ownerName = cacheTag.getStringOr(key, "");
 
                     if (!ownerName.isEmpty()) {
                         pearlOwnerCache.put(pearlId, ownerName);

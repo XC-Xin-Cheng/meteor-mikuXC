@@ -170,23 +170,25 @@ public class OreListSetting extends Setting<Set<Ore.OreKey>> {
     @Override
     protected Set<Ore.OreKey> load(CompoundTag tag) {
         Set<Ore.OreKey> keys = new LinkedHashSet<>();
-        ListTag valueTag = tag.getList("value", net.minecraft.nbt.Tag.TAG_LIST);
+        // 1.21.5+ NBT：getList 不带类型参数；StringTag 改用 record 访问器 value()
+        ListTag valueTag = tag.getListOrEmpty("value");
         for (Tag tagI : valueTag) {
-            Ore.OreKey key = Ore.OreKey.byId(tagI.getAsString());
+            Ore.OreKey key = Ore.OreKey.byId(((StringTag) tagI).value());
             if (key != null) keys.add(key);
         }
 
         // 先把样式恢复到默认，再套用配置里存过的覆盖值。
         resetStyles();
         CompoundTag stylesTag = Via.getNbtCompound(tag, "styles");
-        for (String id : stylesTag.getAllKeys()) {
+        // 1.21.5+ NBT：getAllKeys() 改名 keySet()；getXxx 返回 Optional，改用 getXxxOr
+        for (String id : stylesTag.keySet()) {
             Ore.OreKey key = Ore.OreKey.byId(id);
             if (key == null) continue;
 
             CompoundTag styleTag = Via.getNbtCompound(stylesTag, id);
             Ore.OreStyle style = style(key);
-            style.connected = styleTag.contains("connected") ? styleTag.getBoolean("connected") : false;
-            style.color.set(new Color(styleTag.contains("color") ? styleTag.getInt("color") : key.type.color.getPacked()));
+            style.connected = styleTag.getBooleanOr("connected", false);
+            style.color.set(new Color(styleTag.getIntOr("color", key.type.color.getPacked())));
         }
 
         // Setting.fromTag 不会替我们写回 value，这里必须自己 set，否则选择读不回来。

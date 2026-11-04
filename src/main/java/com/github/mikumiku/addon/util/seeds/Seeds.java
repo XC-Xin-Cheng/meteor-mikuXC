@@ -105,15 +105,9 @@ public class Seeds extends System<Seeds> {
 
     @Override
     public Seeds fromTag(CompoundTag tag) {
-        tag.getAllKeys().forEach(key -> {
-            Object compound = tag.getCompound(key);
-            CompoundTag key2;
-            if (compound instanceof Optional<?> optional) {
-                key2 = (CompoundTag) optional.get();
-            } else {
-                key2 = (CompoundTag) compound;
-            }
-
+        // 1.21.5+ NBT：getAllKeys() → keySet()；getCompound 返回 Optional，改用 getCompoundOrEmpty
+        tag.keySet().forEach(key -> {
+            CompoundTag key2 = tag.getCompoundOrEmpty(key);
             seeds.put(key, Seed.fromTag(key2));
         });
         return this;

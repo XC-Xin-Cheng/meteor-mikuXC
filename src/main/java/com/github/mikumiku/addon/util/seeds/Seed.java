@@ -48,21 +48,10 @@ public class Seed {
     }
 
     public static Seed fromTag(CompoundTag tag) {
-        Object version1 = tag.getString("version");
-        String key;
-        if (version1 instanceof Optional<?> v) {
-            key = (String) v.get();
-        }else {
-            key = (String) version1;
-        }
-
-        Object seed1 = tag.getLong("seed");
-        Long key2;
-         if (seed1 instanceof Optional<?> s) {
-            key2 = (Long) s.get();
-        }else {
-            key2 = (Long) seed1;
-        }
+        // 修复：1.21.5+ 的 CompoundTag.getString/getLong 返回 Optional，键缺失/值类型不符（首次加载、旧存档）
+        // 时对 Optional.get() 抛 NoSuchElementException；改用带默认值的 getStringOr/getLongOr（正常数据语义不变）。
+        String key = tag.getStringOr("version", "");
+        Long key2 = tag.getLongOr("seed", 0L);
 
         return new Seed(
             key2,
