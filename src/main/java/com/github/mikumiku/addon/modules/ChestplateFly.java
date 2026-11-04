@@ -67,6 +67,20 @@ public class ChestplateFly extends BaseModule {
     private Vec3 currentVelocity = Vec3.ZERO;
     private InventorySlotSwap slotSwap = null;
 
+    // 优化：装备音效 ID 列表不变，原来在每次 PlaySoundEvent 都重新 List.of + 9 次 ResourceLocation.parse，
+    // 提升为 static final（ResourceLocation 不可变，解析结果恒定，行为一致）。
+    private static final List<ResourceLocation> ARMOR_EQUIP_SOUNDS = List.of(
+        ResourceLocation.parse("minecraft:item.armor.equip_generic"),
+        ResourceLocation.parse("minecraft:item.armor.equip_netherite"),
+        ResourceLocation.parse("minecraft:item.armor.equip_elytra"),
+        ResourceLocation.parse("minecraft:item.armor.equip_diamond"),
+        ResourceLocation.parse("minecraft:item.armor.equip_gold"),
+        ResourceLocation.parse("minecraft:item.armor.equip_iron"),
+        ResourceLocation.parse("minecraft:item.armor.equip_chain"),
+        ResourceLocation.parse("minecraft:item.armor.equip_leather"),
+        ResourceLocation.parse("minecraft:item.elytra.flying")
+    );
+
     public ChestplateFly() {
         super("甲飞", "再一次。");
     }
@@ -259,18 +273,7 @@ public class ChestplateFly extends BaseModule {
 
     @EventHandler
     public void onPlaySound(PlaySoundEvent event) {
-        List<ResourceLocation> armorEquipSounds = List.of(
-            ResourceLocation.parse("minecraft:item.armor.equip_generic"),
-            ResourceLocation.parse("minecraft:item.armor.equip_netherite"),
-            ResourceLocation.parse("minecraft:item.armor.equip_elytra"),
-            ResourceLocation.parse("minecraft:item.armor.equip_diamond"),
-            ResourceLocation.parse("minecraft:item.armor.equip_gold"),
-            ResourceLocation.parse("minecraft:item.armor.equip_iron"),
-            ResourceLocation.parse("minecraft:item.armor.equip_chain"),
-            ResourceLocation.parse("minecraft:item.armor.equip_leather"),
-            ResourceLocation.parse("minecraft:item.elytra.flying")
-        );
-        for (ResourceLocation identifier : armorEquipSounds) {
+        for (ResourceLocation identifier : ARMOR_EQUIP_SOUNDS) {
             if (identifier.equals(event.sound.getLocation())) {
                 event.cancel();
                 break;

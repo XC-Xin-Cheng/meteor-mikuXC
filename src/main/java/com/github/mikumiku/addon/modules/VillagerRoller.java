@@ -704,6 +704,10 @@ public class VillagerRoller extends BaseModule {
     }
 
     public void triggerTradeCheck(MerchantOffers l) {
+        // 优化：注册表查找提到双层循环外（同一 tick 内不变）；附魔 ID 用 ResourceLocation.equals 直接比较
+        // （ResourceLocation.toString 单射、equals 与 toString().equals 一致），避免每个 offer/附魔都构造两个字符串。
+        var reg = Via.getEnchantmentRegistry();
+
         for (MerchantOffer offer : l) {
             ItemStack sellItem = offer.getResult();
             if (!sellItem.is(Items.ENCHANTED_BOOK) || sellItem.get(DataComponents.STORED_ENCHANTMENTS) == null)
@@ -711,14 +715,13 @@ public class VillagerRoller extends BaseModule {
 
             for (Pair<Holder<Enchantment>, Integer> enchant : getEnchants(sellItem)) {
                 int enchantLevel = enchant.right();
-                var reg = Via.getEnchantmentRegistry();
-
-                String enchantIdString = reg.getKey(enchant.key().value()).toString();
+                ResourceLocation enchantId = reg.getKey(enchant.key().value());
                 String enchantName = Names.get(enchant.key());
 
                 boolean found = false;
                 for (RollingEnchantment e : searchingEnchants) {
-                    if (!e.enabled || !e.enchantment.toString().equals(enchantIdString)) continue;
+                    // 修复：e.enchantment 为 null（保存的附魔 ID 解析失败时 tryParse 返回 null）会 NPE，先跳过。
+                    if (!e.enabled || e.enchantment == null || !e.enchantment.equals(enchantId)) continue;
                     found = true;
                     if (e.minLevel <= 0) {
                         int ml = enchant.key().value().getMaxLevel();

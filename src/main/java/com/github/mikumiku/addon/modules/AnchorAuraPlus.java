@@ -275,9 +275,11 @@ public class AnchorAuraPlus extends BaseModule {
 
     private void updateTargets() {
         List<Player> players = new ArrayList<>();
-        double closestDist = 1000;
+        // 优化：距离只用做阈值比较与最近者比较，统一改为平方距离（阈值 15→225），省掉每玩家 sqrt；
+        // 选择结果与原实现一致（sqrt 单调，种子 1000 仍大于任何平方距离的合格值 225）。
+        double closestDistSq = 1000;
         Player closest;
-        double dist;
+        double distSq;
         for (int i = 3; i > 0; i--) {
 
             closest = null;
@@ -286,14 +288,14 @@ public class AnchorAuraPlus extends BaseModule {
                     continue;
                 }
 
-                dist = player.distanceTo(mc.player);
+                distSq = player.distanceToSqr(mc.player);
 
-                if (dist > 15) {
+                if (distSq > 225) {
                     continue;
                 }
 
-                if (closest == null || dist < closestDist) {
-                    closestDist = dist;
+                if (closest == null || distSq < closestDistSq) {
+                    closestDistSq = distSq;
                     closest = player;
                 }
             }
@@ -334,13 +336,20 @@ public class AnchorAuraPlus extends BaseModule {
     }
 
     private boolean inPlaceRange(BlockPos pos) {
-        double distance = PlayerUtils.distanceTo(pos);
-        return distance <= range.get();
+        // 优化：阈值比较改用平方距离（distanceTo <= r 等价于 squaredDistanceTo <= r*r）。
+        return PlayerUtils.squaredDistanceTo(pos) <= range.get() * range.get();
     }
 
     private boolean inRangeToTargets(BlockPos pos) {
+        // 优化：pos 相关的底部中心向量提到目标循环外（原本每个目标都重建一次）；
+        // 阈值 3.5 改为平方 12.25，省掉每目标 sqrt 与 add(0,1,0) 的中间向量。
+        Vec3 base = Vec3.upFromBottomCenterOf(pos, 0);
         for (Player target : targets) {
-            if (Via.getEntityPos(target).add(0, 1, 0).distanceTo(Vec3.upFromBottomCenterOf(pos, 0)) < 3.5) return true;
+            Vec3 targetPos = Via.getEntityPos(target);
+            double dx = targetPos.x - base.x;
+            double dy = (targetPos.y + 1) - base.y;
+            double dz = targetPos.z - base.z;
+            if (dx * dx + dy * dy + dz * dz < 12.25) return true;
         }
         return false;
     }
