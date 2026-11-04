@@ -455,7 +455,7 @@ public class VillagerRoller extends BaseModule {
 
         Optional<Registry<Enchantment>> reg;
         if (mc.level != null) {
-            reg = Optional.of(mc.level.registryAccess().registryOrThrow(Registries.ENCHANTMENT));
+            reg = Optional.of(mc.level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT));
         } else {
             reg = Optional.empty();
         }
@@ -464,7 +464,7 @@ public class VillagerRoller extends BaseModule {
             RollingEnchantment e = searchingEnchants.get(i);
             Optional<Holder.Reference<Enchantment>> en;
             if (reg.isPresent()) {
-                en = reg.get().getHolder(e.enchantment);
+                en = reg.get().get(e.enchantment);
             } else {
                 en = Optional.empty();
             }
@@ -558,7 +558,7 @@ public class VillagerRoller extends BaseModule {
             list.clear();
             if (reg.isPresent()) {
                 for (RollingEnchantment e : searchingEnchants) {
-                    reg.get().getHolder(e.enchantment).ifPresent(enchantmentReference -> e.maxCost = getMinimumPrice(enchantmentReference));
+                    reg.get().get(e.enchantment).ifPresent(enchantmentReference -> e.maxCost = getMinimumPrice(enchantmentReference));
                 }
             }
             fillWidget(theme, list);
@@ -618,7 +618,7 @@ public class VillagerRoller extends BaseModule {
         if (mc.level == null) {
             return Collections.emptyList();
         }
-        Registry<Enchantment> reg = mc.level.registryAccess().registryOrThrow(Registries.ENCHANTMENT);
+        Registry<Enchantment> reg = mc.level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
         List<Holder<Enchantment>> available = new ArrayList<>();
         if (onlyTradeable) {
             var i = reg.getTagOrEmpty(EnchantmentTags.TRADEABLE);
@@ -649,7 +649,7 @@ public class VillagerRoller extends BaseModule {
             return enchantments;
         }
 
-        Optional<Registry<Enchantment>> reg = Optional.of(mc.level.registryAccess().registryOrThrow(Registries.ENCHANTMENT));
+        Optional<Registry<Enchantment>> reg = Optional.of(mc.level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT));
         if (reg.isEmpty()) {
             return enchantments;
         }

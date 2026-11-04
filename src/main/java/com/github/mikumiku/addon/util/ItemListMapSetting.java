@@ -135,12 +135,13 @@ public class ItemListMapSetting extends Setting<Map<String, List<Item>>> {
         get().clear();
 
         CompoundTag mapTag = Via.getNbtCompound(tag, "value");
-        for (String key : mapTag.getAllKeys()) {
+        // 1.21.5+ NBT：getAllKeys() → keySet()，getList 单参，StringTag 用 value()
+        for (String key : mapTag.keySet()) {
             List<Item> items = new ArrayList<>();
-            ListTag itemList = mapTag.getList(key, net.minecraft.nbt.Tag.TAG_LIST);
+            ListTag itemList = mapTag.getListOrEmpty(key);
 
             for (Tag tagI : itemList) {
-                Item item = BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(tagI.getAsString())).orElse(null);
+                Item item = BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(((StringTag) tagI).value())).orElse(null);
                 if (bypassFilterWhenSavingAndLoading || filter == null || filter.test(item)) {
                     items.add(item);
                 }

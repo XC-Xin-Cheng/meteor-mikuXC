@@ -68,7 +68,7 @@ public abstract class BlockESPMixin {
             int minZ = chunk.getPos().getMinBlockZ();
             int maxX = chunk.getPos().getMaxBlockX();
             int maxZ = chunk.getPos().getMaxBlockZ();
-            int minY = mc.level.getMinBuildHeight();
+            int minY = mc.level.getMinY();
             int px = playerPos.getX(), py = playerPos.getY(), pz = playerPos.getZ();
 
             for (int x = minX; x <= maxX; x++) {
